@@ -626,6 +626,72 @@ function CMSPanel() {
   );
 }
 
+// ─── Admin Login Component ───────────────────────────────────────────────────
+
+function AdminLoginForm({ onLogin }: { onLogin: () => void }) {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm(f => ({ ...f, [key]: e.target.value }));
+    setErrorMsg("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success && data.role === "admin") {
+        localStorage.setItem('gdc_role', data.role);
+        localStorage.setItem('gdc_admin_auth', 'true');
+        onLogin();
+      } else {
+        setErrorMsg(data.error || "Access Denied. Admins only.");
+      }
+    } catch (err) {
+      setErrorMsg("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-[92vh] flex items-center justify-center bg-[var(--bg)] py-12 px-4">
+      <div className="absolute inset-0 opacity-5 pointer-events-none"
+           style={{ backgroundImage: 'linear-gradient(#f472b6 1px, transparent 1px), linear-gradient(90deg, #f472b6 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+      <div className="relative z-10 w-full max-w-md bg-[#111118] border border-[#27272a] rounded-2xl shadow-2xl p-8">
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-4">👑</div>
+          <h2 className="font-display text-3xl uppercase tracking-wider text-[var(--secondary)]">Admin Login</h2>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {errorMsg && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg text-sm font-semibold text-center">
+              {errorMsg}
+            </div>
+          )}
+          <Field label="Admin Email" value={form.email} onChange={v => set("email")({target: {value: v}} as any)} placeholder="admin@college.edu" />
+          <Field label="Password" value={form.password} onChange={v => set("password")({target: {value: v}} as any)} type="password" placeholder="••••••••" />
+          <button type="submit" disabled={loading}
+            className="w-full py-3.5 bg-[var(--secondary)] text-black font-display text-xl uppercase rounded-xl hover:opacity-90 active:scale-95 transition disabled:opacity-50">
+            {loading ? "Authenticating..." : "Access Control Center →"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function AdminPage() {
@@ -633,12 +699,10 @@ export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('gdc_admin_auth') !== 'true') {
-      router.push('/auth');
-    } else {
+    if (localStorage.getItem('gdc_admin_auth') === 'true') {
       setAuthorized(true);
     }
-  }, [router]);
+  }, []);
 
   const [tab, setTab] = useState<"games" | "theme" | "cms">("games");
   
@@ -703,7 +767,7 @@ export default function AdminPage() {
   };
 
   if (!authorized) {
-    return <div className="min-h-screen bg-[var(--bg)] text-white flex items-center justify-center font-display uppercase tracking-widest text-gray-500">Authenticating...</div>;
+    return <AdminLoginForm onLogin={() => setAuthorized(true)} />;
   }
 
   const pendingGames = games.filter(g => g.status === "pending");

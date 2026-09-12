@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [isLogin, setIsLogin] = useState(true);
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -22,10 +23,11 @@ export default function AuthPage() {
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify(isLogin ? { email: form.email, password: form.password } : form)
       });
       const data = await res.json();
 
@@ -48,7 +50,7 @@ export default function AuthPage() {
           }
         }, 1500);
       } else {
-        setErrorMsg(data.error || "Login failed");
+        setErrorMsg(data.error || (isLogin ? "Login failed" : "Registration failed"));
       }
     } catch (err) {
       setErrorMsg("Network error. Please try again.");
@@ -73,9 +75,18 @@ export default function AuthPage() {
 
         <div className="bg-[#111118] border border-[#27272a] rounded-2xl shadow-2xl overflow-hidden">
           <div className="flex border-b border-[#27272a]">
-            <div className="flex-1 py-4 font-display text-xl uppercase tracking-wider text-center bg-[var(--primary)] text-black">
-              Member & Admin Login
-            </div>
+            <button 
+              onClick={() => setIsLogin(true)}
+              className={`flex-1 py-4 font-display text-xl uppercase tracking-wider text-center transition ${isLogin ? 'bg-[var(--primary)] text-black' : 'text-gray-400 hover:bg-white/5'}`}
+            >
+              Login
+            </button>
+            <button 
+              onClick={() => setIsLogin(false)}
+              className={`flex-1 py-4 font-display text-xl uppercase tracking-wider text-center transition ${!isLogin ? 'bg-[var(--secondary)] text-black' : 'text-gray-400 hover:bg-white/5'}`}
+            >
+              Register
+            </button>
           </div>
 
           <div className="p-8">
@@ -83,7 +94,7 @@ export default function AuthPage() {
               <div className="text-center py-6">
                 <div className="text-5xl mb-4">🎮</div>
                 <h2 className="font-display text-3xl uppercase text-[var(--primary)] mb-2">
-                  Welcome Back!
+                  {isLogin ? "Welcome Back!" : "Welcome to GDC!"}
                 </h2>
                 <p className="text-gray-400 mb-6">
                   You're logged in. Redirecting...
@@ -96,12 +107,24 @@ export default function AuthPage() {
                     {errorMsg}
                   </div>
                 )}
+                
+                {!isLogin && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-400 mb-1.5">Full Name <span className="text-red-400">*</span></label>
+                    <input
+                      type="text" required placeholder="Jane Doe"
+                      value={form.name} onChange={set("name")}
+                      className={`w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-2 focus:ring-[var(--secondary)]/30 transition`}
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-400 mb-1.5">Email <span className="text-red-400">*</span></label>
                   <input
                     type="email" required placeholder="member@college.edu"
                     value={form.email} onChange={set("email")}
-                    className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition"
+                    className={`w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 transition ${isLogin ? 'focus:border-[var(--primary)] focus:ring-[var(--primary)]/30' : 'focus:border-[var(--secondary)] focus:ring-[var(--secondary)]/30'}`}
                   />
                 </div>
 
@@ -110,15 +133,15 @@ export default function AuthPage() {
                   <input
                     type="password" required placeholder="••••••••"
                     value={form.password} onChange={set("password")}
-                    className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition"
+                    className={`w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 transition ${isLogin ? 'focus:border-[var(--primary)] focus:ring-[var(--primary)]/30' : 'focus:border-[var(--secondary)] focus:ring-[var(--secondary)]/30'}`}
                   />
                 </div>
 
                 <button
                   type="submit" disabled={loading}
-                  className="w-full py-3.5 bg-[var(--primary)] text-black font-display text-xl uppercase rounded-xl hover:opacity-90 active:scale-95 transition disabled:opacity-50"
+                  className={`w-full py-3.5 text-black font-display text-xl uppercase rounded-xl hover:opacity-90 active:scale-95 transition disabled:opacity-50 ${isLogin ? 'bg-[var(--primary)]' : 'bg-[var(--secondary)]'}`}
                 >
-                  {loading ? "Loading..." : "Sign In →"}
+                  {loading ? "Loading..." : (isLogin ? "Sign In →" : "Create Account ✨")}
                 </button>
               </form>
             )}
@@ -126,7 +149,7 @@ export default function AuthPage() {
         </div>
 
         <p className="text-center text-gray-600 text-sm mt-6">
-          Admins will be redirected to the Control Center. Members to the Dashboard.
+          Members will be redirected to the Dashboard.
         </p>
       </div>
     </div>

@@ -77,9 +77,9 @@ export function Footer() {
             </h3>
             <ul className="space-y-2.5 mb-6">
               {[
-                !isAuth ? ["Admin Login", "/auth"] : null,
+                !isAuth ? ["Member Login", "/auth"] : null,
                 isAuth ? ["Submit a Game", "/dashboard"] : null,
-                ["Admin Portal", "/admin"],
+                ["Admin Login", "/admin"],
               ].filter(Boolean).map((item) => {
                 const [label, href] = item as [string, string];
                 return (
