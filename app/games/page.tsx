@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
 import connectToDatabase from "@/lib/mongodb";
 import Game from "@/models/Game";
+import { games as staticGames } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Games — GDC",
@@ -17,6 +18,23 @@ export default async function GamesPage() {
   await connectToDatabase();
   const approvedGames = await Game.find({ status: "approved" }).sort({ createdAt: -1 }).lean();
   
+  const allGames = [
+    ...approvedGames.map((g: any) => ({
+      ...g,
+      _id: g._id.toString(),
+    })),
+    ...staticGames.map((g: any) => ({
+      ...g,
+      _id: g.slug,
+      coverUrl: g.image,
+      developer: g.authors?.join(", "),
+      itchUrl: g.playUrl,
+      platform: g.version,
+      description: g.summary,
+      tags: g.tags.join(", "),
+    }))
+  ];
+
   return (
     <>
       {/* ═══ POST-WHY WE EXIST WEBP BANNER (FULL WIDTH) ═══════════════════ */}
@@ -60,7 +78,7 @@ export default async function GamesPage() {
 
           {/* Games Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {approvedGames.map((g: any) => (
+            {allGames.map((g: any) => (
               <article
                 key={g._id.toString()}
                 className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]"
