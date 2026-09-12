@@ -8,15 +8,28 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const [role, setRole] = useState<string | null>(null);
   const [isAuth, setIsAuth] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("gdc_role");
+    localStorage.removeItem("gdc_admin_auth");
+    setRole(null);
+    setIsAuth(false);
+    window.location.href = "/auth";
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
+    setRole(localStorage.getItem("gdc_role"));
     setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
     
     // Listen for storage changes in case of logout/login in another tab
-    const handleStorage = () => setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    const handleStorage = () => {
+      setRole(localStorage.getItem("gdc_role"));
+      setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    };
     window.addEventListener("storage", handleStorage);
     
     return () => {
@@ -71,12 +84,28 @@ export function Navbar() {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/auth"
-            className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider text-white border-2 border-white hover:bg-white hover:text-black transition-all shadow-[3px_3px_0px_#FF007F] hover:translate-y-[-2px]"
-          >
-            Login
-          </Link>
+          {!role ? (
+            <Link
+              href="/auth"
+              className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider text-white border-2 border-white hover:bg-white hover:text-black transition-all shadow-[3px_3px_0px_#FF007F] hover:translate-y-[-2px]"
+            >
+              Login
+            </Link>
+          ) : role === "admin" ? (
+            <Link
+              href="/admin"
+              className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider text-black bg-[#00F2FE] border-2 border-[#00F2FE] hover:bg-white transition-all shadow-[3px_3px_0px_#FF007F] hover:translate-y-[-2px]"
+            >
+              Admin Portal
+            </Link>
+          ) : (
+            <Link
+              href="/dashboard"
+              className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider text-white border-2 border-white hover:bg-white hover:text-black transition-all shadow-[3px_3px_0px_#FF007F] hover:translate-y-[-2px]"
+            >
+              Dashboard
+            </Link>
+          )}
           {isAuth && (
             <Link
               href="/dashboard"
@@ -84,6 +113,14 @@ export function Navbar() {
             >
               Submit Game
             </Link>
+          )}
+          {role && (
+            <button
+              onClick={handleLogout}
+              className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider text-gray-400 hover:text-white transition-all ml-2"
+            >
+              Logout
+            </button>
           )}
         </div>
 
@@ -111,13 +148,31 @@ export function Navbar() {
             </Link>
           ))}
           <div className="pt-2 flex flex-col gap-2">
-            <Link
-              href="/auth"
-              onClick={() => setOpen(false)}
-              className="block text-center px-4 py-2.5 font-bold text-base uppercase tracking-wider text-white border-2 border-white hover:bg-white hover:text-black transition-all shadow-[3px_3px_0px_#FF007F]"
-            >
-              Login
-            </Link>
+            {!role ? (
+              <Link
+                href="/auth"
+                onClick={() => setOpen(false)}
+                className="block text-center px-4 py-2.5 font-bold text-base uppercase tracking-wider text-white border-2 border-white hover:bg-white hover:text-black transition-all shadow-[3px_3px_0px_#FF007F]"
+              >
+                Login
+              </Link>
+            ) : role === "admin" ? (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="block text-center px-4 py-2.5 font-bold text-base uppercase tracking-wider text-black bg-[#00F2FE] border-2 border-[#00F2FE] hover:bg-white transition-all shadow-[3px_3px_0px_#FF007F]"
+              >
+                Admin Portal
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="block text-center px-4 py-2.5 font-bold text-base uppercase tracking-wider text-white border-2 border-white hover:bg-white hover:text-black transition-all shadow-[3px_3px_0px_#FF007F]"
+              >
+                Dashboard
+              </Link>
+            )}
             {isAuth && (
               <Link
                 href="/dashboard"
@@ -126,6 +181,14 @@ export function Navbar() {
               >
                 Submit Game
               </Link>
+            )}
+            {role && (
+              <button
+                onClick={handleLogout}
+                className="block w-full text-center px-4 py-2.5 font-bold text-base uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/10 transition-all mt-2"
+              >
+                Logout
+              </button>
             )}
           </div>
         </div>

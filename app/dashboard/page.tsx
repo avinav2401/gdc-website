@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
-import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 
 const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pygame", "Phaser", "MonoGame", "Other"];
 const genreOptions = ["Action", "Platformer", "Puzzle", "RPG", "Arcade", "Simulation", "Horror", "Strategy", "Idle", "Zen", "Roguelite", "Other"];
@@ -132,8 +133,30 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
 
           {/* Links */}
           <InputField label="Itch.io / Steam / WebGL URL" id="itchUrl" type="url" required placeholder="https://yourname.itch.io/game" value={form.itchUrl} onChange={set("itchUrl")} />
-          <InputField label="Cover Image URL" id="coverUrl" type="url" placeholder="https://... (1280×720 recommended)" value={form.coverUrl} onChange={set("coverUrl")} />
-          <InputField label="Gameplay Video / GIF URL" id="videoUrl" type="url" placeholder="https://youtube.com/... or direct .gif URL" value={form.videoUrl} onChange={set("videoUrl")} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-1.5">Cover Image (Cloudinary)</label>
+              <CldUploadWidget
+                uploadPreset="ml_default" // The user needs to change this to their unsigned preset name
+                onSuccess={(result: any) => {
+                  setForm(f => ({ ...f, coverUrl: result.info.secure_url }));
+                }}
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={() => open()}
+                    className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-[#3f3f46] border-dashed rounded-lg px-4 py-3 text-gray-400 hover:text-white hover:border-[var(--primary)] transition"
+                  >
+                    <ImageIcon size={20} />
+                    {form.coverUrl ? "Image Uploaded! Click to Change" : "Upload Cover Image"}
+                  </button>
+                )}
+              </CldUploadWidget>
+            </div>
+            <InputField label="Gameplay Video / GIF URL" id="videoUrl" type="url" placeholder="https://youtube.com/... or direct .gif URL" value={form.videoUrl} onChange={set("videoUrl")} />
+          </div>
 
           {/* Tags */}
           <InputField label="Tech Stack Tags" id="tags" placeholder="unity, c#, pixel-art, multiplayer (comma separated)" value={form.tags} onChange={set("tags")} />

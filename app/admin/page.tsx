@@ -9,14 +9,14 @@ import {
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
-function Field({ label, value, onChange, type = "text", placeholder }: {
+function Field({ label, value, onChange, type = "text", placeholder, autoComplete }: {
   label: string; value: string; onChange: (v: string) => void;
-  type?: string; placeholder?: string;
+  type?: string; placeholder?: string; autoComplete?: string;
 }) {
   return (
     <div>
       <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">{label}</label>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} autoComplete={autoComplete}
         className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[var(--primary)] transition" />
     </div>
   );
@@ -680,8 +680,8 @@ function AdminLoginForm({ onLogin }: { onLogin: () => void }) {
               {errorMsg}
             </div>
           )}
-          <Field label="Admin Email" value={form.email} onChange={v => set("email")({target: {value: v}} as any)} placeholder="admin@college.edu" />
-          <Field label="Password" value={form.password} onChange={v => set("password")({target: {value: v}} as any)} type="password" placeholder="••••••••" />
+          <Field label="Admin Email" value={form.email} onChange={v => set("email")({target: {value: v}} as any)} placeholder="admin@college.edu" autoComplete="off" />
+          <Field label="Password" value={form.password} onChange={v => set("password")({target: {value: v}} as any)} type="password" placeholder="••••••••" autoComplete="new-password" />
           <button type="submit" disabled={loading}
             className="w-full py-3.5 bg-[var(--secondary)] text-black font-display text-xl uppercase rounded-xl hover:opacity-90 active:scale-95 transition disabled:opacity-50">
             {loading ? "Authenticating..." : "Access Control Center →"}

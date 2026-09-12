@@ -113,6 +113,7 @@ export default function AuthPage() {
                     <input
                       type="text" required placeholder="Jane Doe"
                       value={form.name} onChange={set("name")}
+                      autoComplete="off"
                       className={`w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-2 focus:ring-[var(--secondary)]/30 transition`}
                     />
                   </div>
@@ -123,6 +124,7 @@ export default function AuthPage() {
                   <input
                     type="email" required placeholder="member@college.edu"
                     value={form.email} onChange={set("email")}
+                    autoComplete="off"
                     className={`w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 transition ${isLogin ? 'focus:border-[var(--primary)] focus:ring-[var(--primary)]/30' : 'focus:border-[var(--secondary)] focus:ring-[var(--secondary)]/30'}`}
                   />
                 </div>
@@ -132,6 +134,7 @@ export default function AuthPage() {
                   <input
                     type="password" required placeholder="••••••••"
                     value={form.password} onChange={set("password")}
+                    autoComplete="new-password"
                     className={`w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 transition ${isLogin ? 'focus:border-[var(--primary)] focus:ring-[var(--primary)]/30' : 'focus:border-[var(--secondary)] focus:ring-[var(--secondary)]/30'}`}
                   />
                 </div>

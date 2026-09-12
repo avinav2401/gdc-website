@@ -7,8 +7,8 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
 
     // 1. Check for the backdoor admin login
-    if (email === "admin@college.edu" && password === "admin") {
-      return NextResponse.json({ success: true, role: "admin", name: "Backdoor Admin" }, { status: 200 });
+    if (email === "gdc@gmail.com" && password === "gmaes") {
+      return NextResponse.json({ success: true, role: "admin", name: "Admin" }, { status: 200 });
     }
 
     // 2. Connect to DB and verify against real users

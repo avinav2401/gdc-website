@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
-import { games } from "@/lib/data";
+import connectToDatabase from "@/lib/mongodb";
+import Game from "@/models/Game";
 
 export const metadata: Metadata = {
   title: "Games — GDC",
@@ -10,7 +11,12 @@ export const metadata: Metadata = {
     "Games shipped, in development, and prototyped by Game Developer's Community members.",
 };
 
-export default function GamesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function GamesPage() {
+  await connectToDatabase();
+  const approvedGames = await Game.find({ status: "approved" }).sort({ createdAt: -1 }).lean();
+  
   return (
     <>
       {/* ═══ POST-WHY WE EXIST WEBP BANNER (FULL WIDTH) ═══════════════════ */}
@@ -54,17 +60,17 @@ export default function GamesPage() {
 
           {/* Games Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {games.map((g) => (
+            {approvedGames.map((g: any) => (
               <article
-                key={g.slug}
+                key={g._id.toString()}
                 className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]"
               >
                 <div>
                   {/* Media Container */}
                   <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
-                    {g.image ? (
+                    {g.coverUrl ? (
                       <img
-                        src={g.image}
+                        src={g.coverUrl}
                         alt={g.title}
                         className="w-full h-full object-cover block [image-rendering:pixelated]"
                         loading="lazy"
@@ -82,7 +88,7 @@ export default function GamesPage() {
                   {/* Top Meta Info */}
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-mono text-xs text-gray-400">
-                      {g.version || "v1.0"}
+                      {g.platform || "N/A"}
                     </span>
                     <StatusBadge status={g.status} />
                   </div>
@@ -96,18 +102,18 @@ export default function GamesPage() {
                   </p>
 
                   {/* Summary */}
-                  <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed">
-                    {g.summary}
+                  <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed whitespace-pre-wrap">
+                    {g.description || g.tagline}
                   </p>
 
                   {/* Tag Pills */}
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {g.tags.map((t) => (
+                    {g.tags && g.tags.split(",").map((t: string) => (
                       <span
-                        key={t}
+                        key={t.trim()}
                         className="border border-white/30 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-gray-300"
                       >
-                        {t}
+                        {t.trim()}
                       </span>
                     ))}
                   </div>
@@ -116,11 +122,11 @@ export default function GamesPage() {
                 {/* Card Footer */}
                 <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between mt-auto">
                   <span className="text-xs text-gray-400 uppercase tracking-wider font-bold truncate max-w-[180px]">
-                    By {g.authors.join(", ")}
+                    By {g.developer || "Unknown Developer"}
                   </span>
-                  {g.playUrl ? (
+                  {g.itchUrl ? (
                     <a
-                      href={g.playUrl}
+                      href={g.itchUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex items-center justify-center"
@@ -129,7 +135,7 @@ export default function GamesPage() {
                     </a>
                   ) : (
                     <span className="font-mono text-[11px] text-gray-500 uppercase">
-                      Coming Soon
+                      No Link
                     </span>
                   )}
                 </div>
