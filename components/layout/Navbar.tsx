@@ -106,7 +106,7 @@ export function Navbar() {
               Dashboard
             </Link>
           )}
-          {isAuth && (
+          {role && (
             <Link
               href="/dashboard"
               className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider bg-[#FF007F] text-white border-2 border-white hover:bg-[#00F2FE] hover:text-black transition-all shadow-[3px_3px_0px_#00F2FE] hover:translate-y-[-2px]"
@@ -173,7 +173,7 @@ export function Navbar() {
                 Dashboard
               </Link>
             )}
-            {isAuth && (
+            {role && (
               <Link
                 href="/dashboard"
                 onClick={() => setOpen(false)}

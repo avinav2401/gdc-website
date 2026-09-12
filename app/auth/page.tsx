@@ -35,6 +35,9 @@ export default function AuthPage() {
         setSubmitted(true);
         // Save auth state
         localStorage.setItem('gdc_role', data.role); // "admin" or "member"
+        if (data.name) {
+          localStorage.setItem('gdc_name', data.name);
+        }
         if (data.role === 'admin') {
           localStorage.setItem('gdc_admin_auth', 'true'); // For legacy admin checks
         } else {

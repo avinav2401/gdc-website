@@ -19,9 +19,10 @@ function StatusBadge({ status }: { status: "pending" | "approved" | "rejected" }
   return <span className="flex items-center gap-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 px-3 py-1 text-sm font-bold rounded-full"><Clock size={14}/> Pending Review</span>;
 }
 
-function InputField({ label, id, type = "text", placeholder, required, value, onChange }: {
+function InputField({ label, id, type = "text", placeholder, required, value, onChange, readOnly }: {
   label: string; id: string; type?: string; placeholder?: string;
   required?: boolean; value: string; onChange: (v: string) => void;
+  readOnly?: boolean;
 }) {
   return (
     <div>
@@ -31,7 +32,8 @@ function InputField({ label, id, type = "text", placeholder, required, value, on
       <input
         id={id} type={type} placeholder={placeholder} required={required}
         value={value} onChange={e => onChange(e.target.value)}
-        className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition"
+        readOnly={readOnly}
+        className={`w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none transition ${readOnly ? "opacity-60 cursor-not-allowed" : "focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30"}`}
       />
     </div>
   );
@@ -222,10 +224,42 @@ export default function DashboardPage() {
   const [showModal, setShowModal] = useState(false);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [isAuth, setIsAuth] = useState(false);
+  const [userName, setUserName] = useState("Developer");
+  const [userRole, setUserRole] = useState("Member");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
+  const [bio, setBio] = useState("");
 
   useEffect(() => {
     setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
-    const handleStorage = () => setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    
+    const role = localStorage.getItem("gdc_role") || "member";
+    setUserRole(role.charAt(0).toUpperCase() + role.slice(1));
+    
+    const name = localStorage.getItem("gdc_name");
+    if (name) setUserName(name);
+    
+    const gh = localStorage.getItem("gdc_github");
+    if (gh) setGithubUrl(gh);
+    const pf = localStorage.getItem("gdc_portfolio");
+    if (pf) setPortfolioUrl(pf);
+    const b = localStorage.getItem("gdc_bio");
+    if (b) setBio(b);
+
+    const handleStorage = () => {
+      setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+      const r = localStorage.getItem("gdc_role") || "member";
+      setUserRole(r.charAt(0).toUpperCase() + r.slice(1));
+      const n = localStorage.getItem("gdc_name");
+      if (n) setUserName(n);
+      
+      const gh = localStorage.getItem("gdc_github");
+      if (gh) setGithubUrl(gh);
+      const pf = localStorage.getItem("gdc_portfolio");
+      if (pf) setPortfolioUrl(pf);
+      const b = localStorage.getItem("gdc_bio");
+      if (b) setBio(b);
+    };
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
@@ -246,6 +280,13 @@ export default function DashboardPage() {
     fetchSubmissions();
   };
 
+  const handleUpdateProfile = () => {
+    localStorage.setItem("gdc_github", githubUrl);
+    localStorage.setItem("gdc_portfolio", portfolioUrl);
+    localStorage.setItem("gdc_bio", bio);
+    alert("Profile updated successfully!");
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg)] text-white py-12">
       {showModal && <SubmitGameModal onClose={() => setShowModal(false)} onSubmit={handleSubmit} />}
@@ -257,14 +298,12 @@ export default function DashboardPage() {
             <p className="text-[var(--primary)] font-semibold text-sm uppercase tracking-widest mb-1">Developer Portal</p>
             <h1 className="font-display text-5xl md:text-6xl uppercase">Dashboard</h1>
           </div>
-          {isAuth && (
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition"
-            >
-              <Plus size={22}/> Submit New Game
-            </button>
-          )}
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition"
+          >
+            <Plus size={22}/> Submit New Game
+          </button>
         </div>
 
         {/* Stats */}
@@ -301,15 +340,18 @@ export default function DashboardPage() {
         <div className="bg-[#111118] border border-[#27272a] rounded-xl p-6">
           <h2 className="font-display text-3xl uppercase mb-5 text-[var(--secondary)]">Your Profile</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <InputField label="Display Name" id="pname" placeholder="Your name" value="Developer" onChange={() => {}} />
-            <InputField label="GitHub URL" id="pgithub" type="url" placeholder="https://github.com/..." value="" onChange={() => {}} />
-            <InputField label="Portfolio URL" id="pportfolio" type="url" placeholder="https://yoursite.dev" value="" onChange={() => {}} />
-            <InputField label="Role" id="prole" placeholder="Developer" value="Developer" onChange={() => {}} />
+            <InputField label="Display Name" id="pname" placeholder="Your name" value={userName} onChange={() => {}} readOnly />
+            <InputField label="GitHub URL" id="pgithub" type="url" placeholder="https://github.com/..." value={githubUrl} onChange={setGithubUrl} />
+            <InputField label="Portfolio URL" id="pportfolio" type="url" placeholder="https://yoursite.dev" value={portfolioUrl} onChange={setPortfolioUrl} />
+            <InputField label="Role" id="prole" placeholder="Role" value={userRole} onChange={() => {}} readOnly />
           </div>
           <div className="mt-5">
-            <TextAreaField label="Bio" id="pbio" placeholder="Tell the community about yourself..." rows={3} value="" onChange={() => {}} />
+            <TextAreaField label="Bio" id="pbio" placeholder="Tell the community about yourself..." rows={3} value={bio} onChange={setBio} />
           </div>
-          <button className="mt-5 px-6 py-2.5 bg-[var(--secondary)] text-black font-bold rounded-lg hover:opacity-90 transition font-display uppercase tracking-wider">
+          <button 
+            onClick={handleUpdateProfile}
+            className="mt-5 px-6 py-2.5 bg-[var(--secondary)] text-black font-bold rounded-lg hover:opacity-90 transition font-display uppercase tracking-wider"
+          >
             Update Profile
           </button>
         </div>

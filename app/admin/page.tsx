@@ -654,6 +654,9 @@ function AdminLoginForm({ onLogin }: { onLogin: () => void }) {
       if (res.ok && data.success && data.role === "admin") {
         localStorage.setItem('gdc_role', data.role);
         localStorage.setItem('gdc_admin_auth', 'true');
+        if (data.name) {
+          localStorage.setItem('gdc_name', data.name);
+        }
         onLogin();
       } else {
         setErrorMsg(data.error || "Access Denied. Admins only.");
@@ -784,9 +787,6 @@ export default function AdminPage() {
             <p className="text-[var(--secondary)] text-sm font-semibold uppercase tracking-widest mb-1">Admin Portal</p>
             <h1 className="font-display text-5xl md:text-6xl uppercase">Control Center</h1>
           </div>
-          <button onClick={handleLogout} className="px-4 py-2 border border-[#3f3f46] text-gray-400 rounded-lg hover:bg-white/5 transition text-sm font-semibold uppercase tracking-wider">
-            Logout
-          </button>
         </div>
 
         {/* Stats */}

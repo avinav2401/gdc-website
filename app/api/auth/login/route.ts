@@ -5,15 +5,17 @@ import User from "@/models/User";
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
+    
+    const cleanEmail = email?.trim().toLowerCase();
 
     // 1. Check for the backdoor admin login
-    if (email === "gdc@gmail.com" && password === "gmaes") {
+    if (cleanEmail === "gdc@gmail.com" && (password === "gmaes" || password === "games")) {
       return NextResponse.json({ success: true, role: "admin", name: "Admin" }, { status: 200 });
     }
 
     // 2. Connect to DB and verify against real users
     await connectToDatabase();
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
