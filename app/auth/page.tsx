@@ -68,7 +68,6 @@ export default function AuthPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="GDC" className="w-16 h-16 rounded-2xl mx-auto mb-4" />
           <p className="font-display text-2xl uppercase tracking-widest text-gray-400">Game Developers Community</p>
         </div>

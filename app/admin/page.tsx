@@ -735,6 +735,7 @@ export default function AdminPage() {
       fetchGames();
       fetchTheme();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authorized]);
 
   const handleApprove = async (id: string, comment: string) => {
@@ -752,7 +753,7 @@ export default function AdminPage() {
     router.push('/auth');
   };
 
-  const applyThemeVariables = (t: typeof theme) => {
+  function applyThemeVariables(t: typeof theme) {
     const root = document.documentElement;
     root.style.setProperty("--primary", t.primary);
     root.style.setProperty("--secondary", t.secondary);
