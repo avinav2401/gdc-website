@@ -4,43 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle, XCircle, MessageSquare, Palette, Users, Gamepad2,
-  Calendar, ExternalLink, Plus, Trash2, Edit3, Save, X, Video, ArrowLeft, Star, StarOff
+  Calendar, ExternalLink, Plus, Trash2, Edit3, Save, X, Video, ArrowLeft, Star, StarOff, User as UserIcon
 } from "lucide-react";
-
-// ─── Seed data ─────────────────────────────────────────────────────────────
-
-const pendingGames = [
-  { id: "1", title: "Project Nexus", developer: "Ankit Mandal", engine: "Unity 3D", genre: "Action RPG", itchUrl: "https://itch.io/", submittedAt: "2 days ago" },
-  { id: "2", title: "Void Runner", developer: "Priya Sharma", engine: "Godot 4", genre: "Endless Runner", itchUrl: "https://itch.io/", submittedAt: "5 hours ago" },
-];
-
-const seedEvents = [
-  { id: "e1", title: "Fall Game Jam 2026", date: "November 2026", location: "TBD", status: "planned", description: "Our flagship annual jam. 48 hours, judged showcase." },
-  { id: "e2", title: "Godot Basics Workshop", date: "September 2026", location: "CS Block, Lab 3", status: "planned", description: "Four-part hands-on Godot series." },
-  { id: "e3", title: "Club Wars 2026", date: "March 2026", location: "Main Auditorium", status: "shipped", description: "Inter-club 48hr sprint — GDC took 1st and 3rd." },
-];
-
-const seedTeam = [
-  { id: "t1", name: "Club President", role: "President", bio: "Sets the yearly roadmap.", github: "", portfolio: "", isAlumni: false },
-  { id: "t2", name: "Technical Lead", role: "Technical Lead", bio: "Owns workshops and reviews prototypes.", github: "", portfolio: "", isAlumni: false },
-  { id: "t3", name: "Art Lead", role: "Art Lead", bio: "Curates visual identity of showcases.", github: "", portfolio: "", isAlumni: false },
-  { id: "t4", name: "Previous President", role: "Founder / Alumni", bio: "Founded GDC in 2023.", github: "", portfolio: "", isAlumni: true },
-];
-
-const seedGames = [
-  { id: "g1", title: "Flow", engine: "HTML5 Canvas", genre: "Zen", itchUrl: "https://itch.io/", featured: true },
-  { id: "g2", title: "Orbit Drift", engine: "Unity", genre: "Arcade", itchUrl: "https://itch.io/", featured: true },
-  { id: "g3", title: "Signal Loss", engine: "Godot 4", genre: "Puzzle", itchUrl: "https://itch.io/", featured: false },
-  { id: "g4", title: "Last Light", engine: "Godot 4", genre: "Roguelite", itchUrl: "https://itch.io/", featured: false },
-];
-
-const themeDefaults = {
-  primary: "#38bdf8",
-  secondary: "#f472b6",
-  bg: "#0d0d12",
-  bgDark: "#050508",
-  yellow: "#fbbf24",
-};
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -78,7 +43,7 @@ function TabButton({ label, active, onClick, icon: Icon }: { label: string; acti
 
 // ─── Game Approval ──────────────────────────────────────────────────────────
 
-function GameReviewCard({ game, onApprove, onReject }: { game: typeof pendingGames[0]; onApprove: (id: string) => void; onReject: (id: string) => void }) {
+function GameReviewCard({ game, onApprove, onReject }: { game: any; onApprove: (id: string, note: string) => void; onReject: (id: string, note: string) => void }) {
   const [comment, setComment] = useState("");
   const [showComment, setShowComment] = useState(false);
   return (
@@ -89,7 +54,8 @@ function GameReviewCard({ game, onApprove, onReject }: { game: typeof pendingGam
             <h3 className="font-display text-2xl uppercase">{game.title}</h3>
             <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded-full">Pending</span>
           </div>
-          <p className="text-gray-500 text-sm">by <span className="text-gray-300">{game.developer}</span> · {game.engine} · {game.genre} · Submitted {game.submittedAt}</p>
+          <p className="text-gray-500 text-sm">by <span className="text-gray-300">{game.developer || "Unknown"}</span> · {game.engine} · {game.genre} · Submitted {new Date(game.createdAt).toLocaleDateString()}</p>
+          {game.description && <p className="text-gray-400 text-sm mt-2">{game.description}</p>}
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
           {game.itchUrl && (
@@ -101,10 +67,10 @@ function GameReviewCard({ game, onApprove, onReject }: { game: typeof pendingGam
           <button onClick={() => setShowComment(s => !s)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-white/5 text-gray-300 border border-white/10 rounded-lg hover:bg-white/10 transition">
             <MessageSquare size={14} /> Note
           </button>
-          <button onClick={() => onApprove(game.id)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/25 transition font-semibold">
+          <button onClick={() => onApprove(game._id, comment)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/25 transition font-semibold">
             <CheckCircle size={14} /> Approve
           </button>
-          <button onClick={() => onReject(game.id)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-500/15 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/25 transition font-semibold">
+          <button onClick={() => onReject(game._id, comment)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-500/15 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/25 transition font-semibold">
             <XCircle size={14} /> Reject
           </button>
         </div>
@@ -112,9 +78,8 @@ function GameReviewCard({ game, onApprove, onReject }: { game: typeof pendingGam
       {showComment && (
         <div className="mt-4 border-t border-[#27272a] pt-4">
           <textarea value={comment} onChange={e => setComment(e.target.value)}
-            placeholder="Add feedback for the developer..."
+            placeholder="Add feedback for the developer (optional)..."
             className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[var(--primary)] resize-none" rows={3} />
-          <button className="mt-2 px-5 py-2 text-sm bg-[var(--primary)] text-black font-bold rounded-lg hover:opacity-90 transition uppercase tracking-wider">Send Note</button>
         </div>
       )}
     </div>
@@ -123,24 +88,40 @@ function GameReviewCard({ game, onApprove, onReject }: { game: typeof pendingGam
 
 // ─── Events CMS ─────────────────────────────────────────────────────────────
 
-type EventItem = typeof seedEvents[0];
-
 function EventsCMS() {
-  const [items, setItems] = useState(seedEvents);
-  const [editing, setEditing] = useState<EventItem | null>(null);
+  const [items, setItems] = useState<any[]>([]);
+  const [editing, setEditing] = useState<any | null>(null);
   const [adding, setAdding] = useState(false);
-  const blank = (): EventItem => ({ id: "", title: "", date: "", location: "", status: "planned", description: "" });
-  const [draft, setDraft] = useState<EventItem>(blank);
-  const setD = (k: keyof EventItem) => (v: string) => setDraft(d => ({ ...d, [k]: v }));
+  
+  const blank = () => ({ title: "", date: "", location: "", status: "planned", description: "" });
+  const [draft, setDraft] = useState<any>(blank());
+  const setD = (k: string) => (v: string) => setDraft((d: any) => ({ ...d, [k]: v }));
 
-  const save = () => {
-    const itemToSave = draft.id ? draft : { ...draft, id: Date.now().toString() };
-    if (adding) { setItems(i => [itemToSave, ...i]); setAdding(false); }
-    else if (editing) { setItems(i => i.map(x => x.id === editing.id ? itemToSave : x)); setEditing(null); }
-    setDraft(blank());
+  const fetchItems = async () => {
+    const res = await fetch("/api/events");
+    if (res.ok) setItems(await res.json());
   };
-  const del = (id: string) => setItems(i => i.filter(x => x.id !== id));
-  const startEdit = (e: EventItem) => { setDraft(e); setEditing(e); setAdding(false); };
+
+  useEffect(() => { fetchItems(); }, []);
+
+  const save = async () => {
+    if (adding) {
+      await fetch("/api/events", { method: "POST", body: JSON.stringify(draft) });
+    } else if (editing) {
+      await fetch(`/api/events/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+    }
+    setAdding(false);
+    setEditing(null);
+    setDraft(blank());
+    fetchItems();
+  };
+  
+  const del = async (id: string) => {
+    await fetch(`/api/events/${id}`, { method: "DELETE" });
+    fetchItems();
+  };
+  
+  const startEdit = (e: any) => { setDraft(e); setEditing(e); setAdding(false); };
   const startAdd = () => { setDraft(blank()); setAdding(true); setEditing(null); };
   const cancel = () => { setAdding(false); setEditing(null); setDraft(blank()); };
 
@@ -162,7 +143,7 @@ function EventsCMS() {
             <Field label="Location" value={draft.location} onChange={setD("location")} placeholder="Main Auditorium / Online" />
             <div>
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Status</label>
-              <select value={draft.status} onChange={e => setDraft(d => ({ ...d, status: e.target.value }))}
+              <select value={draft.status} onChange={e => setDraft((d: any) => ({ ...d, status: e.target.value }))}
                 className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[var(--primary)] transition">
                 <option value="planned">Planned</option>
                 <option value="live">Live</option>
@@ -184,7 +165,7 @@ function EventsCMS() {
 
       <div className="space-y-3">
         {items.map(ev => (
-          <div key={ev.id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+          <div key={ev._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h4 className="font-display text-xl uppercase">{ev.title}</h4>
@@ -197,7 +178,7 @@ function EventsCMS() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button onClick={() => startEdit(ev)} className="p-2 text-gray-400 hover:text-[var(--primary)] hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
-              <button onClick={() => del(ev.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+              <button onClick={() => del(ev._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
             </div>
           </div>
         ))}
@@ -208,25 +189,41 @@ function EventsCMS() {
 
 // ─── Team CMS ────────────────────────────────────────────────────────────────
 
-type TeamMember = typeof seedTeam[0];
-
 function TeamCMS() {
-  const [items, setItems] = useState(seedTeam);
-  const [editing, setEditing] = useState<TeamMember | null>(null);
+  const [items, setItems] = useState<any[]>([]);
+  const [editing, setEditing] = useState<any | null>(null);
   const [adding, setAdding] = useState(false);
   const [filter, setFilter] = useState<"all" | "core" | "alumni">("all");
-  const blank = (): TeamMember => ({ id: "", name: "", role: "", bio: "", github: "", portfolio: "", isAlumni: false });
-  const [draft, setDraft] = useState<TeamMember>(blank);
-  const setD = (k: keyof TeamMember) => (v: any) => setDraft(d => ({ ...d, [k]: v }));
+  
+  const blank = () => ({ name: "", role: "", bio: "", github: "", portfolio: "", isAlumni: false });
+  const [draft, setDraft] = useState<any>(blank());
+  const setD = (k: string) => (v: any) => setDraft((d: any) => ({ ...d, [k]: v }));
 
-  const save = () => {
-    const itemToSave = draft.id ? draft : { ...draft, id: Date.now().toString() };
-    if (adding) { setItems(i => [itemToSave, ...i]); setAdding(false); }
-    else if (editing) { setItems(i => i.map(x => x.id === editing.id ? itemToSave : x)); setEditing(null); }
-    setDraft(blank());
+  const fetchItems = async () => {
+    const res = await fetch("/api/team");
+    if (res.ok) setItems(await res.json());
   };
-  const del = (id: string) => setItems(i => i.filter(x => x.id !== id));
-  const startEdit = (m: TeamMember) => { setDraft(m); setEditing(m); setAdding(false); };
+
+  useEffect(() => { fetchItems(); }, []);
+
+  const save = async () => {
+    if (adding) {
+      await fetch("/api/team", { method: "POST", body: JSON.stringify(draft) });
+    } else if (editing) {
+      await fetch(`/api/team/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+    }
+    setAdding(false);
+    setEditing(null);
+    setDraft(blank());
+    fetchItems();
+  };
+  
+  const del = async (id: string) => {
+    await fetch(`/api/team/${id}`, { method: "DELETE" });
+    fetchItems();
+  };
+  
+  const startEdit = (m: any) => { setDraft(m); setEditing(m); setAdding(false); };
   const cancel = () => { setAdding(false); setEditing(null); setDraft(blank()); };
 
   const filtered = items.filter(m => filter === "all" ? true : filter === "alumni" ? m.isAlumni : !m.isAlumni);
@@ -279,7 +276,7 @@ function TeamCMS() {
 
       <div className="space-y-3">
         {filtered.map(m => (
-          <div key={m.id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+          <div key={m._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="font-display text-xl uppercase">{m.name || "Unnamed"}</h4>
@@ -296,7 +293,105 @@ function TeamCMS() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button onClick={() => startEdit(m)} className="p-2 text-gray-400 hover:text-[var(--secondary)] hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
-              <button onClick={() => del(m.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+              <button onClick={() => del(m._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Members CMS ─────────────────────────────────────────────────────────────
+
+function MembersCMS() {
+  const [items, setItems] = useState<any[]>([]);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [adding, setAdding] = useState(false);
+  
+  const blank = () => ({ name: "", email: "", password: "gdc2026password", role: "member" });
+  const [draft, setDraft] = useState<any>(blank());
+  const setD = (k: string) => (v: string) => setDraft((d: any) => ({ ...d, [k]: v }));
+
+  const fetchItems = async () => {
+    const res = await fetch("/api/users");
+    if (res.ok) setItems(await res.json());
+  };
+
+  useEffect(() => { fetchItems(); }, []);
+
+  const save = async () => {
+    if (adding) {
+      await fetch("/api/users", { method: "POST", body: JSON.stringify(draft) });
+    } else if (editing) {
+      await fetch(`/api/users/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+    }
+    setAdding(false);
+    setEditing(null);
+    setDraft(blank());
+    fetchItems();
+  };
+  
+  const del = async (id: string) => {
+    await fetch(`/api/users/${id}`, { method: "DELETE" });
+    fetchItems();
+  };
+  
+  const startEdit = (m: any) => { setDraft(m); setEditing(m); setAdding(false); };
+  const cancel = () => { setAdding(false); setEditing(null); setDraft(blank()); };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-display text-2xl uppercase text-[#00f2fe]">Registered Members</h3>
+        <button onClick={() => { setDraft(blank()); setAdding(true); setEditing(null); }}
+          className="flex items-center gap-2 px-4 py-2 bg-[#00f2fe] text-black font-bold rounded-lg hover:opacity-90 transition text-sm uppercase">
+          <Plus size={16} /> Add Member
+        </button>
+      </div>
+
+      {(adding || editing) && (
+        <div className="bg-[#0d0d12] border border-[#00f2fe]/40 rounded-xl p-6 mb-6 space-y-4">
+          <h4 className="font-display text-xl uppercase text-gray-300">{adding ? "New Member" : "Edit Member"}</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Full Name" value={draft.name} onChange={setD("name")} placeholder="Jane Doe" />
+            <Field label="Email" value={draft.email} onChange={setD("email")} placeholder="dev@college.edu" />
+            <Field label="Password" value={draft.password} onChange={setD("password")} placeholder="Password..." type="text" />
+            <div>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Role</label>
+              <select value={draft.role} onChange={e => setDraft((d: any) => ({ ...d, role: e.target.value }))}
+                className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[var(--primary)] transition">
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-3 mt-4">
+            <button onClick={save} className="flex items-center gap-2 px-5 py-2 bg-emerald-500 text-black font-bold rounded-lg hover:opacity-90 transition text-sm uppercase">
+              <Save size={16} /> Save
+            </button>
+            <button onClick={cancel} className="flex items-center gap-2 px-5 py-2 bg-white/5 text-gray-400 border border-white/10 rounded-lg hover:bg-white/10 transition text-sm">
+              <X size={16} /> Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {items.map(m => (
+          <div key={m._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <h4 className="font-display text-xl uppercase">{m.name || "Unnamed"}</h4>
+                <span className={`text-xs px-2 py-0.5 rounded-full border ${m.role === 'admin' ? "bg-red-500/20 text-red-300 border-red-500/30" : "bg-[#00f2fe]/15 text-[#00f2fe] border-[#00f2fe]/30"}`}>
+                  {m.role}
+                </span>
+              </div>
+              <p className="text-gray-500 text-sm">{m.email}</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button onClick={() => startEdit(m)} className="p-2 text-gray-400 hover:text-[#00f2fe] hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
+              <button onClick={() => del(m._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
             </div>
           </div>
         ))}
@@ -307,23 +402,45 @@ function TeamCMS() {
 
 // ─── Games Archive CMS ───────────────────────────────────────────────────────
 
-type GameItem = typeof seedGames[0];
-
 function GamesCMS() {
-  const [items, setItems] = useState(seedGames);
-  const [editing, setEditing] = useState<GameItem | null>(null);
-  const blank = (): GameItem => ({ id: "", title: "", engine: "", genre: "", itchUrl: "", featured: false });
-  const [draft, setDraft] = useState<GameItem>(blank);
-  const setD = (k: keyof GameItem) => (v: any) => setDraft(d => ({ ...d, [k]: v }));
+  const [items, setItems] = useState<any[]>([]);
+  const [editing, setEditing] = useState<any | null>(null);
+  
+  const blank = () => ({ title: "", engine: "", genre: "", itchUrl: "", featured: false });
+  const [draft, setDraft] = useState<any>(blank());
+  const setD = (k: string) => (v: any) => setDraft((d: any) => ({ ...d, [k]: v }));
 
-  const save = () => {
-    const itemToSave = draft.id ? draft : { ...draft, id: Date.now().toString() };
-    if (editing) { setItems(i => i.map(x => x.id === editing.id ? itemToSave : x)); setEditing(null); }
-    setDraft(blank());
+  const fetchItems = async () => {
+    const res = await fetch("/api/games");
+    if (res.ok) {
+      const data = await res.json();
+      setItems(data.filter((g: any) => g.status === "approved"));
+    }
   };
-  const del = (id: string) => setItems(i => i.filter(x => x.id !== id));
-  const startEdit = (g: GameItem) => { setDraft(g); setEditing(g); };
-  const toggleFeatured = (id: string) => setItems(i => i.map(x => x.id === id ? { ...x, featured: !x.featured } : x));
+
+  useEffect(() => { fetchItems(); }, []);
+
+  const save = async () => {
+    if (editing) {
+      await fetch(`/api/games/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+    }
+    setEditing(null);
+    setDraft(blank());
+    fetchItems();
+  };
+  
+  const del = async (id: string) => {
+    await fetch(`/api/games/${id}`, { method: "DELETE" });
+    fetchItems();
+  };
+  
+  const startEdit = (g: any) => { setDraft(g); setEditing(g); };
+  
+  const toggleFeatured = async (id: string, featured: boolean) => {
+    await fetch(`/api/games/${id}`, { method: "PUT", body: JSON.stringify({ featured: !featured }) });
+    fetchItems();
+  };
+  
   const cancel = () => { setEditing(null); setDraft(blank()); };
 
   return (
@@ -359,7 +476,7 @@ function GamesCMS() {
 
       <div className="space-y-3">
         {items.map(g => (
-          <div key={g.id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+          <div key={g._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="font-display text-xl uppercase">{g.title}</h4>
@@ -374,12 +491,12 @@ function GamesCMS() {
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button onClick={() => toggleFeatured(g.id)} title="Toggle featured"
+              <button onClick={() => toggleFeatured(g._id, g.featured)} title="Toggle featured"
                 className={`p-2 rounded-lg transition ${g.featured ? "text-yellow-400 hover:text-yellow-200 bg-yellow-500/10" : "text-gray-600 hover:text-yellow-400 hover:bg-yellow-500/10"}`}>
                 {g.featured ? <Star size={16} fill="currentColor" /> : <StarOff size={16} />}
               </button>
               <button onClick={() => startEdit(g)} className="p-2 text-gray-400 hover:text-yellow-400 hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
-              <button onClick={() => del(g.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+              <button onClick={() => del(g._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
             </div>
           </div>
         ))}
@@ -391,12 +508,21 @@ function GamesCMS() {
 // ─── Hero Video CMS ──────────────────────────────────────────────────────────
 
 function HeroVideoCMS() {
-  const defaultUrl = "https://cdn.pixabay.com/video/2020/07/20/45184-442220456_large.mp4";
-  const [videoUrl, setVideoUrl] = useState(defaultUrl);
+  const [videoUrl, setVideoUrl] = useState("");
   const [saved, setSaved] = useState(true);
-  const [preview, setPreview] = useState(defaultUrl);
+  const [preview, setPreview] = useState("");
 
-  const handleSave = () => {
+  useEffect(() => {
+    fetch("/api/settings").then(res => res.json()).then(data => {
+      if (data && data.heroVideoUrl) {
+        setVideoUrl(data.heroVideoUrl);
+        setPreview(data.heroVideoUrl);
+      }
+    });
+  }, []);
+
+  const handleSave = async () => {
+    await fetch("/api/settings", { method: "PUT", body: JSON.stringify({ heroVideoUrl: videoUrl }) });
     setPreview(videoUrl);
     setSaved(true);
   };
@@ -421,17 +547,19 @@ function HeroVideoCMS() {
         </div>
 
         {/* Preview */}
-        <div>
-          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Live Preview</label>
-          <div className="relative rounded-xl overflow-hidden border border-[#27272a] bg-black aspect-video">
-            <video key={preview} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-70">
-              <source src={preview} type="video/mp4" />
-            </video>
-            <div className="absolute inset-0 flex items-end p-4">
-              <span className="bg-black/70 text-white text-xs px-3 py-1 rounded-full font-mono truncate max-w-full">{preview}</span>
+        {preview && (
+          <div>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Live Preview</label>
+            <div className="relative rounded-xl overflow-hidden border border-[#27272a] bg-black aspect-video">
+              <video key={preview} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-70">
+                <source src={preview} type="video/mp4" />
+              </video>
+              <div className="absolute inset-0 flex items-end p-4">
+                <span className="bg-black/70 text-white text-xs px-3 py-1 rounded-full font-mono truncate max-w-full">{preview}</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Quick presets */}
         <div>
@@ -457,7 +585,7 @@ function HeroVideoCMS() {
 // ─── Main CMS Panel ──────────────────────────────────────────────────────────
 
 function CMSPanel() {
-  const [activeSection, setActiveSection] = useState<"home" | "events" | "team" | "games" | "video">("home");
+  const [activeSection, setActiveSection] = useState<"home" | "events" | "team" | "games" | "video" | "members">("home");
 
   if (activeSection !== "home") {
     return (
@@ -470,6 +598,7 @@ function CMSPanel() {
         {activeSection === "team" && <TeamCMS />}
         {activeSection === "games" && <GamesCMS />}
         {activeSection === "video" && <HeroVideoCMS />}
+        {activeSection === "members" && <MembersCMS />}
       </div>
     );
   }
@@ -481,6 +610,7 @@ function CMSPanel() {
         { icon: Users, label: "Team & Alumni", desc: "Manage core team members, alumni, and their profiles.", color: "text-[var(--secondary)]", section: "team" as const, btnColor: "bg-[var(--secondary)]" },
         { icon: Gamepad2, label: "Games Archive", desc: "Edit approved game listings, reorder featured games.", color: "text-yellow-400", section: "games" as const, btnColor: "bg-yellow-400" },
         { icon: Video, label: "Hero Video URL", desc: "Update the background video shown in the hero section.", color: "text-emerald-400", section: "video" as const, btnColor: "bg-emerald-400" },
+        { icon: UserIcon, label: "Members", desc: "View and manage registered members.", color: "text-[#00f2fe]", section: "members" as const, btnColor: "bg-[#00f2fe]" },
       ].map(item => (
         <button key={item.label} onClick={() => setActiveSection(item.section)}
           className="bg-[#111118] border border-[#27272a] rounded-xl p-6 text-left hover:bg-white/5 hover:border-[#3f3f46] transition group">
@@ -511,31 +641,74 @@ export default function AdminPage() {
   }, [router]);
 
   const [tab, setTab] = useState<"games" | "theme" | "cms">("games");
-  const [games, setGames] = useState(pendingGames);
-  const [theme, setTheme] = useState(themeDefaults);
-  const [approved, setApproved] = useState<string[]>([]);
-  const [rejected, setRejected] = useState<string[]>([]);
+  
+  const [games, setGames] = useState<any[]>([]);
+  const [theme, setTheme] = useState({
+    primary: "#38bdf8", secondary: "#f472b6", bg: "#0d0d12", bgDark: "#050508", yellow: "#fbbf24"
+  });
 
-  const handleApprove = (id: string) => { setApproved(a => [...a, id]); setGames(g => g.filter(x => x.id !== id)); };
-  const handleReject = (id: string) => { setRejected(r => [...r, id]); setGames(g => g.filter(x => x.id !== id)); };
+  const fetchGames = async () => {
+    const res = await fetch("/api/games");
+    if (res.ok) {
+      const data = await res.json();
+      setGames(data);
+    }
+  };
+
+  const fetchTheme = async () => {
+    const res = await fetch("/api/settings");
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.theme) {
+        setTheme(data.theme);
+        applyThemeVariables(data.theme);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (authorized) {
+      fetchGames();
+      fetchTheme();
+    }
+  }, [authorized]);
+
+  const handleApprove = async (id: string, comment: string) => {
+    await fetch(`/api/games/${id}`, { method: "PUT", body: JSON.stringify({ status: "approved", adminComment: comment }) });
+    fetchGames();
+  };
+  
+  const handleReject = async (id: string, comment: string) => {
+    await fetch(`/api/games/${id}`, { method: "PUT", body: JSON.stringify({ status: "rejected", adminComment: comment }) });
+    fetchGames();
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('gdc_admin_auth');
     router.push('/auth');
   };
 
-  const applyTheme = () => {
+  const applyThemeVariables = (t: typeof theme) => {
     const root = document.documentElement;
-    root.style.setProperty("--primary", theme.primary);
-    root.style.setProperty("--secondary", theme.secondary);
-    root.style.setProperty("--bg", theme.bg);
-    root.style.setProperty("--bg-dark", theme.bgDark);
-    root.style.setProperty("--comic-yellow", theme.yellow);
+    root.style.setProperty("--primary", t.primary);
+    root.style.setProperty("--secondary", t.secondary);
+    root.style.setProperty("--bg", t.bg);
+    root.style.setProperty("--bg-dark", t.bgDark);
+    root.style.setProperty("--comic-yellow", t.yellow);
+  }
+
+  const saveTheme = async () => {
+    await fetch("/api/settings", { method: "PUT", body: JSON.stringify({ theme }) });
+    applyThemeVariables(theme);
   };
 
   if (!authorized) {
     return <div className="min-h-screen bg-[var(--bg)] text-white flex items-center justify-center font-display uppercase tracking-widest text-gray-500">Authenticating...</div>;
   }
+
+  const pendingGames = games.filter(g => g.status === "pending");
+  const approvedGames = games.filter(g => g.status === "approved");
+  const rejectedGames = games.filter(g => g.status === "rejected");
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-white py-12">
@@ -554,10 +727,10 @@ export default function AdminPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Pending Review", value: games.length, color: "text-yellow-400" },
-            { label: "Approved Today", value: approved.length, color: "text-emerald-400" },
-            { label: "Rejected", value: rejected.length, color: "text-red-400" },
-            { label: "Total Members", value: 48, color: "text-[var(--primary)]" },
+            { label: "Pending Review", value: pendingGames.length, color: "text-yellow-400" },
+            { label: "Total Approved", value: approvedGames.length, color: "text-emerald-400" },
+            { label: "Rejected", value: rejectedGames.length, color: "text-red-400" },
+            { label: "Total Games", value: games.length, color: "text-[var(--primary)]" },
           ].map(s => (
             <div key={s.label} className="bg-[#111118] border border-[#27272a] rounded-xl p-4 text-center">
               <div className={`font-display text-4xl ${s.color}`}>{s.value}</div>
@@ -576,14 +749,14 @@ export default function AdminPage() {
         {/* Game Approvals */}
         {tab === "games" && (
           <div className="space-y-4">
-            {games.length === 0 ? (
+            {pendingGames.length === 0 ? (
               <div className="text-center py-16 text-gray-600">
                 <div className="text-5xl mb-4">✅</div>
                 <p className="font-display text-2xl uppercase">All Clear!</p>
                 <p className="text-sm mt-2">No pending game submissions.</p>
               </div>
-            ) : games.map(game => (
-              <GameReviewCard key={game.id} game={game} onApprove={handleApprove} onReject={handleReject} />
+            ) : pendingGames.map(game => (
+              <GameReviewCard key={game._id} game={game} onApprove={handleApprove} onReject={handleReject} />
             ))}
           </div>
         )}
@@ -613,11 +786,8 @@ export default function AdminPage() {
               ))}
             </div>
             <div className="mt-8 flex gap-4">
-              <button onClick={applyTheme} className="px-8 py-3 bg-[var(--primary)] text-black font-display text-lg uppercase rounded-xl hover:opacity-90 transition font-bold">
+              <button onClick={saveTheme} className="px-8 py-3 bg-[var(--primary)] text-black font-display text-lg uppercase rounded-xl hover:opacity-90 transition font-bold">
                 Apply to Site
-              </button>
-              <button onClick={() => setTheme(themeDefaults)} className="px-6 py-3 border border-[#3f3f46] text-gray-400 rounded-xl hover:bg-white/5 transition text-sm">
-                Reset Defaults
               </button>
             </div>
           </div>

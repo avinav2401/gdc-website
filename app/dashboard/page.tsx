@@ -2,42 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
-import { ComicCard } from "@/components/ui/ComicCard";
 import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
-
-// ─── Static demo game submissions data ─────────────────────────────────
-const demoSubmissions = [
-  {
-    id: "1",
-    title: "Project Nexus",
-    engine: "Unity 3D",
-    genre: "Action RPG",
-    itchUrl: "https://itch.io/",
-    status: "pending" as const,
-    submittedAt: "2 days ago",
-    adminComment: "",
-  },
-  {
-    id: "2",
-    title: "Flow",
-    engine: "HTML5 Canvas",
-    genre: "Zen / Particle Sim",
-    itchUrl: "https://itch.io/",
-    status: "approved" as const,
-    submittedAt: "3 months ago",
-    adminComment: "Great work! Published to the games archive.",
-  },
-  {
-    id: "3",
-    title: "Orbit Drift",
-    engine: "Unity",
-    genre: "Arcade / Physics",
-    itchUrl: "https://itch.io/",
-    status: "rejected" as const,
-    submittedAt: "1 month ago",
-    adminComment: "Please add a proper cover image and game description before resubmitting.",
-  },
-];
 
 const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pygame", "Phaser", "MonoGame", "Other"];
 const genreOptions = ["Action", "Platformer", "Puzzle", "RPG", "Arcade", "Simulation", "Horror", "Strategy", "Idle", "Zen", "Roguelite", "Other"];
@@ -114,6 +79,7 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
   const [form, setForm] = useState({
     title: "", tagline: "", description: "", engine: "", genre: "",
     platform: "", itchUrl: "", tags: "", coverUrl: "", videoUrl: "",
+    developer: "Developer Name", // Placeholder for now
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -192,7 +158,7 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
 }
 
 // ─── Submission Card ─────────────────────────────────────────────────────
-function SubmissionCard({ sub }: { sub: typeof demoSubmissions[0] }) {
+function SubmissionCard({ sub }: { sub: any }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="bg-[#111118] border border-[#27272a] rounded-xl overflow-hidden">
@@ -202,7 +168,7 @@ function SubmissionCard({ sub }: { sub: typeof demoSubmissions[0] }) {
             <h3 className="font-display text-2xl uppercase">{sub.title}</h3>
             <StatusBadge status={sub.status} />
           </div>
-          <p className="text-sm text-gray-500">{sub.engine} · {sub.genre} · Submitted {sub.submittedAt}</p>
+          <p className="text-sm text-gray-500">{sub.engine} · {sub.genre} · Submitted {new Date(sub.createdAt).toLocaleDateString()}</p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           {sub.itchUrl && (
@@ -231,7 +197,7 @@ function SubmissionCard({ sub }: { sub: typeof demoSubmissions[0] }) {
 // ─── Page ────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [showModal, setShowModal] = useState(false);
-  const [submissions, setSubmissions] = useState(demoSubmissions);
+  const [submissions, setSubmissions] = useState<any[]>([]);
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
@@ -241,17 +207,20 @@ export default function DashboardPage() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const handleSubmit = (data: any) => {
-    setSubmissions(prev => [{
-      id: String(Date.now()),
-      title: data.title || "Untitled Game",
-      engine: data.engine || "Unknown",
-      genre: data.genre || "Unknown",
-      itchUrl: data.itchUrl || "",
-      status: "pending",
-      submittedAt: "Just now",
-      adminComment: "",
-    }, ...prev]);
+  const fetchSubmissions = async () => {
+    const res = await fetch("/api/games");
+    if (res.ok) {
+      setSubmissions(await res.json());
+    }
+  };
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, []);
+
+  const handleSubmit = async (data: any) => {
+    await fetch("/api/games", { method: "POST", body: JSON.stringify(data) });
+    fetchSubmissions();
   };
 
   return (
@@ -300,7 +269,7 @@ export default function DashboardPage() {
                 <p className="text-sm mt-2">Hit "Submit New Game" to get started.</p>
               </div>
             ) : (
-              submissions.map(sub => <SubmissionCard key={sub.id} sub={sub} />)
+              submissions.map(sub => <SubmissionCard key={sub._id} sub={sub} />)
             )}
           </div>
         </div>
@@ -309,7 +278,7 @@ export default function DashboardPage() {
         <div className="bg-[#111118] border border-[#27272a] rounded-xl p-6">
           <h2 className="font-display text-3xl uppercase mb-5 text-[var(--secondary)]">Your Profile</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <InputField label="Display Name" id="pname" placeholder="Your name" value="Cass" onChange={() => {}} />
+            <InputField label="Display Name" id="pname" placeholder="Your name" value="Developer" onChange={() => {}} />
             <InputField label="GitHub URL" id="pgithub" type="url" placeholder="https://github.com/..." value="" onChange={() => {}} />
             <InputField label="Portfolio URL" id="pportfolio" type="url" placeholder="https://yoursite.dev" value="" onChange={() => {}} />
             <InputField label="Role" id="prole" placeholder="Developer" value="Developer" onChange={() => {}} />
