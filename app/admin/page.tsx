@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   CheckCircle, XCircle, MessageSquare, Palette, Users, Gamepad2,
   Calendar, ExternalLink, Plus, Trash2, Edit3, Save, X, Video, ArrowLeft, Star, StarOff
@@ -498,6 +499,17 @@ function CMSPanel() {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function AdminPage() {
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('gdc_admin_auth') !== 'true') {
+      router.push('/auth');
+    } else {
+      setAuthorized(true);
+    }
+  }, [router]);
+
   const [tab, setTab] = useState<"games" | "theme" | "cms">("games");
   const [games, setGames] = useState(pendingGames);
   const [theme, setTheme] = useState(themeDefaults);
@@ -506,6 +518,11 @@ export default function AdminPage() {
 
   const handleApprove = (id: string) => { setApproved(a => [...a, id]); setGames(g => g.filter(x => x.id !== id)); };
   const handleReject = (id: string) => { setRejected(r => [...r, id]); setGames(g => g.filter(x => x.id !== id)); };
+
+  const handleLogout = () => {
+    localStorage.removeItem('gdc_admin_auth');
+    router.push('/auth');
+  };
 
   const applyTheme = () => {
     const root = document.documentElement;
@@ -516,13 +533,22 @@ export default function AdminPage() {
     root.style.setProperty("--comic-yellow", theme.yellow);
   };
 
+  if (!authorized) {
+    return <div className="min-h-screen bg-[var(--bg)] text-white flex items-center justify-center font-display uppercase tracking-widest text-gray-500">Authenticating...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-[var(--bg)] text-white py-12">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
-        <div className="mb-8">
-          <p className="text-[var(--secondary)] text-sm font-semibold uppercase tracking-widest mb-1">Admin Portal</p>
-          <h1 className="font-display text-5xl md:text-6xl uppercase">Control Center</h1>
+        <div className="mb-8 flex justify-between items-end">
+          <div>
+            <p className="text-[var(--secondary)] text-sm font-semibold uppercase tracking-widest mb-1">Admin Portal</p>
+            <h1 className="font-display text-5xl md:text-6xl uppercase">Control Center</h1>
+          </div>
+          <button onClick={handleLogout} className="px-4 py-2 border border-[#3f3f46] text-gray-400 rounded-lg hover:bg-white/5 transition text-sm font-semibold uppercase tracking-wider">
+            Logout
+          </button>
         </div>
 
         {/* Stats */}

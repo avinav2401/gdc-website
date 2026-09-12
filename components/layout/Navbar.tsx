@@ -8,10 +8,21 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const [isAuth, setIsAuth] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    
+    // Listen for storage changes in case of logout/login in another tab
+    const handleStorage = () => setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    window.addEventListener("storage", handleStorage);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
   const navLinks = [
@@ -66,12 +77,14 @@ export function Navbar() {
           >
             Login
           </Link>
-          <Link
-            href="/dashboard"
-            className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider bg-[#FF007F] text-white border-2 border-white hover:bg-[#00F2FE] hover:text-black transition-all shadow-[3px_3px_0px_#00F2FE] hover:translate-y-[-2px]"
-          >
-            Submit Game
-          </Link>
+          {isAuth && (
+            <Link
+              href="/dashboard"
+              className="px-4 py-1.5 font-bold text-sm uppercase tracking-wider bg-[#FF007F] text-white border-2 border-white hover:bg-[#00F2FE] hover:text-black transition-all shadow-[3px_3px_0px_#00F2FE] hover:translate-y-[-2px]"
+            >
+              Submit Game
+            </Link>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -105,13 +118,15 @@ export function Navbar() {
             >
               Login
             </Link>
-            <Link
-              href="/dashboard"
-              onClick={() => setOpen(false)}
-              className="block text-center px-4 py-2.5 font-bold text-base uppercase tracking-wider bg-[#FF007F] text-white border-2 border-white hover:bg-[#00F2FE] hover:text-black transition-all shadow-[3px_3px_0px_#00F2FE]"
-            >
-              Submit Game
-            </Link>
+            {isAuth && (
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="block text-center px-4 py-2.5 font-bold text-base uppercase tracking-wider bg-[#FF007F] text-white border-2 border-white hover:bg-[#00F2FE] hover:text-black transition-all shadow-[3px_3px_0px_#00F2FE]"
+              >
+                Submit Game
+              </Link>
+            )}
           </div>
         </div>
       )}

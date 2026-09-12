@@ -1,6 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export function Footer() {
+  const [isAuth, setIsAuth] = useState(false);
+
+  useEffect(() => {
+    setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    const handleStorage = () => setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   return (
     <footer className="relative border-t-8 border-white bg-[#07080D] text-white overflow-hidden">
       {/* Top Neon Accent Bar */}
@@ -65,20 +77,23 @@ export function Footer() {
             </h3>
             <ul className="space-y-2.5 mb-6">
               {[
-                ["Member Login", "/auth"],
-                ["Submit a Game", "/dashboard"],
+                !isAuth ? ["Admin Login", "/auth"] : null,
+                isAuth ? ["Submit a Game", "/dashboard"] : null,
                 ["Admin Portal", "/admin"],
-              ].map(([label, href]) => (
-                <li key={href}>
-                  <Link 
-                    href={href}
-                    className="text-sm text-gray-300 hover:text-[#FF007F] transition-all inline-flex items-center gap-2 uppercase tracking-wider font-bold group"
-                  >
-                    <span className="text-[#00F2FE] opacity-0 group-hover:opacity-100 transition-opacity">▶</span>
-                    {label}
-                  </Link>
-                </li>
-              ))}
+              ].filter(Boolean).map((item) => {
+                const [label, href] = item as [string, string];
+                return (
+                  <li key={href}>
+                    <Link 
+                      href={href}
+                      className="text-sm text-gray-300 hover:text-[#FF007F] transition-all inline-flex items-center gap-2 uppercase tracking-wider font-bold group"
+                    >
+                      <span className="text-[#00F2FE] opacity-0 group-hover:opacity-100 transition-opacity">▶</span>
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
 
             {/* Newsletter */}

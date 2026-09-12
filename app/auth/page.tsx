@@ -4,8 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function AuthPage() {
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -18,6 +17,7 @@ export default function AuthPage() {
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
+      localStorage.setItem('gdc_admin_auth', 'true');
     }, 1200);
   };
 
@@ -30,64 +30,39 @@ export default function AuthPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="GDC" className="w-16 h-16 rounded-2xl mx-auto mb-4" />
           <p className="font-display text-2xl uppercase tracking-widest text-gray-400">Game Developers Community</p>
         </div>
 
         <div className="bg-[#111118] border border-[#27272a] rounded-2xl shadow-2xl overflow-hidden">
-          {/* Mode Toggle */}
           <div className="flex border-b border-[#27272a]">
-            {(["login", "register"] as const).map(m => (
-              <button
-                key={m}
-                onClick={() => { setMode(m); setSubmitted(false); }}
-                className={`flex-1 py-4 font-display text-xl uppercase tracking-wider transition ${
-                  mode === m
-                    ? "bg-[var(--primary)] text-black"
-                    : "text-gray-500 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {m === "login" ? "Login" : "Register"}
-              </button>
-            ))}
+            <div className="flex-1 py-4 font-display text-xl uppercase tracking-wider text-center bg-[var(--primary)] text-black">
+              Admin Login
+            </div>
           </div>
 
           <div className="p-8">
             {submitted ? (
               <div className="text-center py-6">
-                <div className="text-5xl mb-4">{mode === "login" ? "🎮" : "🎉"}</div>
+                <div className="text-5xl mb-4">🎮</div>
                 <h2 className="font-display text-3xl uppercase text-[var(--primary)] mb-2">
-                  {mode === "login" ? "Welcome Back!" : "Request Sent!"}
+                  Welcome Back!
                 </h2>
                 <p className="text-gray-400 mb-6">
-                  {mode === "login"
-                    ? "You're logged in. Redirecting to your dashboard..."
-                    : "Your access request has been submitted. An admin will approve your account."}
+                  You're logged in. Redirecting to the admin portal...
                 </p>
-                {mode === "login" && (
-                  <Link href="/dashboard"
-                        className="inline-block px-8 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase rounded-xl hover:opacity-90 transition">
-                    Go to Dashboard →
-                  </Link>
-                )}
+                <Link href="/admin"
+                      className="inline-block px-8 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase rounded-xl hover:opacity-90 transition">
+                  Go to Admin Portal →
+                </Link>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                {mode === "register" && (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-400 mb-1.5">Full Name <span className="text-red-400">*</span></label>
-                    <input
-                      type="text" required placeholder="Ankit Mandal"
-                      value={form.name} onChange={set("name")}
-                      className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition"
-                    />
-                  </div>
-                )}
-
                 <div>
                   <label className="block text-sm font-semibold text-gray-400 mb-1.5">Email <span className="text-red-400">*</span></label>
                   <input
-                    type="email" required placeholder="dev@college.edu"
+                    type="email" required placeholder="admin@college.edu"
                     value={form.email} onChange={set("email")}
                     className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition"
                   />
@@ -102,17 +77,11 @@ export default function AuthPage() {
                   />
                 </div>
 
-                {mode === "register" && (
-                  <p className="text-xs text-gray-600 border border-[#27272a] rounded-lg p-3">
-                    Access is restricted to approved GDC members. After submitting, an admin will review and activate your account.
-                  </p>
-                )}
-
                 <button
                   type="submit" disabled={loading}
                   className="w-full py-3.5 bg-[var(--primary)] text-black font-display text-xl uppercase rounded-xl hover:opacity-90 active:scale-95 transition disabled:opacity-50"
                 >
-                  {loading ? "Loading..." : mode === "login" ? "Sign In →" : "Request Access →"}
+                  {loading ? "Loading..." : "Sign In →"}
                 </button>
               </form>
             )}
@@ -120,10 +89,7 @@ export default function AuthPage() {
         </div>
 
         <p className="text-center text-gray-600 text-sm mt-6">
-          {mode === "login"
-            ? <>Not a member? <button onClick={() => setMode("register")} className="text-[var(--primary)] hover:underline">Request access</button></>
-            : <>Already have an account? <button onClick={() => setMode("login")} className="text-[var(--primary)] hover:underline">Sign in</button></>
-          }
+          Access is restricted to GDC Core Team.
         </p>
       </div>
     </div>

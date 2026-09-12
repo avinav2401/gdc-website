@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
 import { ComicCard } from "@/components/ui/ComicCard";
 import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
@@ -232,6 +232,14 @@ function SubmissionCard({ sub }: { sub: typeof demoSubmissions[0] }) {
 export default function DashboardPage() {
   const [showModal, setShowModal] = useState(false);
   const [submissions, setSubmissions] = useState(demoSubmissions);
+  const [isAuth, setIsAuth] = useState(false);
+
+  useEffect(() => {
+    setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    const handleStorage = () => setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const handleSubmit = (data: any) => {
     setSubmissions(prev => [{
@@ -257,12 +265,14 @@ export default function DashboardPage() {
             <p className="text-[var(--primary)] font-semibold text-sm uppercase tracking-widest mb-1">Developer Portal</p>
             <h1 className="font-display text-5xl md:text-6xl uppercase">Dashboard</h1>
           </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition"
-          >
-            <Plus size={22}/> Submit New Game
-          </button>
+          {isAuth && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition"
+            >
+              <Plus size={22}/> Submit New Game
+            </button>
+          )}
         </div>
 
         {/* Stats */}
