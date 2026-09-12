@@ -96,20 +96,7 @@ export function Footer() {
               })}
             </ul>
 
-            {/* Newsletter */}
-            <div className="border-4 border-white bg-[#0D0E17] p-4 shadow-[5px_5px_0px_#00F2FE]">
-              <p className="font-black text-sm uppercase mb-2 text-[#00F2FE] tracking-wider">Get Jam Alerts</p>
-              <div className="flex gap-2">
-                <input 
-                  type="email" 
-                  placeholder="your@email.com"
-                  className="flex-1 bg-[#07080D] border-2 border-white px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F2FE] transition-colors font-mono" 
-                />
-                <button className="px-4 py-1.5 bg-[#FF007F] text-white font-bold text-xs uppercase border-2 border-white hover:bg-[#00F2FE] hover:text-black transition-all shadow-[2px_2px_0px_#ffffff]">
-                  Go
-                </button>
-              </div>
-            </div>
+
           </div>
         </div>
 
@@ -119,7 +106,7 @@ export function Footer() {
             © {new Date().getFullYear()} Game Developers Community — Made with ❤️ and late nights.
           </p>
           <div className="flex gap-6">
-            {["Privacy Policy", "Code of Conduct", "Open Source"].map((item) => (
+            {["Privacy Policy"].map((item) => (
               <a 
                 key={item} 
                 href="#" 
