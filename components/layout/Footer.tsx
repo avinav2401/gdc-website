@@ -70,10 +70,10 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Developer Access & Jam Alerts */}
+          {/* Login Access */}
           <div className="md:col-span-4">
             <h3 className="font-black text-xl uppercase mb-4 text-[#FF007F] border-b-4 border-[#FF007F] pb-1 tracking-wider">
-              Developer Access
+              Login Access
             </h3>
             <ul className="space-y-2.5 mb-6">
               {[
