@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+@theme {
+  --font-arcade: var(--font-arcade), "Press Start 2P", monospace;
+  --font-pixel: var(--font-pixel), "Silkscreen", monospace;
+  --font-body: var(--font-body), "Pixelify Sans", sans-serif;
+
+  /* Color token overrides */
+  --color-ink: #000000;
+  --color-paper: #0c0c0c;
+  --color-card: #111111;
+  --color-yellow: #ffd700;
+  --color-red: #ff2020;
+  --color-blue: #1a8fff;
+  --color-neon-cyan: #00f2fe;
+  --color-neon-pink: #ff007f;
+}
+
+/* ─── Core Color Palette ─────────────────────────────────── */
+:root {
+  --ink: #000000;
+  --paper: #0c0c0c;
+  --card: #111111;
+  --yellow: #ffd700;
+  --red: #ff2020;
+  --blue: #1a8fff;
+  --white: #ffffff;
+  --panel-gap: #ffd700;
+
+  /* Legacy aliases used by components */
+  --primary: #1a8fff;
+  --secondary: #ff2020;
+  --bg: #0c0c0c;
+  --bg-dark: #080808;
+  --border-color: #ffffff;
+  --comic-yellow: #ffd700;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--white);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-arcade);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Crisp Pixel Rendering Utilities ───────────────────── */
+
+/* Prevents browser blur on pixel typography */
+.pixel-antialiased {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
+}
+
+/* Prevents scaling blur on 8-bit sprites and icons */
+.pixel-image {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ─── The Big Three Textures ─────────────────────────────── */
+
+/* 1. Ben-Day halftone dots */
+.dots-yellow {
+  background-image: radial-gradient(circle, #ffd70055 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+.dots-blue {
+  background-image: radial-gradient(circle, #1a8fff33 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+.dots-red {
+  background-image: radial-gradient(circle, #ff202033 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+.dots-white {
+  background-image: radial-gradient(circle, #ffffff18 2px, transparent 2px);
+  background-size: 16px 16px;
+}
+
+/* 2. Diagonal hatching */
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.05) 0px,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 0px,
+    transparent 50%
+  );
+  background-size: 8px 8px;
+}
+.hatch-bold {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.1) 0px,
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 0px,
+    transparent 50%
+  );
+  background-size: 6px 6px;
+}
+
+/* 3. Crosshatch */
+.crosshatch {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 0 50%),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 0 50%);
+  background-size: 8px 8px;
+}
+
+/* ─── Comic & Arcade Border System ───────────────────────── */
+.ink-border {
+  border: 4px solid #ffffff;
+}
+.ink-border-black {
+  border: 4px solid #000000;
+}
+.ink-border-sm {
+  border: 2px solid #ffffff;
+}
+
+/* Hard offset shadow system */
+.ink-shadow {
+  box-shadow: 6px 6px 0px 0px #ffd700;
+}
+.ink-shadow-red {
+  box-shadow: 6px 6px 0px 0px #ff2020;
+}
+.ink-shadow-blue {
+  box-shadow: 6px 6px 0px 0px #1a8fff;
+}
+.ink-shadow-cyan {
+  box-shadow: 6px 6px 0px 0px #00f2fe;
+}
+.ink-shadow-pink {
+  box-shadow: 6px 6px 0px 0px #ff007f;
+}
+.ink-shadow-white {
+  box-shadow: 6px 6px 0px 0px #ffffff;
+}
+.ink-shadow-sm {
+  box-shadow: 3px 3px 0px 0px #ffd700;
+}
+.ink-shadow-sm-red {
+  box-shadow: 3px 3px 0px 0px #ff2020;
+}
+
+/* Lift on hover */
+.ink-hover {
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.ink-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0px 0px #ffd700;
+}
+.ink-hover:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #ffd700;
+}
+
+/* ─── Speech Bubble ──────────────────────────────────────── */
+.speech-bubble {
+  position: relative;
+  border: 4px solid white;
+  background: #111;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 24px;
+  border-left: 14px solid transparent;
+  border-right: 0px solid transparent;
+  border-top: 20px solid white;
+}
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 28px;
+  border-left: 10px solid transparent;
+  border-right: 0px solid transparent;
+  border-top: 16px solid #111;
+  z-index: 1;
+}
+
+/* ─── Action Burst Shapes ────────────────────────────────── */
+.burst {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* ─── Outlined Text ──────────────────────────────────────── */
+.outlined-text {
+  -webkit-text-stroke: 3px white;
+  color: transparent;
+}
+.outlined-text-yellow {
+  -webkit-text-stroke: 3px #ffd700;
+  color: transparent;
+}
+
+/* ─── Panel Borders ──────────────────────────────────────── */
+.panel {
+  border: 5px solid #ffffff;
+  box-shadow: 8px 8px 0px 0px #ffd700;
+}
+.panel-red {
+  border: 5px solid #ffffff;
+  box-shadow: 8px 8px 0px 0px #ff2020;
+}
+.panel-blue {
+  border: 5px solid #ffffff;
+  box-shadow: 8px 8px 0px 0px #1a8fff;
+}
+
+/* ─── Retro Custom Scrollbar ────────────────────────────── */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+::-webkit-scrollbar-thumb {
+  background: #ff007f;
+  border: 2px solid #000000;
+}
+
+/* ─── Legacy Aliases ─────────────────────────────────────── */
+.comic-border {
+  border: 4px solid #ffffff;
+}
+.comic-shadow {
+  box-shadow: 6px 6px 0px 0px #ffd700;
+}
+.comic-shadow-sm {
+  box-shadow: 3px 3px 0px 0px #ffd700;
+}
+.comic-hover {
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.comic-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 #ffd700;
+}
