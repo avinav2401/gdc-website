@@ -128,13 +128,14 @@ function EventsCMS() {
   const [items, setItems] = useState(seedEvents);
   const [editing, setEditing] = useState<EventItem | null>(null);
   const [adding, setAdding] = useState(false);
-  const blank = (): EventItem => ({ id: Date.now().toString(), title: "", date: "", location: "", status: "planned", description: "" });
-  const [draft, setDraft] = useState<EventItem>(blank());
+  const blank = (): EventItem => ({ id: "", title: "", date: "", location: "", status: "planned", description: "" });
+  const [draft, setDraft] = useState<EventItem>(blank);
   const setD = (k: keyof EventItem) => (v: string) => setDraft(d => ({ ...d, [k]: v }));
 
   const save = () => {
-    if (adding) { setItems(i => [draft, ...i]); setAdding(false); }
-    else if (editing) { setItems(i => i.map(x => x.id === editing.id ? draft : x)); setEditing(null); }
+    const itemToSave = draft.id ? draft : { ...draft, id: Date.now().toString() };
+    if (adding) { setItems(i => [itemToSave, ...i]); setAdding(false); }
+    else if (editing) { setItems(i => i.map(x => x.id === editing.id ? itemToSave : x)); setEditing(null); }
     setDraft(blank());
   };
   const del = (id: string) => setItems(i => i.filter(x => x.id !== id));
@@ -213,13 +214,14 @@ function TeamCMS() {
   const [editing, setEditing] = useState<TeamMember | null>(null);
   const [adding, setAdding] = useState(false);
   const [filter, setFilter] = useState<"all" | "core" | "alumni">("all");
-  const blank = (): TeamMember => ({ id: Date.now().toString(), name: "", role: "", bio: "", github: "", portfolio: "", isAlumni: false });
-  const [draft, setDraft] = useState<TeamMember>(blank());
+  const blank = (): TeamMember => ({ id: "", name: "", role: "", bio: "", github: "", portfolio: "", isAlumni: false });
+  const [draft, setDraft] = useState<TeamMember>(blank);
   const setD = (k: keyof TeamMember) => (v: any) => setDraft(d => ({ ...d, [k]: v }));
 
   const save = () => {
-    if (adding) { setItems(i => [draft, ...i]); setAdding(false); }
-    else if (editing) { setItems(i => i.map(x => x.id === editing.id ? draft : x)); setEditing(null); }
+    const itemToSave = draft.id ? draft : { ...draft, id: Date.now().toString() };
+    if (adding) { setItems(i => [itemToSave, ...i]); setAdding(false); }
+    else if (editing) { setItems(i => i.map(x => x.id === editing.id ? itemToSave : x)); setEditing(null); }
     setDraft(blank());
   };
   const del = (id: string) => setItems(i => i.filter(x => x.id !== id));
@@ -309,12 +311,13 @@ type GameItem = typeof seedGames[0];
 function GamesCMS() {
   const [items, setItems] = useState(seedGames);
   const [editing, setEditing] = useState<GameItem | null>(null);
-  const blank = (): GameItem => ({ id: Date.now().toString(), title: "", engine: "", genre: "", itchUrl: "", featured: false });
-  const [draft, setDraft] = useState<GameItem>(blank());
+  const blank = (): GameItem => ({ id: "", title: "", engine: "", genre: "", itchUrl: "", featured: false });
+  const [draft, setDraft] = useState<GameItem>(blank);
   const setD = (k: keyof GameItem) => (v: any) => setDraft(d => ({ ...d, [k]: v }));
 
   const save = () => {
-    if (editing) { setItems(i => i.map(x => x.id === editing.id ? draft : x)); setEditing(null); }
+    const itemToSave = draft.id ? draft : { ...draft, id: Date.now().toString() };
+    if (editing) { setItems(i => i.map(x => x.id === editing.id ? itemToSave : x)); setEditing(null); }
     setDraft(blank());
   };
   const del = (id: string) => setItems(i => i.filter(x => x.id !== id));
