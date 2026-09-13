@@ -55,6 +55,13 @@ function GameReviewCard({ game, onApprove, onReject }: { game: any; onApprove: (
             <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded-full">Pending</span>
           </div>
           <p className="text-gray-500 text-sm">by <span className="text-gray-300">{game.developer || "Unknown"}</span> · {game.engine} · {game.genre} · Submitted {new Date(game.createdAt).toLocaleDateString()}</p>
+          
+          {game.coverUrl && (
+            <div className="mt-4 mb-2">
+              <img src={game.coverUrl} alt="Cover" className="w-full max-w-[300px] h-auto rounded-lg border border-[#27272a] object-cover" />
+            </div>
+          )}
+
           {game.description && <p className="text-gray-400 text-sm mt-2">{game.description}</p>}
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
@@ -405,6 +412,7 @@ function MembersCMS() {
 function GamesCMS() {
   const [items, setItems] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
+  const [filter, setFilter] = useState("all");
   
   const blank = () => ({ title: "", engine: "", genre: "", itchUrl: "", developer: "", featured: false });
   const [draft, setDraft] = useState<any>(blank());
@@ -413,8 +421,7 @@ function GamesCMS() {
   const fetchItems = async () => {
     const res = await fetch("/api/games");
     if (res.ok) {
-      const data = await res.json();
-      setItems(data.filter((g: any) => g.status === "approved"));
+      setItems(await res.json());
     }
   };
 
@@ -445,9 +452,19 @@ function GamesCMS() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-display text-2xl uppercase text-yellow-400">Games Archive</h3>
-        <p className="text-gray-500 text-sm">Approved games listed below. Star = featured on homepage.</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+          <h3 className="font-display text-2xl uppercase text-yellow-400">Games Archive</h3>
+          <p className="text-gray-500 text-sm">Manage all game submissions. Star = featured on homepage.</p>
+        </div>
+        <div className="flex gap-1 bg-[#0d0d12] p-1 rounded-lg border border-[#27272a] self-start md:self-auto">
+          {["all", "approved", "pending", "rejected"].map(f => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 text-xs uppercase tracking-wide rounded-md font-semibold transition ${filter === f ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
       {editing && (
@@ -476,11 +493,12 @@ function GamesCMS() {
       )}
 
       <div className="space-y-3">
-        {items.map(g => (
+        {(filter === "all" ? items : items.filter(g => g.status === filter)).map(g => (
           <div key={g._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="font-display text-xl uppercase">{g.title}</h4>
+                <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${g.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : g.status === 'rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>{g.status}</span>
                 {g.featured && <span className="text-xs px-2 py-0.5 rounded-full border bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Featured</span>}
               </div>
               <p className="text-gray-500 text-sm">{g.engine} · {g.genre}</p>
