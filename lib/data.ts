@@ -16,6 +16,7 @@ export interface ClubEvent {
   tags: string[];
   image: string;
   registerUrl?: string;
+  shape?: string;
 }
 
 export const events: ClubEvent[] = [

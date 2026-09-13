@@ -6,6 +6,8 @@ const EventSchema = new Schema({
   location: { type: String, required: true },
   status: { type: String, enum: ["planned", "live", "shipped"], default: "planned" },
   description: { type: String, required: true },
+  imageUrl: { type: String, required: false },
+  shape: { type: String, enum: ["full", "large", "half", "small"], default: "half" },
 }, { timestamps: true });
 
 const Event = models.Event || model("Event", EventSchema);

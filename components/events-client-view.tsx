@@ -9,78 +9,7 @@ interface EventsClientViewProps {
   events: ClubEvent[];
 }
 
-// Asymmetric width splits for a 2-panel row. Deliberately uneven (never
-// 6fr/6fr) so paired panels look hand-laid-out like inked comic pages,
-// not a mechanical 50/50 grid. Order is randomized per pair at group time.
-const SPLIT_PATTERNS: string[] = [
-  "md:grid-cols-[7fr_5fr]",
-  "md:grid-cols-[8fr_4fr]",
-  "md:grid-cols-[5fr_7fr]",
-  "md:grid-cols-[4fr_8fr]",
-  "md:grid-cols-[9fr_3fr]",
-  "md:grid-cols-[3fr_9fr]",
-];
 
-type ComicRow = { events: ClubEvent[]; colClass: string; startIndex: number };
-
-// Deterministic string hash -> 32-bit seed.
-function hashSeed(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
-}
-
-// Tiny seeded PRNG (mulberry32). Given the same seed, always produces the
-// same sequence of numbers — unlike Math.random(), which differs between
-// the server's render pass and the client's hydration pass and causes
-// React hydration mismatches.
-function mulberry32(seed: number) {
-  let a = seed;
-  return function rand() {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-// Groups a flat, date-sorted list of events into comic "rows" of 1 or 2
-// panels each. The "randomness" is seeded from the events themselves, so
-// the exact same list always produces the exact same grouping on both
-// server and client — no hydration mismatch, and no reshuffling on
-// re-render — while still varying naturally from year to year.
-function buildComicRows(items: ClubEvent[]): ComicRow[] {
-  const seed = hashSeed(items.map((e) => e.slug).join("|")) || 1;
-  const rand = mulberry32(seed);
-
-  const rows: ComicRow[] = [];
-  let i = 0;
-  let cursor = 0;
-
-  while (i < items.length) {
-    const remaining = items.length - i;
-    // Weighted toward pairs (more comic-like) but a solo splash panel
-    // still shows up whenever 2+ events remain.
-    const takeTwo = remaining >= 2 && rand() < 0.6;
-    const count = takeTwo ? 2 : 1;
-    const rowEvents = items.slice(i, i + count);
-
-    const colClass =
-      count === 2
-        ? SPLIT_PATTERNS[Math.floor(rand() * SPLIT_PATTERNS.length)]
-        : "md:grid-cols-1";
-
-    rows.push({ events: rowEvents, colClass, startIndex: cursor });
-    cursor += count;
-    i += count;
-  }
-
-  return rows;
-}
 
 const TILTS = ["rotate-[0deg]", "rotate-[-0.6deg]", "rotate-[0.5deg]", "rotate-[-0.4deg]"];
 
@@ -170,22 +99,8 @@ function ComicPanel({ event, panelNumber }: { event: ClubEvent; panelNumber: num
 }
 
 export default function EventsClientView({ events }: EventsClientViewProps) {
-  const availableYears = Array.from(
-    new Set(events.map((e) => e.dateSort?.substring(0, 4) || "2026"))
-  ).sort((a, b) => b.localeCompare(a));
-
-  const [selectedYear, setSelectedYear] = useState<string>(availableYears[0] || "2026");
-
-  const yearEvents = events.filter((e) => {
-    const eventYear = e.dateSort?.substring(0, 4) || "2026";
-    return eventYear === selectedYear;
-  });
-
-  const timelineEvents = [...yearEvents].sort((a, b) => (a.dateSort > b.dateSort ? 1 : -1));
-
-  // Recomputed only when the visible event list actually changes (i.e. when
-  // switching year), so the random row grouping stays stable across re-renders.
-  const comicRows = useMemo(() => buildComicRows(timelineEvents), [timelineEvents]);
+  // Show all events in one timeline, sorted by date (newest first or oldest first based on user preference, we'll do newest first which is standard for events)
+  const timelineEvents = [...events].sort((a, b) => ((a.dateSort || "") > (b.dateSort || "") ? -1 : 1));
 
   return (
     <>
@@ -215,7 +130,7 @@ export default function EventsClientView({ events }: EventsClientViewProps) {
         <div className="mx-auto max-w-7xl relative z-10">
           <div className="border-4 border-white bg-[#141622] p-6 md:p-8 mb-12 shadow-[10px_10px_0px_#FF007F] relative transform -rotate-1">
             <div className="absolute -top-4 -left-4 bg-[#FF007F] text-white font-black text-xs md:text-sm uppercase tracking-widest px-4 py-1 border-2 border-white shadow-[3px_3px_0px_#00F2FE] rotate-[-4deg]">
-              GDC COMIC ISSUE #{selectedYear}
+              GDC COMIC OMNIBUS
             </div>
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mt-2">
@@ -230,21 +145,11 @@ export default function EventsClientView({ events }: EventsClientViewProps) {
 
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="font-mono text-xs text-[#FF9F43] font-bold uppercase tracking-wider w-full md:w-auto">
-                  Issue Volume:
+                  Total Events:
                 </span>
-                {availableYears.map((yr) => (
-                  <button
-                    key={yr}
-                    onClick={() => setSelectedYear(yr)}
-                    className={`px-4 py-2 font-black text-sm uppercase border-2 border-white transition-all shadow-[3px_3px_0px_#00F2FE] ${
-                      selectedYear === yr
-                        ? "bg-[#FF007F] text-white translate-y-[-2px]"
-                        : "bg-[#07080D] text-gray-300 hover:bg-white hover:text-black"
-                    }`}
-                  >
-                    VOL. {yr}
-                  </button>
-                ))}
+                <span className="px-4 py-2 font-black text-sm uppercase border-2 border-white transition-all shadow-[3px_3px_0px_#00F2FE] bg-[#FF007F] text-white">
+                  {timelineEvents.length} FILES
+                </span>
               </div>
             </div>
           </div>
@@ -252,22 +157,24 @@ export default function EventsClientView({ events }: EventsClientViewProps) {
           {timelineEvents.length === 0 ? (
             <div className="border-4 border-dashed border-gray-700 p-12 text-center bg-[#141622]/50">
               <p className="font-mono text-sm text-gray-400 uppercase tracking-widest">
-                No comic frames recorded for volume {selectedYear}.
+                No comic frames recorded.
               </p>
             </div>
           ) : (
             <div className="bg-[#E7DEC6] p-3 md:p-5 border-4 border-black shadow-[10px_10px_0px_#00F2FE]">
-              <div className="flex flex-col gap-3 md:gap-5">
-                {comicRows.map((row, rowIndex) => (
-                  <div
-                    key={rowIndex}
-                    className={`grid grid-cols-1 gap-3 md:gap-5 ${row.colClass}`}
-                  >
-                    {row.events.map((e, i) => (
-                      <ComicPanel key={e.slug} event={e} panelNumber={row.startIndex + i + 1} />
-                    ))}
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
+                {timelineEvents.map((e, i) => {
+                  let spanClass = "md:col-span-6"; // default half
+                  if (e.shape === "full") spanClass = "md:col-span-12";
+                  if (e.shape === "large") spanClass = "md:col-span-8";
+                  if (e.shape === "small") spanClass = "md:col-span-4";
+
+                  return (
+                    <div key={e.slug} className={`w-full ${spanClass}`}>
+                      <ComicPanel event={e} panelNumber={i + 1} />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

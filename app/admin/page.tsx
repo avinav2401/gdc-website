@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle, XCircle, MessageSquare, Palette, Users, Gamepad2,
-  Calendar, ExternalLink, Plus, Trash2, Edit3, Save, X, Video, ArrowLeft, Star, StarOff, User as UserIcon
+  Calendar, ExternalLink, Plus, Trash2, Edit3, Save, X, Video, ArrowLeft, Star, StarOff, User as UserIcon, Image as ImageIcon
 } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -99,8 +100,9 @@ function EventsCMS() {
   const [items, setItems] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
   const [adding, setAdding] = useState(false);
+  const [error, setError] = useState("");
   
-  const blank = () => ({ title: "", date: "", location: "", status: "planned", description: "" });
+  const blank = () => ({ title: "", date: "", location: "", status: "planned", description: "", imageUrl: "", shape: "half" });
   const [draft, setDraft] = useState<any>(blank());
   const setD = (k: string) => (v: string) => setDraft((d: any) => ({ ...d, [k]: v }));
 
@@ -112,11 +114,24 @@ function EventsCMS() {
   useEffect(() => { fetchItems(); }, []);
 
   const save = async () => {
-    if (adding) {
-      await fetch("/api/events", { method: "POST", body: JSON.stringify(draft) });
-    } else if (editing) {
-      await fetch(`/api/events/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+    setError("");
+    if (!draft.title || !draft.date || !draft.location || !draft.description) {
+      setError("Please fill out all required fields (Title, Date, Location, Description).");
+      return;
     }
+    
+    let res;
+    if (adding) {
+      res = await fetch("/api/events", { method: "POST", body: JSON.stringify(draft) });
+    } else if (editing) {
+      res = await fetch(`/api/events/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+    }
+    
+    if (res && !res.ok) {
+      setError("Failed to save event. Please try again.");
+      return;
+    }
+    
     setAdding(false);
     setEditing(null);
     setDraft(blank());
@@ -128,9 +143,9 @@ function EventsCMS() {
     fetchItems();
   };
   
-  const startEdit = (e: any) => { setDraft(e); setEditing(e); setAdding(false); };
-  const startAdd = () => { setDraft(blank()); setAdding(true); setEditing(null); };
-  const cancel = () => { setAdding(false); setEditing(null); setDraft(blank()); };
+  const startEdit = (e: any) => { setDraft(e); setEditing(e); setAdding(false); setError(""); };
+  const startAdd = () => { setDraft(blank()); setAdding(true); setEditing(null); setError(""); };
+  const cancel = () => { setAdding(false); setEditing(null); setDraft(blank()); setError(""); };
 
   return (
     <div>
@@ -144,9 +159,10 @@ function EventsCMS() {
       {(adding || editing) && (
         <div className="bg-[#0d0d12] border border-[var(--primary)]/40 rounded-xl p-6 mb-6 space-y-4">
           <h4 className="font-display text-xl uppercase text-gray-300 mb-2">{adding ? "New Event" : "Edit Event"}</h4>
+          {error && <div className="text-red-400 text-sm font-bold bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">{error}</div>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Title" value={draft.title} onChange={setD("title")} placeholder="Fall Game Jam 2026" />
-            <Field label="Date" value={draft.date} onChange={setD("date")} placeholder="November 2026" />
+            <Field label="Date" value={draft.date} onChange={setD("date")} type="date" placeholder="YYYY-MM-DD" />
             <Field label="Location" value={draft.location} onChange={setD("location")} placeholder="Main Auditorium / Online" />
             <div>
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Status</label>
@@ -157,8 +173,48 @@ function EventsCMS() {
                 <option value="shipped">Completed</option>
               </select>
             </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Panel Shape</label>
+              <select value={draft.shape} onChange={e => setDraft((d: any) => ({ ...d, shape: e.target.value }))}
+                className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[var(--primary)] transition">
+                <option value="full">Full Width (100%)</option>
+                <option value="large">Large (66%)</option>
+                <option value="half">Half Width (50%)</option>
+                <option value="small">Small (33%)</option>
+              </select>
+            </div>
           </div>
           <TextArea label="Description" value={draft.description} onChange={setD("description")} placeholder="Short summary of the event..." />
+          <div>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Cover Image</label>
+            <CldUploadWidget uploadPreset="ml_default" onSuccess={(result: any) => {
+              if (result && result.info && result.info.secure_url) {
+                setDraft((prev: any) => ({ ...prev, imageUrl: result.info.secure_url }));
+              }
+            }}>
+              {({ open }) => (
+                <div className="flex flex-col gap-2">
+                  {draft.imageUrl ? (
+                    <div className="relative w-full h-40 border border-[#3f3f46] rounded-xl overflow-hidden group">
+                      <img src={draft.imageUrl} alt="Cover" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <button type="button" onClick={() => open()} className="px-4 py-2 bg-white/20 text-white rounded-lg backdrop-blur-sm font-semibold">
+                          Change Image
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => open()} className="w-full h-32 border-2 border-dashed border-[#3f3f46] rounded-xl flex flex-col items-center justify-center text-gray-500 hover:text-white hover:border-[var(--primary)] transition">
+                      <ImageIcon size={32} className="mb-2" />
+                      <span className="text-sm font-semibold">Upload Image</span>
+                    </button>
+                  )}
+                  {/* Debug text to verify URL is saved in state */}
+                  {draft.imageUrl && <div className="text-[10px] text-gray-600 break-all">URL: {draft.imageUrl}</div>}
+                </div>
+              )}
+            </CldUploadWidget>
+          </div>
           <div className="flex gap-3">
             <button onClick={save} className="flex items-center gap-2 px-5 py-2 bg-emerald-500 text-black font-bold rounded-lg hover:opacity-90 transition text-sm uppercase">
               <Save size={16} /> Save
