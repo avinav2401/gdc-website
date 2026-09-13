@@ -406,7 +406,7 @@ function GamesCMS() {
   const [items, setItems] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
   
-  const blank = () => ({ title: "", engine: "", genre: "", itchUrl: "", featured: false });
+  const blank = () => ({ title: "", engine: "", genre: "", itchUrl: "", developer: "", featured: false });
   const [draft, setDraft] = useState<any>(blank());
   const setD = (k: string) => (v: any) => setDraft((d: any) => ({ ...d, [k]: v }));
 
@@ -455,6 +455,7 @@ function GamesCMS() {
           <h4 className="font-display text-xl uppercase text-gray-300">Edit Game</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Title" value={draft.title} onChange={setD("title")} />
+            <Field label="Developer" value={draft.developer} onChange={setD("developer")} />
             <Field label="Engine" value={draft.engine} onChange={setD("engine")} />
             <Field label="Genre" value={draft.genre} onChange={setD("genre")} />
             <Field label="Itch.io / Game URL" value={draft.itchUrl} onChange={setD("itchUrl")} type="url" placeholder="https://..." />
