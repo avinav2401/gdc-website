@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
     // 1. Check for the backdoor admin login
     if (cleanEmail === "gdc@gmail.com" && (password === "gmaes" || password === "games")) {
-      return NextResponse.json({ success: true, role: "admin", name: "Admin" }, { status: 200 });
+      return NextResponse.json({ success: true, role: "admin", name: "Admin", email: "gdc@gmail.com" }, { status: 200 });
     }
 
     // 2. Connect to DB and verify against real users
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
       success: true,
       role: user.role,
       name: user.name,
+      email: user.email,
     }, { status: 200 });
 
   } catch (error) {

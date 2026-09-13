@@ -12,6 +12,7 @@ const GameSchema = new Schema({
   coverUrl: { type: String, required: false },
   videoUrl: { type: String, required: false },
   tags: { type: String, required: false },
+  userEmail: { type: String, required: false },
   status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
   featured: { type: Boolean, default: false },
   adminComment: { type: String, default: "" },

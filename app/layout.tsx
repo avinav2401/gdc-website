@@ -3,6 +3,7 @@ import { Press_Start_2P, Silkscreen, Pixelify_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { GoogleProvider } from "@/components/auth/GoogleProvider";
 
 // Retro 8-Bit Headers / Titles
 const pressStart2P = Press_Start_2P({
@@ -43,11 +44,14 @@ export default function RootLayout({
       className={`${pressStart2P.variable} ${silkscreen.variable} ${pixelifySans.variable}`}
     >
       <body className="min-h-screen flex flex-col font-body bg-[#07080D] text-white antialiased selection:bg-[#FF007F] selection:text-white">
-        <Navbar />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <GoogleProvider>
+          <Navbar />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </GoogleProvider>
+
       </body>
     </html>
   );

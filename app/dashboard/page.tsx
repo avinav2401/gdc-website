@@ -265,7 +265,9 @@ export default function DashboardPage() {
   }, []);
 
   const fetchSubmissions = async () => {
-    const res = await fetch("/api/games");
+    const email = localStorage.getItem("gdc_email");
+    if (!email) return;
+    const res = await fetch(`/api/games?email=${encodeURIComponent(email)}`);
     if (res.ok) {
       setSubmissions(await res.json());
     }
@@ -276,7 +278,10 @@ export default function DashboardPage() {
   }, []);
 
   const handleSubmit = async (data: any) => {
-    await fetch("/api/games", { method: "POST", body: JSON.stringify(data) });
+    const userEmail = localStorage.getItem("gdc_email") || "";
+    const userName = localStorage.getItem("gdc_name") || "Developer";
+    const payload = { ...data, userEmail, developer: userName };
+    await fetch("/api/games", { method: "POST", body: JSON.stringify(payload) });
     fetchSubmissions();
   };
 
