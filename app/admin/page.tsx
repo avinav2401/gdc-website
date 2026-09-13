@@ -258,7 +258,7 @@ function TeamCMS() {
   const [adding, setAdding] = useState(false);
   const [filter, setFilter] = useState<"all" | "core" | "alumni">("all");
   
-  const blank = () => ({ name: "", role: "", bio: "", github: "", portfolio: "", isAlumni: false });
+  const blank = () => ({ name: "", role: "", bio: "", github: "", portfolio: "", instagram: "", linkedin: "", isAlumni: false, team: "core", level: 4, imageUrl: "" });
   const [draft, setDraft] = useState<any>(blank());
   const setD = (k: string) => (v: any) => setDraft((d: any) => ({ ...d, [k]: v }));
 
@@ -319,8 +319,46 @@ function TeamCMS() {
             <Field label="Role / Title" value={draft.role} onChange={setD("role")} placeholder="Technical Lead" />
             <Field label="GitHub URL" value={draft.github} onChange={setD("github")} placeholder="https://github.com/..." type="url" />
             <Field label="Portfolio URL" value={draft.portfolio} onChange={setD("portfolio")} placeholder="https://..." type="url" />
+            <Field label="Instagram URL" value={draft.instagram} onChange={setD("instagram")} placeholder="https://instagram.com/..." type="url" />
+            <Field label="LinkedIn URL" value={draft.linkedin} onChange={setD("linkedin")} placeholder="https://linkedin.com/in/..." type="url" />
+            <div>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Category</label>
+              <select value={draft.team} onChange={e => setD("team")(e.target.value)}
+                className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[var(--secondary)] transition">
+                <option value="core">Core Team</option>
+                <option value="faculty">Faculty</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Skill Level</label>
+              <select value={draft.level} onChange={e => setD("level")(parseInt(e.target.value))}
+                className="w-full bg-[#0d0d12] border border-[#3f3f46] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[var(--secondary)] transition">
+                <option value={4}>Level 4 (Initiate)</option>
+                <option value={3}>Level 3 (Operative)</option>
+                <option value={2}>Level 2 (Guild Master)</option>
+                <option value={1}>Level 1 (Director)</option>
+                <option value={0}>Level 0 (Faculty)</option>
+              </select>
+            </div>
           </div>
           <TextArea label="Bio" value={draft.bio} onChange={setD("bio")} placeholder="Short bio..." />
+          <div>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Profile Photo</label>
+            <CldUploadWidget uploadPreset="ml_default" onSuccess={(result: any) => {
+              if (result?.info?.secure_url) setD("imageUrl")(result.info.secure_url);
+            }}>
+              {({ open }) => (
+                <div className="flex items-center gap-4">
+                  <button onClick={() => open()} className="px-4 py-2 bg-[#27272a] hover:bg-[#3f3f46] border border-[#3f3f46] rounded-lg text-sm font-semibold transition">
+                    {draft.imageUrl ? "Change Photo" : "Upload Photo"}
+                  </button>
+                  {draft.imageUrl && (
+                    <img src={draft.imageUrl} alt="Preview" className="w-12 h-12 rounded object-cover border border-[#3f3f46]" />
+                  )}
+                </div>
+              )}
+            </CldUploadWidget>
+          </div>
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={draft.isAlumni} onChange={e => setD("isAlumni")(e.target.checked)}
               className="w-4 h-4 accent-[var(--secondary)]" />
@@ -344,7 +382,13 @@ function TeamCMS() {
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="font-display text-xl uppercase">{m.name || "Unnamed"}</h4>
                 <span className={`text-xs px-2 py-0.5 rounded-full border ${m.isAlumni ? "bg-purple-500/20 text-purple-300 border-purple-500/30" : "bg-[var(--secondary)]/15 text-[var(--secondary)] border-[var(--secondary)]/30"}`}>
-                  {m.isAlumni ? "Alumni" : "Core"}
+                  {m.isAlumni ? "Alumni" : "Active"}
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full border bg-blue-500/15 text-blue-300 border-blue-500/30">
+                  {m.team === "faculty" ? "Faculty" : "Core"}
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full border bg-emerald-500/15 text-emerald-300 border-emerald-500/30">
+                  LVL {m.level ?? 4}
                 </span>
               </div>
               <p className="text-[var(--secondary)] text-sm font-semibold">{m.role}</p>

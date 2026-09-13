@@ -124,9 +124,14 @@ export interface Member {
   role: string;
   team: Role;
   bio: string;
-  focus: string[]; // areas: design, programming, art, production, etc
-  level: 0|1 | 2 | 3 | 4; // Operational hierarchy level for the skill tree
+  focus?: string[]; // areas: design, programming, art, production, etc
+  level: 0 | 1 | 2 | 3 | 4; // Operational hierarchy level for the skill tree
   image?: string;
+  isAlumni?: boolean;
+  github?: string;
+  portfolio?: string;
+  instagram?: string;
+  linkedin?: string;
 }
 
 export const team: Member[] = [
