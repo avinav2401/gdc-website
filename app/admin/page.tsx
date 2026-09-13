@@ -286,7 +286,11 @@ function TeamCMS() {
     fetchItems();
   };
   
-  const startEdit = (m: any) => { setDraft(m); setEditing(m); setAdding(false); };
+  const startEdit = (m: any) => { 
+    setDraft({ ...blank(), ...m, level: m.level ?? 4, team: m.team || "core" }); 
+    setEditing(m); 
+    setAdding(false); 
+  };
   const cancel = () => { setAdding(false); setEditing(null); setDraft(blank()); };
 
   const filtered = items.filter(m => filter === "all" ? true : filter === "alumni" ? m.isAlumni : !m.isAlumni);
