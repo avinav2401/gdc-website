@@ -489,18 +489,8 @@ export default async function HomePage() {
         
         let displayEvents = (events || [])
           .filter((event) => event.dateSort >= today)
-          .sort((a, b) => a.dateSort.localeCompare(b.dateSort));
-
-        // If less than 4 upcoming, backfill with recent past events
-        if (displayEvents.length < 4) {
-          const pastEvents = (events || [])
-            .filter((event) => event.dateSort < today)
-            .sort((a, b) => b.dateSort.localeCompare(a.dateSort)); // Descending for past events
-          
-          displayEvents = [...displayEvents, ...pastEvents].slice(0, 4);
-        } else {
-          displayEvents = displayEvents.slice(0, 4);
-        }
+          .sort((a, b) => a.dateSort.localeCompare(b.dateSort))
+          .slice(0, 4);
 
         if (displayEvents.length === 0) {
           return (
