@@ -20,18 +20,19 @@ export default async function EventsPage() {
   
   // Map database events to the ClubEvent structure expected by the client view
   const events: ClubEvent[] = dbEvents.map((e: any) => ({
-    slug: e._id.toString(),
+    slug: e.slug || e._id.toString(),
     title: e.title,
     status: e.status || "planned",
-    version: "GDC-DB",
+    version: e.version || "GDC-DB",
     date: e.date,
-    dateSort: e.date, // Note: For best results, e.date should be in YYYY-MM-DD or have the year at the start.
+    dateSort: e.dateSort || e.date,
     location: e.location,
     summary: e.description,
-    tags: [],
+    tags: e.tags || [],
     image: e.imageUrl || "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80",
-    registerUrl: "",
+    registerUrl: e.registerUrl || "",
     shape: e.shape || "half",
+    floatingAssets: e.floatingAssets || [],
   }));
 
   return <EventsClientView events={events} />;

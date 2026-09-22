@@ -4,7 +4,6 @@ import { ExternalLink } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
 import connectToDatabase from "@/lib/mongodb";
 import Game from "@/models/Game";
-import { games as staticGames } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Games — GDC",
@@ -18,22 +17,10 @@ export default async function GamesPage() {
   await connectToDatabase();
   const approvedGames = await Game.find({ status: "approved" }).sort({ createdAt: -1 }).lean();
   
-  const allGames = [
-    ...approvedGames.map((g: any) => ({
-      ...g,
-      _id: g._id.toString(),
-    })),
-    ...staticGames.map((g: any) => ({
-      ...g,
-      _id: g.slug,
-      coverUrl: g.image,
-      developer: g.authors?.join(", "),
-      itchUrl: g.playUrl,
-      platform: g.version,
-      description: g.summary,
-      tags: g.tags.join(", "),
-    }))
-  ];
+  const allGames = approvedGames.map((g: any) => ({
+    ...g,
+    _id: g._id.toString(),
+  }));
 
   return (
     <>
@@ -77,89 +64,97 @@ export default async function GamesPage() {
           </div>
 
           {/* Games Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {allGames.map((g: any) => (
-              <article
-                key={g._id.toString()}
-                className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]"
-              >
-                <div>
-                  {/* Media Container */}
-                  <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
-                    {g.coverUrl ? (
-                      <img
-                        src={g.coverUrl}
-                        alt={g.title}
-                        className="w-full h-full object-cover block [image-rendering:pixelated]"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="text-gray-500 font-mono text-xs uppercase">
-                        No Image Preview
-                      </div>
-                    )}
-                    <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
-                      {g.engine}
-                    </span>
-                  </div>
-
-                  {/* Top Meta Info */}
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-xs text-gray-400">
-                      {g.platform || "N/A"}
-                    </span>
-                    <StatusBadge status={g.status} />
-                  </div>
-
-                  {/* Title & Genre */}
-                  <h2 className="text-2xl font-black uppercase text-white mb-1">
-                    {g.title}
-                  </h2>
-                  <p className="font-mono text-xs text-[#FF9F43] mb-3">
-                    {g.genre}
-                  </p>
-
-                  {/* Summary */}
-                  <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed whitespace-pre-wrap">
-                    {g.description || g.tagline}
-                  </p>
-
-                  {/* Tag Pills */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {g.tags && g.tags.split(",").map((t: string) => (
-                      <span
-                        key={t.trim()}
-                        className="border border-white/30 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-gray-300"
-                      >
-                        {t.trim()}
+          {allGames.length === 0 ? (
+            <div className="border-4 border-dashed border-[#FF007F] p-12 text-center bg-[#141622]/50">
+              <p className="font-mono text-sm text-gray-400 uppercase tracking-widest">
+                No games have been shipped yet. Check back after the next Game Jam!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {allGames.map((g: any) => (
+                <article
+                  key={g._id.toString()}
+                  className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]"
+                >
+                  <div>
+                    {/* Media Container */}
+                    <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
+                      {g.coverUrl ? (
+                        <img
+                          src={g.coverUrl}
+                          alt={g.title}
+                          className="w-full h-full object-cover block [image-rendering:pixelated]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="text-gray-500 font-mono text-xs uppercase">
+                          No Image Preview
+                        </div>
+                      )}
+                      <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
+                        {g.engine}
                       </span>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                {/* Card Footer */}
-                <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between mt-auto">
-                  <span className="text-xs text-gray-400 uppercase tracking-wider font-bold truncate max-w-[180px]">
-                    By {g.developer || "Unknown Developer"}
-                  </span>
-                  {g.itchUrl ? (
-                    <a
-                      href={g.itchUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex items-center justify-center"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  ) : (
-                    <span className="font-mono text-[11px] text-gray-500 uppercase">
-                      No Link
+                    {/* Top Meta Info */}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs text-gray-400">
+                        {g.platform || "N/A"}
+                      </span>
+                      <StatusBadge status={g.status} />
+                    </div>
+
+                    {/* Title & Genre */}
+                    <h2 className="text-2xl font-black uppercase text-white mb-1">
+                      {g.title}
+                    </h2>
+                    <p className="font-mono text-xs text-[#FF9F43] mb-3">
+                      {g.genre}
+                    </p>
+
+                    {/* Summary */}
+                    <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed whitespace-pre-wrap">
+                      {g.description || g.tagline}
+                    </p>
+
+                    {/* Tag Pills */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {g.tags && g.tags.split(",").map((t: string) => (
+                        <span
+                          key={t.trim()}
+                          className="border border-white/30 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-gray-300"
+                        >
+                          {t.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Card Footer */}
+                  <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between mt-auto">
+                    <span className="text-xs text-gray-400 uppercase tracking-wider font-bold truncate max-w-[180px]">
+                      By {g.developer || "Unknown Developer"}
                     </span>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
+                    {g.itchUrl ? (
+                      <a
+                        href={g.itchUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex items-center justify-center"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <span className="font-mono text-[11px] text-gray-500 uppercase">
+                        No Link
+                      </span>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
 
         </div>
       </div>

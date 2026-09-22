@@ -116,9 +116,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
   // Gallery slider state & active group photo paths (Store your photos in public/gallery/)
   const [currentSlide, setCurrentSlide] = useState(0);
   const galleryImages = [
-    "/gallery/squad-1.jpeg",
-    "/gallery/squad-2.jpeg",
-    "/gallery/squad-3.jpeg",
+    "/gallery/grp_photo.png",
   ];
   const slidesCount = galleryImages.length;
 
@@ -241,7 +239,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6 max-w-5xl items-stretch">
+            <div className={facultyMembers.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-3xl items-stretch justify-items-center"}>
               {facultyMembers.map((m) => (
                 <div key={m.name} className="w-full max-w-[320px]">
                   <CharacterCard member={m} />
@@ -278,7 +276,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 1 // Founders & Directors
                   </span>
                 </div>
-                <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto items-stretch">
+                <div className={level1GuildMasters.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch justify-items-center"}>
                   {level1GuildMasters.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
@@ -296,7 +294,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 2 // Guild Masters & Directors
                   </span>
                 </div>
-                <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto items-stretch">
+                <div className={level2GuildMasters.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch justify-items-center"}>
                   {level2GuildMasters.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
@@ -314,7 +312,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 3 // Senior Engine Operatives
                   </span>
                 </div>
-                <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto items-stretch">
+                <div className={level3Operatives.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch justify-items-center"}>
                   {level3Operatives.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
@@ -332,7 +330,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 4 // Community Recruits & Specialists
                   </span>
                 </div>
-                <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto items-stretch">
+                <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3 max-w-5xl mx-auto items-stretch justify-items-center">
                   {level4Initiates.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
