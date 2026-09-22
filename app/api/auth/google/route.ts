@@ -1,45 +1,30 @@
 import { NextResponse } from "next/server";
-import { OAuth2Client } from "google-auth-library";
-import connectToDatabase from "@/lib/mongodb";
-import User from "@/models/User";
-
-const client = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
-    const { token } = await req.json();
+    const { email, name } = await req.json();
+    const cleanEmail = email?.trim().toLowerCase();
 
-    if (!token) {
-      return NextResponse.json({ error: "No token provided" }, { status: 400 });
-    }
+    const { data: user, error } = await supabase.from('users').select('*').eq('email', cleanEmail).single();
 
-    // Verify the token
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    });
-
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
-      return NextResponse.json({ error: "Invalid Google token" }, { status: 401 });
-    }
-
-    const { email, name } = payload;
-    const cleanEmail = email.trim().toLowerCase();
-
-    await connectToDatabase();
-
-    // Check if user exists
-    let user = await User.findOne({ email: cleanEmail });
-
-    if (!user) {
-      // Create a new user with default password since they are logging in via Google
-      user = await User.create({
-        name: name || "Google User",
+    if (!user || error) {
+      // Create user if not exists
+      const { data: newUser, error: createError } = await supabase.from('users').insert([{
         email: cleanEmail,
-        password: Math.random().toString(36).slice(-10), // Random password
-        role: "member"
-      });
+        name: name,
+        role: 'member',
+        password: 'google_oauth'
+      }]).select().single();
+      
+      if (createError) return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+      
+      return NextResponse.json({
+        success: true,
+        role: newUser.role,
+        name: newUser.name,
+        email: newUser.email,
+      }, { status: 200 });
     }
 
     return NextResponse.json({
@@ -48,9 +33,7 @@ export async function POST(req: Request) {
       name: user.name,
       email: user.email,
     }, { status: 200 });
-
   } catch (error) {
-    console.error("Google Auth Error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

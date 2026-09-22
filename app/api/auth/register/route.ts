@@ -1,36 +1,31 @@
 import { NextResponse } from "next/server";
-import connectToDatabase from "@/lib/mongodb";
-import User from "@/models/User";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
+    const cleanEmail = email?.trim().toLowerCase();
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
-
-    await connectToDatabase();
-
-    const existingUser = await User.findOne({ email });
+    const { data: existingUser } = await supabase.from('users').select('*').eq('email', cleanEmail).maybeSingle();
     if (existingUser) {
-      return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
+      return NextResponse.json({ error: "User already exists" }, { status: 400 });
     }
 
-    // Default to 'member' role for all public registrations
-    const newUser = await User.create({
+    const { data: newUser, error } = await supabase.from('users').insert([{
       name,
-      email,
+      email: cleanEmail,
       password,
-      role: "member"
-    });
+      role: 'member'
+    }]).select().single();
+
+    if (error) return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
 
     return NextResponse.json({
       success: true,
       role: newUser.role,
       name: newUser.name,
+      email: newUser.email,
     }, { status: 201 });
-
   } catch (error) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
