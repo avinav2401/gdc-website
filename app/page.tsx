@@ -488,10 +488,8 @@ export default async function HomePage() {
 
     <div className="bg-[#07080D] border-4 border-white p-4 md:p-6 shadow-[8px_8px_0px_#FF9F43] relative overflow-hidden [&_[class*='border-dashed']]:hidden [&_hr]:border-solid [&_hr]:border-gray-800">
       {(() => {
-        const today = new Date().toISOString().split("T")[0];
-        
         let displayEvents = (events || [])
-          .filter((event) => event.dateSort >= today)
+          .filter((event) => event.status !== "shipped" && event.status !== "archived")
           .sort((a, b) => a.dateSort.localeCompare(b.dateSort));
 
         if (displayEvents.length === 0) {
