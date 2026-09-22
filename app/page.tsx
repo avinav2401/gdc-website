@@ -2,9 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { EventTimeline } from "@/components/ui/EventTimeline";
 import { clubMeta, socials } from "@/lib/data";
-import dbConnect from "@/lib/mongodb";
-import EventModel from "@/models/Event";
-import GameModel from "@/models/Game";
+import { supabase } from "@/lib/supabase";
 import {
   ExternalLink,
   Mail,
@@ -296,33 +294,36 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function HomePage() {
-  await dbConnect();
+  const { data: dbEvents } = await supabase.from('events').select('*');
   
-  const dbEvents = await EventModel.find({}).lean();
-  
-  // Map MongoDB documents to the format expected by EventTimeline
-  const events = dbEvents.map((e: any) => ({
+  // Map Supabase documents to the format expected by EventTimeline
+  const events = (dbEvents || []).map((e: any) => ({
     slug: e.slug,
     title: e.title,
     status: e.status || "upcoming",
     date: e.date,
-    dateSort: e.dateSort,
+    dateSort: e.date_sort,
     location: e.location,
-    summary: e.description || e.summary || "",
+    summary: e.description || "",
     tags: e.tags || [],
   }));
 
   // Fetch Games
-  const dbGames = await GameModel.find({ status: "approved" }).sort({ createdAt: -1 }).lean();
-  const featuredGames = dbGames.map((g: any) => ({
-    slug: g._id.toString(),
+  const { data: dbGames } = await supabase
+    .from('games')
+    .select('*')
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false });
+
+  const featuredGames = (dbGames || []).map((g: any) => ({
+    slug: g.slug || g.id.toString(),
     title: g.title,
-    developer: g.developer || "GDC Devs",
-    tagline: g.tagline || g.description?.slice(0, 50) || "",
+    developer: g.team || "GDC Devs",
+    tagline: g.description?.slice(0, 50) || "",
     description: g.description || "",
     engine: g.engine || "Unknown",
-    coverUrl: g.coverUrl || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
-    itchUrl: g.itchUrl || "#",
+    coverUrl: g.image_url || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+    itchUrl: g.play_url || "#",
   })).slice(0, 3);
 
   return (

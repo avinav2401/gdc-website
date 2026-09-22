@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import EventsClientView from "@/components/events-client-view";
-import dbConnect from "@/lib/mongodb";
-import EventModel from "@/models/Event";
+import { supabase } from "@/lib/supabase";
 import { ClubEvent } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -13,26 +12,28 @@ export const metadata: Metadata = {
 export const revalidate = 0; // Disable static rendering so events update immediately
 
 export default async function EventsPage() {
-  await dbConnect();
   
   // Fetch events from the database
-  const dbEvents = await EventModel.find({}).sort({ date: -1 }).lean();
+  const { data: dbEvents } = await supabase
+    .from('events')
+    .select('*')
+    .order('date_sort', { ascending: false });
   
   // Map database events to the ClubEvent structure expected by the client view
-  const events: ClubEvent[] = dbEvents.map((e: any) => ({
-    slug: e.slug || e._id.toString(),
+  const events: ClubEvent[] = (dbEvents || []).map((e: any) => ({
+    slug: e.slug || e.id.toString(),
     title: e.title,
     status: e.status || "planned",
     version: e.version || "GDC-DB",
     date: e.date,
-    dateSort: e.dateSort || e.date,
+    dateSort: e.date_sort || e.date,
     location: e.location,
     summary: e.description,
     tags: e.tags || [],
-    image: e.imageUrl || "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80",
-    registerUrl: e.registerUrl || "",
+    image: e.image_url || "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80",
+    registerUrl: e.register_url || "",
     shape: e.shape || "half",
-    floatingAssets: e.floatingAssets || [],
+    floatingAssets: e.floating_assets || [],
   }));
 
   return <EventsClientView events={events} />;

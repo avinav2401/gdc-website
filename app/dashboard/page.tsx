@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
 import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
-import { CldUploadWidget } from "next-cloudinary";
 
 const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pygame", "Phaser", "MonoGame", "Other"];
 const genreOptions = ["Action", "Platformer", "Puzzle", "RPG", "Arcade", "Simulation", "Horror", "Strategy", "Idle", "Zen", "Roguelite", "Other"];
@@ -138,24 +137,48 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-1.5">Cover Image (Cloudinary)</label>
-              <CldUploadWidget
-                uploadPreset="ml_default" // The user needs to change this to their unsigned preset name
-                onSuccess={(result: any) => {
-                  setForm(f => ({ ...f, coverUrl: result.info.secure_url }));
-                }}
-              >
-                {({ open }) => (
-                  <button
-                    type="button"
-                    onClick={() => open()}
-                    className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-[#3f3f46] border-dashed rounded-lg px-4 py-3 text-gray-400 hover:text-white hover:border-[var(--primary)] transition"
-                  >
-                    <ImageIcon size={20} />
-                    {form.coverUrl ? "Image Uploaded! Click to Change" : "Upload Cover Image"}
-                  </button>
+              <label className="block text-sm font-semibold text-gray-300 mb-1.5">Cover Image</label>
+              <div className="flex flex-col gap-2">
+                {form.coverUrl ? (
+                  <div className="relative w-full h-40 border-2 border-white rounded-xl overflow-hidden group">
+                    <img src={form.coverUrl} alt="Cover Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                      <label className="px-4 py-2 bg-white text-black font-display uppercase tracking-wider rounded-lg text-sm hover:-translate-y-1 transition active:translate-y-0 cursor-pointer">
+                        Change Cover
+                        <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                            const data = await res.json();
+                            if (data.secure_url) {
+                              setForm((prev: any) => ({ ...prev, coverUrl: data.secure_url }));
+                            }
+                          }
+                        }} />
+                      </label>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="w-full h-32 border-2 border-dashed border-white/20 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:text-white hover:border-white/50 transition bg-white/5 cursor-pointer">
+                    <ImageIcon size={32} className="mb-2" />
+                    <span className="font-display tracking-widest uppercase text-sm">Upload 16:9 Cover Image</span>
+                    <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.secure_url) {
+                          setForm((prev: any) => ({ ...prev, coverUrl: data.secure_url }));
+                        }
+                      }
+                    }} />
+                  </label>
                 )}
-              </CldUploadWidget>
+              </div>
             </div>
             <InputField label="Gameplay Video / GIF URL" id="videoUrl" type="url" placeholder="https://youtube.com/... or direct .gif URL" value={form.videoUrl} onChange={set("videoUrl")} />
           </div>

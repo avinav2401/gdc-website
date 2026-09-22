@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
-import connectToDatabase from "@/lib/mongodb";
-import Game from "@/models/Game";
+import { supabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Games — GDC",
@@ -14,12 +13,18 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function GamesPage() {
-  await connectToDatabase();
-  const approvedGames = await Game.find({ status: "approved" }).sort({ createdAt: -1 }).lean();
+  const { data: approvedGames } = await supabase
+    .from('games')
+    .select('*')
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false });
   
-  const allGames = approvedGames.map((g: any) => ({
+  const allGames = (approvedGames || []).map((g: any) => ({
     ...g,
-    _id: g._id.toString(),
+    _id: g.id.toString(),
+    coverUrl: g.image_url,
+    itchUrl: g.play_url,
+    developer: g.team,
   }));
 
   return (

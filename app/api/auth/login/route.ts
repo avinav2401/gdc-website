@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import connectToDatabase from "@/lib/mongodb";
-import User from "@/models/User";
-
+import { supabase } from "@/lib/supabase";
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
@@ -14,10 +12,13 @@ export async function POST(req: Request) {
     }
 
     // 2. Connect to DB and verify against real users
-    await connectToDatabase();
-    const user = await User.findOne({ email: cleanEmail });
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', cleanEmail)
+      .single();
 
-    if (!user) {
+    if (error || !user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
