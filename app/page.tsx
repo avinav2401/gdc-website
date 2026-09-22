@@ -1,9 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { EventTimeline } from "@/components/ui/EventTimeline";
-import { clubMeta, games, socials } from "@/lib/data";
+import { clubMeta, socials } from "@/lib/data";
 import dbConnect from "@/lib/mongodb";
 import EventModel from "@/models/Event";
+import GameModel from "@/models/Game";
 import {
   ExternalLink,
   Mail,
@@ -308,8 +309,18 @@ export default async function HomePage() {
     tags: e.tags || [],
   }));
 
-  const upcoming = [...events].sort((a, b) => a.dateSort.localeCompare(b.dateSort));
-  const featuredGames = games.slice(0, 3);
+  // Fetch Games
+  const dbGames = await GameModel.find({ status: "approved" }).sort({ createdAt: -1 }).lean();
+  const featuredGames = dbGames.map((g: any) => ({
+    slug: g._id.toString(),
+    title: g.title,
+    developer: g.developer || "GDC Devs",
+    tagline: g.tagline || g.description?.slice(0, 50) || "",
+    description: g.description || "",
+    engine: g.engine || "Unknown",
+    coverUrl: g.coverUrl || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+    itchUrl: g.itchUrl || "#",
+  })).slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#07080D] text-white selection:bg-[#FF007F] selection:text-white font-mono">
@@ -406,111 +417,56 @@ export default async function HomePage() {
       </Link>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-      
-      {/* 1. FLOW */}
-      <div className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]">
-        <div>
-          <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
-            <img
-              src="/Flow.png" // <-- Replace with your image path
-              alt="Flow"
-              className="w-full h-full object-cover block [image-rendering:pixelated]"
-              loading="lazy"
-            />
-            <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
-              Unity
-            </span>
-          </div>
-
-          <h3 className="text-2xl font-black uppercase text-white mb-2">Flow</h3>
-          <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed">
-            A meditative particle playground — draw currents across the canvas and watch thousands of particles respond in real time. No score, no fail state, just flow.
-          </p>
-        </div>
-
-        <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between">
-          <span className="text-xs text-[#FF9F43] uppercase tracking-wider font-bold">
-            By GDC Devs
-          </span>
-          <Link 
-            href="/games/flow"
-            className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors"
-          >
-            <ExternalLink className="w-5 h-5" />
-          </Link>
-        </div>
+    {featuredGames.length === 0 ? (
+      <div className="py-12 text-center font-mono">
+        <span className="text-4xl mb-3 block">🎮</span>
+        <p className="text-[#00F2FE] font-black uppercase tracking-wider text-lg">
+          No Games Found
+        </p>
+        <p className="text-gray-400 text-sm mt-1">
+          Check back later for new releases!
+        </p>
       </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        {featuredGames.map((game: any) => (
+          <div key={game.slug} className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]">
+            <div>
+              <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
+                <img
+                  src={game.coverUrl}
+                  alt={game.title}
+                  className="w-full h-full object-cover block [image-rendering:pixelated]"
+                  loading="lazy"
+                />
+                <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
+                  {game.engine}
+                </span>
+              </div>
 
-      {/* 2. SIGNAL LOSS */}
-      <div className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]">
-        <div>
-          <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
-            <img
-              src="/Signal lost.png" // <-- Replace with your image path
-              alt="Signal Loss"
-              className="w-full h-full object-cover block [image-rendering:pixelated]"
-              loading="lazy"
-            />
-            <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
-              Godot 4
-            </span>
+              <h3 className="text-2xl font-black uppercase text-white mb-2 truncate" title={game.title}>{game.title}</h3>
+              <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed">
+                {game.description}
+              </p>
+            </div>
+
+            <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between">
+              <span className="text-xs text-[#FF9F43] uppercase tracking-wider font-bold truncate pr-4">
+                By {game.developer}
+              </span>
+              <Link 
+                href={game.itchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex-shrink-0"
+              >
+                <ExternalLink className="w-5 h-5" />
+              </Link>
+            </div>
           </div>
-
-          <h3 className="text-2xl font-black uppercase text-white mb-2">Signal Loss</h3>
-          <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed">
-            Navigate a decommissioned research station using only sound cues — your flashlight draws enemies in. Built during Club Wars 2026, now in post-jam expansion.
-          </p>
-        </div>
-
-        <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between">
-          <span className="text-xs text-[#FF9F43] uppercase tracking-wider font-bold">
-            By Club Wars Team Alpha
-          </span>
-          <Link 
-            href="/games/signal-loss"
-            className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors"
-          >
-            <ExternalLink className="w-5 h-5" />
-          </Link>
-        </div>
+        ))}
       </div>
-
-      {/* 3. ORBIT DRIFT */}
-      <div className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]">
-        <div>
-          <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
-            <img
-              src="/Orbit Drift.png" // <-- Replace with your image path
-              alt="Orbit Drift"
-              className="w-full h-full object-cover block [image-rendering:pixelated]"
-              loading="lazy"
-            />
-            <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
-              Unity
-            </span>
-          </div>
-
-          <h3 className="text-2xl font-black uppercase text-white mb-2">Orbit Drift</h3>
-          <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed">
-            A one-button gravity game — slingshot your ship between orbits to collect fuel before it runs out. Built in 36 hours for Spring Game Jam.
-          </p>
-        </div>
-
-        <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between">
-          <span className="text-xs text-[#FF9F43] uppercase tracking-wider font-bold">
-            By Spring Jam Team
-          </span>
-          <Link 
-            href="/games/orbit-drift"
-            className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors"
-          >
-            <ExternalLink className="w-5 h-5" />
-          </Link>
-        </div>
-      </div>
-
-    </div>
+    )}
 
   </div>
 </section>
@@ -530,11 +486,23 @@ export default async function HomePage() {
     <div className="bg-[#07080D] border-4 border-white p-4 md:p-6 shadow-[8px_8px_0px_#FF9F43] relative overflow-hidden [&_[class*='border-dashed']]:hidden [&_hr]:border-solid [&_hr]:border-gray-800">
       {(() => {
         const today = new Date().toISOString().split("T")[0];
-        const upcomingEvents = (events || [])
+        
+        let displayEvents = (events || [])
           .filter((event) => event.dateSort >= today)
           .sort((a, b) => a.dateSort.localeCompare(b.dateSort));
 
-        if (upcomingEvents.length === 0) {
+        // If less than 4 upcoming, backfill with recent past events
+        if (displayEvents.length < 4) {
+          const pastEvents = (events || [])
+            .filter((event) => event.dateSort < today)
+            .sort((a, b) => b.dateSort.localeCompare(a.dateSort)); // Descending for past events
+          
+          displayEvents = [...displayEvents, ...pastEvents].slice(0, 4);
+        } else {
+          displayEvents = displayEvents.slice(0, 4);
+        }
+
+        if (displayEvents.length === 0) {
           return (
             <div className="py-12 text-center font-mono">
               <span className="text-4xl mb-3 block">👾</span>
@@ -548,7 +516,7 @@ export default async function HomePage() {
           );
         }
 
-        return <EventTimeline events={upcomingEvents} />;
+        return <EventTimeline events={displayEvents} />;
       })()}
     </div>
   </div>
