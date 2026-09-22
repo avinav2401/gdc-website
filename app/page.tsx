@@ -489,8 +489,7 @@ export default async function HomePage() {
         
         let displayEvents = (events || [])
           .filter((event) => event.dateSort >= today)
-          .sort((a, b) => a.dateSort.localeCompare(b.dateSort))
-          .slice(0, 4);
+          .sort((a, b) => a.dateSort.localeCompare(b.dateSort));
 
         if (displayEvents.length === 0) {
           return (
