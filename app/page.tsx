@@ -1,9 +1,9 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import { EventTimeline } from "@/components/ui/EventTimeline";
-import { clubMeta, events, games, socials } from "@/lib/data";
+import { clubMeta, games, socials } from "@/lib/data";
+import dbConnect from "@/lib/mongodb";
+import EventModel from "@/models/Event";
 import {
   ExternalLink,
   Mail,
@@ -291,7 +291,23 @@ function AboutAndCommunitySection() {
 
 // ═══ MAIN PAGE COMPONENT ═════════════════════════════════════════════════════
 
-export default function HomePage() {
+export default async function HomePage() {
+  await dbConnect();
+  
+  const dbEvents = await EventModel.find({}).lean();
+  
+  // Map MongoDB documents to the format expected by EventTimeline
+  const events = dbEvents.map((e: any) => ({
+    slug: e.slug,
+    title: e.title,
+    status: e.status || "upcoming",
+    date: e.date,
+    dateSort: e.dateSort,
+    location: e.location,
+    summary: e.description || e.summary || "",
+    tags: e.tags || [],
+  }));
+
   const upcoming = [...events].sort((a, b) => a.dateSort.localeCompare(b.dateSort));
   const featuredGames = games.slice(0, 3);
 

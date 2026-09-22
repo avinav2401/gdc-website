@@ -121,15 +121,7 @@ export const team: Member[] = [
     level: 2,
     
   },
-  {
-    name: "Ankit Mandal",
-    role: "Technical Head",
-    team: "core",
-    bio: "Owns the engine workshops and reviews team prototypes for architecture and scope before jam deadlines.",
-    focus: ["programming", "engines"],
-    level: 4,
-    image: "/team/Ankit.jpeg",
-  },
+
   {
     name: "Devi Prasad Nayak",
     role: "Creative Head",
