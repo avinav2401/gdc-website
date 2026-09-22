@@ -222,56 +222,61 @@ export default function TeamClientView({ team }: { team: Member[] }) {
           </div>
         </div>
 
-        {/* FACULTY SECTION */}
-        {facultyMembers.length > 0 && (
-          <section className="mb-20">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="bg-[#FF9F43] p-2 border-2 border-white text-black shadow-[3px_3px_0px_#FF007F]">
-                <Shield className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white drop-shadow-[2px_2px_0px_#FF007F]">
-                  Faculty Command Section
-                </h2>
-                <p className="font-mono text-xs text-[#FF9F43] uppercase tracking-wider">
-                  Institutional oversight & leadership mentors
-                </p>
-              </div>
-            </div>
-
-            <div className={facultyMembers.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-3xl items-stretch justify-items-center"}>
-              {facultyMembers.map((m) => (
-                <div key={m.name} className="w-full max-w-[320px]">
-                  <CharacterCard member={m} />
+        {/* UNIFIED GDC HIERARCHY TREE */}
+        <section className="relative mt-8">
+          
+          {/* Main Tree Container with Continuous Vertical Line */}
+          <div className="space-y-16 md:space-y-24 relative before:absolute before:inset-0 before:left-1/2 before:-translate-x-1/2 before:w-1 before:bg-gradient-to-b before:from-[#FF9F43] before:via-[#FF007F] before:to-[#00F2FE]">
+            
+            {/* FACULTY COMMAND SECTION */}
+            {facultyMembers.length > 0 && (
+              <div className="relative">
+                {/* Centered Section Header */}
+                <div className="flex flex-col items-center justify-center text-center gap-3 mb-10 relative z-20 max-w-xl mx-auto bg-[#07080D] py-2">
+                  <div className="bg-[#FF9F43] p-2 border-2 border-white text-black shadow-[3px_3px_0px_#FF007F] inline-block mb-1">
+                    <Shield className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white drop-shadow-[2px_2px_0px_#FF007F]">
+                      Faculty Command Section
+                    </h2>
+                    <p className="font-mono text-xs text-[#FF9F43] uppercase tracking-wider mt-1">
+                      Institutional oversight & leadership mentors
+                    </p>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
 
-        {/* CORE SKILL TREE SECTION */}
-        <section className="relative">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="bg-[#00F2FE] p-2 border-2 border-white text-black shadow-[3px_3px_0px_#FF007F]">
-              <GitBranch className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white drop-shadow-[2px_2px_0px_#FF007F]">
-                GDC Core Skill Tree
-              </h2>
-              <p className="font-mono text-xs text-[#00F2FE] uppercase tracking-wider">
-                Hierarchical student operational tiers
-              </p>
-            </div>
-          </div>
+                <div className={facultyMembers.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch justify-items-center"}>
+                  {facultyMembers.map((m) => (
+                    <div key={m.name} className="w-full max-w-[320px]">
+                      <CharacterCard member={m} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          {/* SKILL TREE CONTAINER (Tree line visible on both Mobile and Desktop) */}
-          <div className="space-y-16 relative before:absolute before:inset-0 before:left-6 md:before:left-1/2 before:-translate-x-1/2 before:w-1 before:bg-gradient-to-b before:from-[#00F2FE] before:via-[#FF007F] before:to-[#FF9F43]">
+            {/* CORE SKILL TREE SECTION HEADER */}
+            <div className="relative">
+              <div className="flex flex-col items-center justify-center text-center gap-3 relative z-20 max-w-xl mx-auto bg-[#07080D] py-4">
+                <div className="bg-[#00F2FE] p-2 border-2 border-white text-black shadow-[3px_3px_0px_#FF007F] inline-block mb-1">
+                  <GitBranch className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white drop-shadow-[2px_2px_0px_#FF007F]">
+                    GDC Core Skill Tree
+                  </h2>
+                  <p className="font-mono text-xs text-[#00F2FE] uppercase tracking-wider mt-1">
+                    Hierarchical student operational tiers
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* LEVEL 1: (If applicable) */}
             {level1GuildMasters.length > 0 && (
-              <div className="relative">
-                <div className="flex justify-center mb-6">
+              <div className="relative pt-6">
+                <div className="flex justify-center mb-8">
                   <span className="bg-[#FF9F43] text-black font-mono text-xs font-black px-4 py-1.5 border-2 border-white shadow-[3px_3px_0px_#FF007F] uppercase tracking-widest z-20 text-center">
                     LEVEL 1 // Founders & Directors
                   </span>
@@ -289,7 +294,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
             {/* LEVEL 2: GUILD MASTERS */}
             {level2GuildMasters.length > 0 && (
               <div className="relative">
-                <div className="flex justify-center mb-6">
+                <div className="flex justify-center mb-8">
                   <span className="bg-[#00F2FE] text-black font-mono text-xs font-black px-4 py-1.5 border-2 border-white shadow-[3px_3px_0px_#FF007F] uppercase tracking-widest z-20 text-center">
                     LEVEL 2 // Guild Masters & Directors
                   </span>
@@ -307,7 +312,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
             {/* LEVEL 3: SENIOR OPERATIVES */}
             {level3Operatives.length > 0 && (
               <div className="relative">
-                <div className="flex justify-center mb-6">
+                <div className="flex justify-center mb-8">
                   <span className="bg-[#FF9F43] text-black font-mono text-xs font-black px-4 py-1.5 border-2 border-white shadow-[3px_3px_0px_#FF007F] uppercase tracking-widest z-20 text-center">
                     LEVEL 3 // Senior Engine Operatives
                   </span>
@@ -324,13 +329,13 @@ export default function TeamClientView({ team }: { team: Member[] }) {
 
             {/* LEVEL 4: COMMUNITY INITIATES */}
             {level4Initiates.length > 0 && (
-              <div className="relative">
-                <div className="flex justify-center mb-6">
+              <div className="relative pb-16">
+                <div className="flex justify-center mb-8">
                   <span className="bg-white text-black font-mono text-xs font-black px-4 py-1.5 border-2 border-[#FF007F] shadow-[3px_3px_0px_#FF007F] uppercase tracking-widest z-20 text-center">
                     LEVEL 4 // Community Recruits & Specialists
                   </span>
                 </div>
-                <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3 max-w-5xl mx-auto items-stretch justify-items-center">
+                <div className={level4Initiates.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch justify-items-center"}>
                   {level4Initiates.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />

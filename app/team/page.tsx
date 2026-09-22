@@ -15,6 +15,7 @@ export default async function TeamPage() {
     name: m.name,
     role: m.role,
     bio: m.bio || "",
+    focus: m.focus || [],
     image: m.imageUrl || "",
     portfolio: m.portfolio || "",
     github: m.github || "",
