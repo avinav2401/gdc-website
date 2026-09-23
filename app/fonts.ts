@@ -17,5 +17,5 @@ export const silkscreen = Silkscreen({
 export const pixelifySans = Pixelify_Sans({
   subsets: ["latin"],
   variable: "--font-pixel-body",
-  display: "swap",
+  display: "swap", 
 });
