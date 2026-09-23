@@ -4,14 +4,17 @@ import TeamClientView from "@/components/team-client-view";
 export const revalidate = 0; // Ensures data is fresh
 
 export default async function TeamPage() {
-  
-  // Fetch members from the database
-  const { data: members } = await supabase
-    .from('team_members')
-    .select('*')
-    .order('created_at', { ascending: true });
-  
-  // Map Supabase documents to the Member format expected by TeamClientView
+  // Fetch team members from Supabase
+  const { data: members, error } = await supabase
+    .from("team_members")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Failed to fetch team members:", error);
+  }
+
+  // Map Supabase records to the format expected by TeamClientView
   const mappedTeam = (members || []).map((m: any) => ({
     name: m.name,
     role: m.role,

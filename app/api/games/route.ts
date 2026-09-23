@@ -1,42 +1,68 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-export async function GET() {
-  const { data: games, error } = await supabase.from('games').select('*').order('created_at', { ascending: false });
-  if (error) return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
-  
-  const mapped = games.map(g => ({
-    ...g,
-    _id: g.id,
-    itchUrl: g.itch_url,
-    coverUrl: g.cover_url,
-    videoUrl: g.video_url,
-    userEmail: g.user_email,
-    adminComment: g.admin_comment
-  }));
-  return NextResponse.json(mapped);
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const email = searchParams.get("email");
+
+    let query = supabase
+      .from("games")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (email) {
+      query = query.eq("user_email", email);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Supabase GET games error:", error);
+
+      return NextResponse.json(
+        { error: "Failed to fetch games" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("GET games error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to fetch games" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { data: game, error } = await supabase.from('games').insert([{
-    title: body.title,
-    developer: body.developer,
-    tagline: body.tagline,
-    description: body.description,
-    engine: body.engine,
-    genre: body.genre,
-    platform: body.platform,
-    itch_url: body.itchUrl,
-    cover_url: body.coverUrl,
-    video_url: body.videoUrl,
-    tags: body.tags,
-    user_email: body.userEmail,
-    status: body.status || 'pending',
-    featured: body.featured || false,
-    admin_comment: body.adminComment || ''
-  }]).select().single();
+  try {
+    const body = await req.json();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(game, { status: 201 });
+    const { data, error } = await supabase
+      .from("games")
+      .insert(body)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase POST game error:", error);
+
+      return NextResponse.json(
+        { error: "Failed to create game" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(data, { status: 201 });
+  } catch (error) {
+    console.error("POST game error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to create game" },
+      { status: 500 }
+    );
+  }
 }

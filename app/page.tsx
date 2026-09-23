@@ -3,6 +3,7 @@ import Link from "next/link";
 import { EventTimeline } from "@/components/ui/EventTimeline";
 import { clubMeta, socials } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
+
 import {
   ExternalLink,
   Mail,
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 
 // ═══ CUSTOM PIXEL ART & GRAPHIC SVGs ════════════════════════════════════════
+
 function PixelControllerSVG() {
   return (
     <svg
@@ -33,6 +35,7 @@ function PixelControllerSVG() {
         d="M3 3h10v1h2v2h1v5h-2v3h-3v-2H5v2H2v-3H0V6h1V4h2V3z"
         fill="currentColor"
       />
+
       {/* D-Pad Cutout */}
       <rect x="3" y="6" width="3" height="1" fill="#0D0E17" />
       <rect x="4" y="5" width="1" height="3" fill="#0D0E17" />
@@ -49,13 +52,24 @@ function PixelControllerSVG() {
 
 function ComicHalftoneBG() {
   return (
-    <svg className="absolute inset-0 w-full h-full opacity-15 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      className="absolute inset-0 w-full h-full opacity-15 pointer-events-none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <defs>
-        <pattern id="halftone-dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <pattern
+          id="halftone-dots"
+          x="0"
+          y="0"
+          width="20"
+          height="20"
+          patternUnits="userSpaceOnUse"
+        >
           <circle cx="2" cy="2" r="2" fill="#00F2FE" />
           <circle cx="12" cy="12" r="2.5" fill="#FF007F" />
         </pattern>
       </defs>
+
       <rect width="100%" height="100%" fill="url(#halftone-dots)" />
     </svg>
   );
@@ -75,15 +89,44 @@ function PixelMembersSVG() {
       <rect x="6" y="8" width="4" height="7" fill="currentColor" />
 
       {/* Left Member */}
-      <rect x="1" y="4" width="3" height="3" fill="currentColor" opacity="0.85" />
-      <rect x="0" y="8" width="4" height="6" fill="currentColor" opacity="0.85" />
+      <rect
+        x="1"
+        y="4"
+        width="3"
+        height="3"
+        fill="currentColor"
+        opacity="0.85"
+      />
+      <rect
+        x="0"
+        y="8"
+        width="4"
+        height="6"
+        fill="currentColor"
+        opacity="0.85"
+      />
 
       {/* Right Member */}
-      <rect x="12" y="4" width="3" height="3" fill="currentColor" opacity="0.85" />
-      <rect x="12" y="8" width="4" height="6" fill="currentColor" opacity="0.85" />
+      <rect
+        x="12"
+        y="4"
+        width="3"
+        height="3"
+        fill="currentColor"
+        opacity="0.85"
+      />
+      <rect
+        x="12"
+        y="8"
+        width="4"
+        height="6"
+        fill="currentColor"
+        opacity="0.85"
+      />
     </svg>
   );
 }
+
 function PixelPuzzleSVG() {
   return (
     <svg
@@ -100,6 +143,7 @@ function PixelPuzzleSVG() {
     </svg>
   );
 }
+
 function PixelHeartSVG() {
   return (
     <svg
@@ -113,6 +157,7 @@ function PixelHeartSVG() {
         d="M2 3h4v2h2V3h4v2h2v4h-2v2h-2v2H8v2H7v-2H5v-2H3v-2H1V5h1V3z"
         fill="currentColor"
       />
+
       {/* Top-Left Retro White Specular Highlight */}
       <rect x="3" y="4" width="2" height="2" fill="#FFFFFF" />
     </svg>
@@ -131,14 +176,17 @@ function AboutAndCommunitySection() {
         <div className="max-w-6xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-4 mb-3">
             <span className="h-[2px] w-12 bg-gray-700" />
+
             <span className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-gray-400">
               OUR COMMUNITY
             </span>
+
             <span className="h-[2px] w-12 bg-gray-700" />
           </div>
 
           <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-white mb-10 md:mb-12 leading-[0.95]">
             BUILT BY STUDENTS, <br />
+
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF007F] via-[#FF9F43] to-[#FF007F] drop-shadow-[4px_4px_0px_#000]">
               FOR STUDENTS
             </span>
@@ -149,9 +197,11 @@ function AboutAndCommunitySection() {
               <div className="mb-4 p-3 bg-[#07080D] border-2 border-[#FF007F] group-hover:scale-110 transition-transform">
                 <PixelMembersSVG />
               </div>
+
               <span className="text-5xl md:text-6xl font-black text-[#FF007F] mb-2 tracking-tighter drop-shadow-[2px_2px_0px_#000]">
                 60+
               </span>
+
               <span className="text-xs font-bold uppercase tracking-widest text-gray-300">
                 ACTIVE MEMBERS
               </span>
@@ -161,9 +211,11 @@ function AboutAndCommunitySection() {
               <div className="mb-4 p-3 bg-[#07080D] border-2 border-[#00F2FE] group-hover:scale-110 transition-transform">
                 <PixelPuzzleSVG />
               </div>
+
               <span className="text-5xl md:text-6xl font-black text-[#00F2FE] mb-2 tracking-tighter drop-shadow-[2px_2px_0px_#000]">
                 10+
               </span>
+
               <span className="text-xs font-bold uppercase tracking-widest text-gray-300">
                 EVENTS & JAMS
               </span>
@@ -173,9 +225,11 @@ function AboutAndCommunitySection() {
               <div className="mb-4 p-3 bg-[#07080D] border-2 border-[#FF9F43] group-hover:scale-110 transition-transform">
                 <PixelHeartSVG />
               </div>
+
               <span className="text-5xl md:text-6xl font-black text-[#FF007F] mb-2 tracking-tighter drop-shadow-[2px_2px_0px_#000]">
                 100%
               </span>
+
               <span className="text-xs font-bold uppercase tracking-widest text-gray-300">
                 FUN AND SATISFACTION
               </span>
@@ -193,14 +247,26 @@ function AboutAndCommunitySection() {
             <div className="inline-block bg-[#FF9F43] text-black font-black uppercase text-xs md:text-sm px-4 py-1.5 border-4 border-black mb-4 rotate-[-1.5deg] shadow-[4px_4px_0px_#FF007F]">
               ⚡ PHILOSOPHY & MANIFESTO
             </div>
-            
+
             <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-white mb-6 leading-none">
-              WHY WE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] via-[#FF007F] to-[#FF9F43] drop-shadow-[4px_4px_0px_#000]">EXIST</span>
+              WHY WE{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] via-[#FF007F] to-[#FF9F43] drop-shadow-[4px_4px_0px_#000]">
+                EXIST
+              </span>
             </h2>
-            
+
             <div className="bg-[#0D0E17] border-4 border-[#00F2FE] p-5 shadow-[6px_6px_0px_#FF007F] relative">
               <p className="text-gray-200 font-sans text-base md:text-lg leading-relaxed">
-                We reject the idea that standard academic tracks are the only way forward. Interactive media is the ultimate fusion of <span className="text-[#00F2FE] font-bold">code</span>, <span className="text-[#FF007F] font-bold">music</span>, <span className="text-[#FF9F43] font-bold">narrative</span>, and <span className="text-white font-bold underline decoration-[#00F2FE]">design</span>.
+                We reject the idea that standard academic tracks are the only
+                way forward. Interactive media is the ultimate fusion of{" "}
+                <span className="text-[#00F2FE] font-bold">code</span>,{" "}
+                <span className="text-[#FF007F] font-bold">music</span>,{" "}
+                <span className="text-[#FF9F43] font-bold">narrative</span>,
+                and{" "}
+                <span className="text-white font-bold underline decoration-[#00F2FE]">
+                  design
+                </span>
+                .
               </p>
             </div>
           </div>
@@ -217,23 +283,42 @@ function AboutAndCommunitySection() {
                   <span>A Legitimate Career Path</span>
                   <Zap className="w-8 h-8 text-[#00F2FE]" />
                 </h3>
-                
+
                 <p className="text-gray-300 font-sans leading-relaxed text-base md:text-lg mb-6 border-b-2 border-gray-800 pb-6">
-                  Transforming game development from an isolated bedroom hobby into an industry-grade discipline with studio dynamics and publishable outputs.
+                  Transforming game development from an isolated bedroom hobby
+                  into an industry-grade discipline with studio dynamics and
+                  publishable outputs.
                 </p>
 
                 <ul className="space-y-3 font-sans text-sm text-gray-200 mb-8">
                   <li className="flex items-start gap-3">
-                    <span className="p-1 bg-[#00F2FE] text-black font-bold mt-0.5"><Check className="w-3.5 h-3.5 stroke-[4]" /></span>
-                    <span><strong>Studio Dynamics:</strong> Cross-functional team setups mirroring real game studios.</span>
+                    <span className="p-1 bg-[#00F2FE] text-black font-bold mt-0.5">
+                      <Check className="w-3.5 h-3.5 stroke-[4]" />
+                    </span>
+                    <span>
+                      <strong>Studio Dynamics:</strong> Cross-functional team
+                      setups mirroring real game studios.
+                    </span>
                   </li>
+
                   <li className="flex items-start gap-3">
-                    <span className="p-1 bg-[#00F2FE] text-black font-bold mt-0.5"><Check className="w-3.5 h-3.5 stroke-[4]" /></span>
-                    <span><strong>Publishing Pipeline:</strong> Guiding titles to itch.io, Steam, and mobile stores.</span>
+                    <span className="p-1 bg-[#00F2FE] text-black font-bold mt-0.5">
+                      <Check className="w-3.5 h-3.5 stroke-[4]" />
+                    </span>
+                    <span>
+                      <strong>Publishing Pipeline:</strong> Guiding titles to
+                      itch.io, Steam, and mobile stores.
+                    </span>
                   </li>
+
                   <li className="flex items-start gap-3">
-                    <span className="p-1 bg-[#00F2FE] text-black font-bold mt-0.5"><Check className="w-3.5 h-3.5 stroke-[4]" /></span>
-                    <span><strong>Portfolio First:</strong> Graduate with shipped titles, not just certificates.</span>
+                    <span className="p-1 bg-[#00F2FE] text-black font-bold mt-0.5">
+                      <Check className="w-3.5 h-3.5 stroke-[4]" />
+                    </span>
+                    <span>
+                      <strong>Portfolio First:</strong> Graduate with shipped
+                      titles, not just certificates.
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -255,23 +340,42 @@ function AboutAndCommunitySection() {
                   <span>Keep The Creative Kid Alive</span>
                   <Flame className="w-8 h-8 text-[#FF007F]" />
                 </h3>
-                
+
                 <p className="text-gray-300 font-sans leading-relaxed text-base md:text-lg mb-6 border-b-2 border-gray-800 pb-6">
-                  Never compromise on raw imagination. We create a safe haven for wild mechanics, experimental game loops, and artistic risks.
+                  Never compromise on raw imagination. We create a safe haven
+                  for wild mechanics, experimental game loops, and artistic
+                  risks.
                 </p>
 
                 <ul className="space-y-3 font-sans text-sm text-gray-200 mb-8">
                   <li className="flex items-start gap-3">
-                    <span className="p-1 bg-[#FF007F] text-white font-bold mt-0.5"><Check className="w-3.5 h-3.5 stroke-[4]" /></span>
-                    <span><strong>Zero Gatekeeping:</strong> Beginner-friendly hackathons & game jams.</span>
+                    <span className="p-1 bg-[#FF007F] text-white font-bold mt-0.5">
+                      <Check className="w-3.5 h-3.5 stroke-[4]" />
+                    </span>
+                    <span>
+                      <strong>Zero Gatekeeping:</strong> Beginner-friendly
+                      hackathons & game jams.
+                    </span>
                   </li>
+
                   <li className="flex items-start gap-3">
-                    <span className="p-1 bg-[#FF007F] text-white font-bold mt-0.5"><Check className="w-3.5 h-3.5 stroke-[4]" /></span>
-                    <span><strong>Experimental Freedom:</strong> Support for bizarre ideas and niche art styles.</span>
+                    <span className="p-1 bg-[#FF007F] text-white font-bold mt-0.5">
+                      <Check className="w-3.5 h-3.5 stroke-[4]" />
+                    </span>
+                    <span>
+                      <strong>Experimental Freedom:</strong> Support for bizarre
+                      ideas and niche art styles.
+                    </span>
                   </li>
+
                   <li className="flex items-start gap-3">
-                    <span className="p-1 bg-[#FF007F] text-white font-bold mt-0.5"><Check className="w-3.5 h-3.5 stroke-[4]" /></span>
-                    <span><strong>Burnout Prevention:</strong> Collaborative pacing and supportive guild leadership.</span>
+                    <span className="p-1 bg-[#FF007F] text-white font-bold mt-0.5">
+                      <Check className="w-3.5 h-3.5 stroke-[4]" />
+                    </span>
+                    <span>
+                      <strong>Burnout Prevention:</strong> Collaborative pacing
+                      and supportive guild leadership.
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -294,9 +398,20 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const { data: dbEvents } = await supabase.from('events').select('*');
-  
-  // Map Supabase documents to the format expected by EventTimeline
+  // ═══════════════════════════════════════════════════════════════════════
+  // FETCH EVENTS FROM SUPABASE
+  // ═══════════════════════════════════════════════════════════════════════
+
+  const { data: dbEvents, error: eventsError } = await supabase
+    .from("events")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (eventsError) {
+    console.error("Failed to fetch events:", eventsError);
+  }
+
+  // Convert Supabase column names to the format expected by EventTimeline
   const events = (dbEvents || []).map((e: any) => ({
     slug: e.slug,
     title: e.title,
@@ -308,241 +423,302 @@ export default async function HomePage() {
     tags: e.tags || [],
   }));
 
-  // Fetch Games
-  const { data: dbGames } = await supabase
-    .from('games')
-    .select('*')
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false });
+  // ═══════════════════════════════════════════════════════════════════════
+  // FETCH APPROVED GAMES FROM SUPABASE
+  // ═══════════════════════════════════════════════════════════════════════
 
-  const featuredGames = (dbGames || []).map((g: any) => ({
-    slug: g.slug || g.id.toString(),
-    title: g.title,
-    developer: g.team || "GDC Devs",
-    tagline: g.description?.slice(0, 50) || "",
-    description: g.description || "",
-    engine: g.engine || "Unknown",
-    coverUrl: g.image_url || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
-    itchUrl: g.play_url || "#",
-  })).slice(0, 3);
+  const { data: dbGames, error: gamesError } = await supabase
+    .from("games")
+    .select("*")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (gamesError) {
+    console.error("Failed to fetch games:", gamesError);
+  }
+
+  const featuredGames = (dbGames || [])
+    .map((g: any) => ({
+      slug: g.id,
+      title: g.title,
+      developer: g.developer || "GDC Devs",
+      tagline: g.tagline || g.description?.slice(0, 50) || "",
+      description: g.description || "",
+      engine: g.engine || "Unknown",
+      coverUrl:
+        g.cover_url ||
+        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+      itchUrl: g.itch_url || "#",
+    }))
+    .slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#07080D] text-white selection:bg-[#FF007F] selection:text-white font-mono">
 
       {/* ═══ 1. HERO AREA ═══════════════════════════════════════════════════ */}
+
       <section className="relative w-full h-screen min-h-[750px] flex flex-col items-center justify-center overflow-hidden px-4">
-  <ComicHalftoneBG />
+        <ComicHalftoneBG />
 
-  {/* Animated Background Image */}
-  <div className="absolute inset-0 z-0 overflow-hidden">
-    <img
-      src="/hero-bg.webp"
-      alt="Hero Background"
-      className="w-full h-full object-cover opacity-80 pointer-events-none"
-    />
-    <div className="absolute inset-0 bg-gradient-to-b from-[#07080D]/10 via-[#07080D]/40 to-[#07080D]" />
-  </div>
+        {/* Animated Background Image */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <img
+            src="/hero-bg.webp"
+            alt="Hero Background"
+            className="w-full h-full object-cover opacity-80 pointer-events-none"
+          />
 
-  {/* Hero Content */}
-  <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center justify-center gap-5 w-full my-auto">
-    
-    <div className="inline-flex items-center gap-3 bg-[#0D0E17] border-4 border-[#00F2FE] px-5 py-2 rotate-[-2deg] shadow-[5px_5px_0px_#FF007F]">
-      <PixelControllerSVG />
-      <span className="font-bold text-sm md:text-base uppercase tracking-widest text-[#00F2FE]">
-        Game Developers Community
-      </span>
-    </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#07080D]/10 via-[#07080D]/40 to-[#07080D]" />
+        </div>
 
-    <h1 className="font-black text-5xl md:text-8xl tracking-tight uppercase leading-[0.95]">
-      Ideas Become <br />
-      <span 
-        className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] via-[#FF007F] to-[#FF9F43]"
-        style={{ filter: "drop-shadow(4px 4px 0px #000)" }}
-      >
-        Art
-      </span>
-    </h1>
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center justify-center gap-5 w-full my-auto">
 
-    <p className="max-w-2xl text-base md:text-xl text-gray-300 font-sans leading-relaxed border-l-4 border-[#FF007F] pl-4 text-left my-2 bg-[#0D0E17]/80 p-3 shadow-[4px_4px_0px_#00F2FE]">
-      Don't let anyone tell you it's <span className="text-[#FF007F] font-bold">"just a hobby."</span> We protect the creative kid inside you and turn game creation into a viable, high-impact career path.
-    </p>
+          <div className="inline-flex items-center gap-3 bg-[#0D0E17] border-4 border-[#00F2FE] px-5 py-2 rotate-[-2deg] shadow-[5px_5px_0px_#FF007F]">
+            <PixelControllerSVG />
 
-    <div className="flex flex-wrap justify-center gap-4 mt-2">
-      <Link 
-        href="#creations"
-        className="px-8 py-4 bg-[#00F2FE] text-black font-extrabold text-lg uppercase tracking-wider border-4 border-black shadow-[6px_6px_0px_#FF007F] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_#FF007F] transition-all flex items-center gap-2"
-      >
-        <Gamepad2 className="w-6 h-6" /> Explore Games
-      </Link>
-      <Link 
-        href="#contact"
-        className="px-8 py-4 bg-[#FF007F] text-white font-extrabold text-lg uppercase tracking-wider border-4 border-white shadow-[6px_6px_0px_#FF007F] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_#FF007F] transition-all flex items-center gap-2"
-      >
-        <Sparkles className="w-6 h-6" /> Join The Guild
-      </Link>
-    </div>
+            <span className="font-bold text-sm md:text-base uppercase tracking-widest text-[#00F2FE]">
+              Game Developers Community
+            </span>
+          </div>
 
-  </div>
-</section>
+          <h1 className="font-black text-5xl md:text-8xl tracking-tight uppercase leading-[0.95]">
+            Ideas Become <br />
+
+            <span
+              className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] via-[#FF007F] to-[#FF9F43]"
+              style={{ filter: "drop-shadow(4px 4px 0px #000)" }}
+            >
+              Art
+            </span>
+          </h1>
+
+          <p className="max-w-2xl text-base md:text-xl text-gray-300 font-sans leading-relaxed border-l-4 border-[#FF007F] pl-4 text-left my-2 bg-[#0D0E17]/80 p-3 shadow-[4px_4px_0px_#00F2FE]">
+            Don't let anyone tell you it's{" "}
+            <span className="text-[#FF007F] font-bold">"just a hobby."</span>{" "}
+            We protect the creative kid inside you and turn game creation into
+            a viable, high-impact career path.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-4 mt-2">
+            <Link
+              href="#creations"
+              className="px-8 py-4 bg-[#00F2FE] text-black font-extrabold text-lg uppercase tracking-wider border-4 border-black shadow-[6px_6px_0px_#FF007F] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_#FF007F] transition-all flex items-center gap-2"
+            >
+              <Gamepad2 className="w-6 h-6" />
+              Explore Games
+            </Link>
+
+            <Link
+              href="#contact"
+              className="px-8 py-4 bg-[#FF007F] text-white font-extrabold text-lg uppercase tracking-wider border-4 border-white shadow-[6px_6px_0px_#FF007F] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_#FF007F] transition-all flex items-center gap-2"
+            >
+              <Sparkles className="w-6 h-6" />
+              Join The Guild
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* ═══ 2. ABOUT & COMMUNITY ═════════════════════════════════════════ */}
+
       <AboutAndCommunitySection />
 
-{/* ═══ POST-WHY WE EXIST WEBP BANNER (FULL WIDTH) ═══════════════════ */}
-<section className="relative w-full overflow-hidden bg-[#0D0E17] py-6 md:py-10">
-  <div className="w-full border-y-4 border-[#00F2FE] bg-[#07080D] shadow-[0px_6px_0px_#FF007F] relative">
-    <img
-      src="/relax.webp"
-      alt="Game Developers Community Showcase"
-      className="w-full h-48 sm:h-64 md:h-80 lg:h-[350px] object-cover block [image-rendering:pixelated]"
-      loading="lazy"
-    />
-  </div>
-</section>
+      {/* ═══ POST-WHY WE EXIST WEBP BANNER (FULL WIDTH) ═══════════════════ */}
+
+      <section className="relative w-full overflow-hidden bg-[#0D0E17] py-6 md:py-10">
+        <div className="w-full border-y-4 border-[#00F2FE] bg-[#07080D] shadow-[0px_6px_0px_#FF007F] relative">
+          <img
+            src="/relax.webp"
+            alt="Game Developers Community Showcase"
+            className="w-full h-48 sm:h-64 md:h-80 lg:h-[350px] object-cover block [image-rendering:pixelated]"
+            loading="lazy"
+          />
+        </div>
+      </section>
 
       {/* ═══ 3. FEATURED CREATIONS ════════════════════════════════════════ */}
-<section id="creations" className="relative py-16 md:py-24 px-4 md:px-6 bg-[#0D0E17]">
-  <div className="max-w-7xl mx-auto">
-    
-    <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 md:mb-12 gap-4">
-      <div>
-        <span className="bg-[#FF007F] text-white text-xs font-bold uppercase tracking-widest px-3 py-1 border-2 border-white inline-block mb-2 shadow-[3px_3px_0px_#00F2FE]">
-          Handpicked Projects
-        </span>
-        <h2 className="text-4xl md:text-6xl font-black uppercase text-white tracking-tight">
-          Featured <span className="text-[#00F2FE]">Creations</span>
-        </h2>
-      </div>
-      <Link 
-        href="/games" 
-        className="text-[#FF9F43] hover:text-white font-bold uppercase tracking-wider border-b-2 border-[#FF9F43] flex items-center gap-1 transition-colors"
+
+      <section
+        id="creations"
+        className="relative py-16 md:py-24 px-4 md:px-6 bg-[#0D0E17]"
       >
-        View All Games →
-      </Link>
-    </div>
+        <div className="max-w-7xl mx-auto">
 
-    {featuredGames.length === 0 ? (
-      <div className="py-12 text-center font-mono">
-        <span className="text-4xl mb-3 block">🎮</span>
-        <p className="text-[#00F2FE] font-black uppercase tracking-wider text-lg">
-          No Games Found
-        </p>
-        <p className="text-gray-400 text-sm mt-1">
-          Check back later for new releases!
-        </p>
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-        {featuredGames.map((game: any) => (
-          <div key={game.slug} className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 md:mb-12 gap-4">
             <div>
-              <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
-                <img
-                  src={game.coverUrl}
-                  alt={game.title}
-                  className="w-full h-full object-cover block [image-rendering:pixelated]"
-                  loading="lazy"
-                />
-                <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
-                  {game.engine}
-                </span>
-              </div>
+              <span className="bg-[#FF007F] text-white text-xs font-bold uppercase tracking-widest px-3 py-1 border-2 border-white inline-block mb-2 shadow-[3px_3px_0px_#00F2FE]">
+                Handpicked Projects
+              </span>
 
-              <h3 className="text-2xl font-black uppercase text-white mb-2 truncate" title={game.title}>{game.title}</h3>
-              <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed">
-                {game.description}
+              <h2 className="text-4xl md:text-6xl font-black uppercase text-white tracking-tight">
+                Featured <span className="text-[#00F2FE]">Creations</span>
+              </h2>
+            </div>
+
+            <Link
+              href="/games"
+              className="text-[#FF9F43] hover:text-white font-bold uppercase tracking-wider border-b-2 border-[#FF9F43] flex items-center gap-1 transition-colors"
+            >
+              View All Games →
+            </Link>
+          </div>
+
+          {featuredGames.length === 0 ? (
+            <div className="py-12 text-center font-mono">
+              <span className="text-4xl mb-3 block">🎮</span>
+
+              <p className="text-[#00F2FE] font-black uppercase tracking-wider text-lg">
+                No Games Found
+              </p>
+
+              <p className="text-gray-400 text-sm mt-1">
+                Check back later for new releases!
               </p>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {featuredGames.map((game: any) => (
+                <div
+                  key={game.slug}
+                  className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]"
+                >
+                  <div>
+                    <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4">
+                      <img
+                        src={game.coverUrl}
+                        alt={game.title}
+                        className="w-full h-full object-cover block [image-rendering:pixelated]"
+                        loading="lazy"
+                      />
 
-            <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between">
-              <span className="text-xs text-[#FF9F43] uppercase tracking-wider font-bold truncate pr-4">
-                By {game.developer}
-              </span>
-              <Link 
-                href={game.itchUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex-shrink-0"
-              >
-                <ExternalLink className="w-5 h-5" />
-              </Link>
+                      <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
+                        {game.engine}
+                      </span>
+                    </div>
+
+                    <h3
+                      className="text-2xl font-black uppercase text-white mb-2 truncate"
+                      title={game.title}
+                    >
+                      {game.title}
+                    </h3>
+
+                    <p className="text-sm text-gray-300 font-sans line-clamp-3 mb-4 leading-relaxed">
+                      {game.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t-2 border-gray-800 flex items-center justify-between">
+                    <span className="text-xs text-[#FF9F43] uppercase tracking-wider font-bold truncate pr-4">
+                      By {game.developer}
+                    </span>
+
+                    <Link
+                      href={game.itchUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex-shrink-0"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        ))}
-      </div>
-    )}
-
-  </div>
-</section>
+          )}
+        </div>
+      </section>
 
       {/* ═══ 4. UPCOMING EVENTS ═══════════════════════════════════════════ */}
-<section className="relative py-16 md:py-24 px-4 md:px-6 bg-[#0D0E17]">
-  <div className="max-w-7xl mx-auto">
-    <div className="mb-10 md:mb-12">
-      <span className="bg-[#00F2FE] text-black text-xs font-bold uppercase tracking-widest px-3 py-1 border-2 border-black inline-block mb-2 shadow-[3px_3px_0px_#FF007F]">
-        Calendar & Jams
-      </span>
-      <h2 className="text-4xl md:text-6xl font-black uppercase text-white tracking-tight">
-        Upcoming <span className="text-[#FF007F]">Events</span>
-      </h2>
-    </div>
 
-    <div className="bg-[#07080D] border-4 border-white p-4 md:p-6 shadow-[8px_8px_0px_#FF9F43] relative overflow-hidden [&_[class*='border-dashed']]:hidden [&_hr]:border-solid [&_hr]:border-gray-800">
-      {(() => {
-        let displayEvents = (events || [])
-          .filter((event) => event.status !== "shipped" && event.status !== "archived")
-          .sort((a, b) => a.dateSort.localeCompare(b.dateSort));
+      <section className="relative py-16 md:py-24 px-4 md:px-6 bg-[#0D0E17]">
+        <div className="max-w-7xl mx-auto">
 
-        if (displayEvents.length === 0) {
-          return (
-            <div className="py-12 text-center font-mono">
-              <span className="text-4xl mb-3 block">👾</span>
-              <p className="text-[#00F2FE] font-black uppercase tracking-wider text-lg">
-                No Upcoming Events Scheduled
-              </p>
-              <p className="text-gray-400 text-sm mt-1">
-                Check back soon or join Discord for upcoming announcements!
-              </p>
-            </div>
-          );
-        }
+          <div className="mb-10 md:mb-12">
+            <span className="bg-[#00F2FE] text-black text-xs font-bold uppercase tracking-widest px-3 py-1 border-2 border-black inline-block mb-2 shadow-[3px_3px_0px_#FF007F]">
+              Calendar & Jams
+            </span>
 
-        return <EventTimeline events={displayEvents} />;
-      })()}
-    </div>
-  </div>
-</section>
+            <h2 className="text-4xl md:text-6xl font-black uppercase text-white tracking-tight">
+              Upcoming <span className="text-[#FF007F]">Events</span>
+            </h2>
+          </div>
+
+          <div className="bg-[#07080D] border-4 border-white p-4 md:p-6 shadow-[8px_8px_0px_#FF9F43] relative overflow-hidden [&_[class*='border-dashed']]:hidden [&_hr]:border-solid [&_hr]:border-gray-800">
+            {(() => {
+              const displayEvents = (events || [])
+                .filter(
+                  (event) =>
+                    event.status !== "shipped" &&
+                    event.status !== "archived"
+                )
+                .sort((a, b) =>
+                  a.dateSort.localeCompare(b.dateSort)
+                );
+
+              if (displayEvents.length === 0) {
+                return (
+                  <div className="py-12 text-center font-mono">
+                    <span className="text-4xl mb-3 block">👾</span>
+
+                    <p className="text-[#00F2FE] font-black uppercase tracking-wider text-lg">
+                      No Upcoming Events Scheduled
+                    </p>
+
+                    <p className="text-gray-400 text-sm mt-1">
+                      Check back soon or join Discord for upcoming announcements!
+                    </p>
+                  </div>
+                );
+              }
+
+              return <EventTimeline events={displayEvents} />;
+            })()}
+          </div>
+        </div>
+      </section>
 
       {/* ═══ 5. CONTACT US & JOIN ═════════════════════════════════════════ */}
-      <section id="contact" className="relative py-16 md:py-24 px-4 md:px-6 bg-[#07080D]">
+
+      <section
+        id="contact"
+        className="relative py-16 md:py-24 px-4 md:px-6 bg-[#07080D]"
+      >
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          
+
           <div className="inline-block bg-[#FF9F43] text-black font-black uppercase text-xs md:text-sm px-4 py-1 border-2 border-black mb-6 rotate-[-1deg] shadow-[4px_4px_0px_#FF007F]">
             🚀 No Prior XP Required — Just Raw Passion
           </div>
 
           <h2 className="text-4xl md:text-7xl font-black uppercase text-white tracking-tight mb-6">
-            READY TO <span className="text-[#00F2FE]">BUILD THE FUTURE?</span>
+            READY TO{" "}
+            <span className="text-[#00F2FE]">
+              BUILD THE FUTURE?
+            </span>
           </h2>
 
           <p className="max-w-xl mx-auto text-gray-300 font-sans text-base md:text-lg mb-10 leading-relaxed">
-            Whether you are a coder, 2D/3D artist, sound designer, writer, or level designer — there is a seat for you here.
+            Whether you are a coder, 2D/3D artist, sound designer, writer, or
+            level designer — there is a seat for you here.
           </p>
 
           <div className="mb-12 md:mb-16">
-            <Link 
+            <Link
               href="/auth"
               className="inline-flex items-center gap-3 px-8 md:px-12 py-4 md:py-5 bg-[#FF007F] text-white font-black text-xl md:text-2xl uppercase tracking-wider border-4 border-white shadow-[6px_6px_0px_#00F2FE] md:shadow-[8px_8px_0px_#00F2FE] hover:translate-x-[-3px] hover:translate-y-[-3px] hover:shadow-[12px_12px_0px_#00F2FE] transition-all"
             >
-              <Rocket className="w-7 h-7 md:w-8 md:h-8" /> JOIN THE CLUB NOW
+              <Rocket className="w-7 h-7 md:w-8 md:h-8" />
+              JOIN THE CLUB NOW
             </Link>
           </div>
 
           <div className="bg-[#0D0E17] border-4 border-[#00F2FE] p-6 md:p-8 max-w-2xl mx-auto shadow-[8px_8px_0px_#FF007F]">
             <h3 className="text-2xl font-black uppercase text-white mb-6 flex items-center justify-center gap-2">
-              <Mail className="text-[#FF007F]" /> Get In Touch
+              <Mail className="text-[#FF007F]" />
+              Get In Touch
             </h3>
-            
+
             <div className="flex flex-wrap justify-center gap-3 md:gap-4">
               {socials.map((s) => (
                 <a
@@ -557,10 +733,8 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
-
         </div>
       </section>
-
     </div>
   );
 }

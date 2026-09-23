@@ -9,28 +9,33 @@ export const metadata: Metadata = {
     "Past, ongoing, and upcoming events from Game Developer's Community displayed in a comic book timeline issue format.",
 };
 
-export const revalidate = 0; // Disable static rendering so events update immediately
+export const revalidate = 0;
 
 export default async function EventsPage() {
-  
-  // Fetch events from the database
-  const { data: dbEvents } = await supabase
-    .from('events')
-    .select('*')
-    .order('date_sort', { ascending: false });
-  
-  // Map database events to the ClubEvent structure expected by the client view
+  // Fetch events from Supabase
+  const { data: dbEvents, error } = await supabase
+    .from("events")
+    .select("*")
+    .order("date_sort", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch events:", error);
+  }
+
+  // Map Supabase events to the ClubEvent structure
   const events: ClubEvent[] = (dbEvents || []).map((e: any) => ({
-    slug: e.slug || e.id.toString(),
+    slug: e.slug || e.id,
     title: e.title,
     status: e.status || "planned",
     version: e.version || "GDC-DB",
     date: e.date,
     dateSort: e.date_sort || e.date,
     location: e.location,
-    summary: e.description,
+    summary: e.description || "",
     tags: e.tags || [],
-    image: e.image_url || "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80",
+    image:
+      e.image_url ||
+      "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80",
     registerUrl: e.register_url || "",
     shape: e.shape || "half",
     floatingAssets: e.floating_assets || [],

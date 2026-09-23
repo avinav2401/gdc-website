@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
 import { supabase } from "@/lib/supabase";
@@ -13,18 +12,35 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function GamesPage() {
-  const { data: approvedGames } = await supabase
-    .from('games')
-    .select('*')
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false });
-  
+  const { data: approvedGames, error } = await supabase
+    .from("games")
+    .select("*")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch approved games:", error);
+  }
+
   const allGames = (approvedGames || []).map((g: any) => ({
     ...g,
-    _id: g.id.toString(),
-    coverUrl: g.image_url,
-    itchUrl: g.play_url,
-    developer: g.team,
+
+    // Supabase column names
+    id: g.id,
+    title: g.title,
+    developer: g.developer,
+    tagline: g.tagline,
+    description: g.description,
+    engine: g.engine,
+    genre: g.genre,
+    platform: g.platform,
+    tags: g.tags,
+    status: g.status,
+
+    // MongoDB -> Supabase field names
+    coverUrl: g.cover_url,
+    itchUrl: g.itch_url,
+    videoUrl: g.video_url,
   }));
 
   return (
@@ -47,21 +63,28 @@ export default async function GamesPage() {
           className="absolute inset-0 pointer-events-none z-0"
           style={{
             backgroundImage: `
-              repeating-linear-gradient(45deg, #161B26 0px, #161B26 2px, transparent 2px, transparent 24px)
+              repeating-linear-gradient(
+                45deg,
+                #161B26 0px,
+                #161B26 2px,
+                transparent 2px,
+                transparent 24px
+              )
             `,
           }}
         />
 
         <div className="mx-auto max-w-7xl relative z-10">
-          
           {/* Header Section */}
           <div className="mb-12">
             <span className="bg-[#FF007F] text-white text-xs font-bold uppercase tracking-widest px-3 py-1 border-2 border-white inline-block mb-3 shadow-[3px_3px_0px_#00F2FE]">
               Repo / Games
             </span>
+
             <h1 className="text-4xl md:text-6xl font-black uppercase text-white tracking-tight">
               Games <span className="text-[#00F2FE]">Showcase</span>
             </h1>
+
             <p className="mt-3 max-w-xl text-sm md:text-base text-gray-300 font-sans leading-relaxed">
               Everything our members have built — jam entries, ongoing projects,
               and early prototypes.
@@ -79,7 +102,7 @@ export default async function GamesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {allGames.map((g: any) => (
                 <article
-                  key={g._id.toString()}
+                  key={g.id}
                   className="bg-[#07080D] border-4 border-[#00F2FE] flex flex-col justify-between p-5 relative shadow-[8px_8px_0px_#FF007F] transition-all hover:translate-y-[-4px]"
                 >
                   <div>
@@ -97,6 +120,7 @@ export default async function GamesPage() {
                           No Image Preview
                         </div>
                       )}
+
                       <span className="absolute top-2 right-2 bg-[#07080D]/90 text-[#00F2FE] border border-[#00F2FE] text-xs px-2 py-0.5 font-bold uppercase z-10 backdrop-blur-sm">
                         {g.engine}
                       </span>
@@ -107,6 +131,7 @@ export default async function GamesPage() {
                       <span className="font-mono text-xs text-gray-400">
                         {g.platform || "N/A"}
                       </span>
+
                       <StatusBadge status={g.status} />
                     </div>
 
@@ -114,6 +139,7 @@ export default async function GamesPage() {
                     <h2 className="text-2xl font-black uppercase text-white mb-1">
                       {g.title}
                     </h2>
+
                     <p className="font-mono text-xs text-[#FF9F43] mb-3">
                       {g.genre}
                     </p>
@@ -125,14 +151,17 @@ export default async function GamesPage() {
 
                     {/* Tag Pills */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {g.tags && g.tags.split(",").map((t: string) => (
-                        <span
-                          key={t.trim()}
-                          className="border border-white/30 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-gray-300"
-                        >
-                          {t.trim()}
-                        </span>
-                      ))}
+                      {g.tags &&
+                        g.tags
+                          .split(",")
+                          .map((t: string) => (
+                            <span
+                              key={t.trim()}
+                              className="border border-white/30 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-gray-300"
+                            >
+                              {t.trim()}
+                            </span>
+                          ))}
                     </div>
                   </div>
 
@@ -141,6 +170,7 @@ export default async function GamesPage() {
                     <span className="text-xs text-gray-400 uppercase tracking-wider font-bold truncate max-w-[180px]">
                       By {g.developer || "Unknown Developer"}
                     </span>
+
                     {g.itchUrl ? (
                       <a
                         href={g.itchUrl}
@@ -160,7 +190,6 @@ export default async function GamesPage() {
               ))}
             </div>
           )}
-
         </div>
       </div>
     </>

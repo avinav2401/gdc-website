@@ -3,51 +3,62 @@ import { supabase } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    const { data: users, error } = await supabase
-      .from('users')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase GET users error:", error);
 
-    const mapped = users.map(u => ({
-      ...u,
-      _id: u.id,
-      createdAt: u.created_at,
-      updatedAt: u.updated_at
-    }));
+      return NextResponse.json(
+        { error: "Failed to fetch users" },
+        { status: 500 }
+      );
+    }
 
-    return NextResponse.json(mapped);
+    return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+    console.error("GET users error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to fetch users" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { data: user, error } = await supabase
-      .from('users')
-      .insert([{
-        email: body.email,
+
+    const { data, error } = await supabase
+      .from("users")
+      .insert({
+        id: body.id,
         name: body.name,
-        password: body.password,
-        role: body.role || 'member'
-      }])
+        email: body.email,
+        role: body.role ?? "member",
+      })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase POST user error:", error);
 
-    const mapped = {
-      ...user,
-      _id: user.id,
-      createdAt: user.created_at,
-      updatedAt: user.updated_at
-    };
+      return NextResponse.json(
+        { error: "Failed to create user" },
+        { status: 500 }
+      );
+    }
 
-    return NextResponse.json(mapped, { status: 201 });
+    return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+    console.error("POST user error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to create user" },
+      { status: 500 }
+    );
   }
 }

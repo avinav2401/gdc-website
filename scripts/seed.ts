@@ -1,32 +1,93 @@
+import { connect } from "mongoose";
 import * as dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
 import { events, team, games } from "../lib/data";
 
 dotenv.config({ path: ".env.local" });
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Missing Supabase credentials in .env.local");
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Helper to convert local paths to Cloudinary URLs
+// Change 'your-cloud-name' to your actual Cloudinary cloud name
+const CLOUDINARY_CLOUD_NAME = "your-cloud-name";
+const USE_CLOUDINARY = process.env.USE_CLOUDINARY === "true"; // Set to true to enable Cloudinary
 
 function getImageUrl(localPath: string | undefined | null) {
   if (!localPath) return "";
+  
+  if (USE_CLOUDINARY) {
+    // Example Cloudinary format: https://res.cloudinary.com/<cloud_name>/image/upload/v1234567/gdc-website<localPath>
+    return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/v1/gdc-website${localPath}`;
+  }
+  
   return localPath;
 }
 
-async function seed() {
-  console.log("Connected to Supabase.");
+// Define minimal schemas directly so we don't need complex nextjs setup for mongoose models
+import mongoose from "mongoose";
 
-  // Clear existing (optional, but safe for a seed script)
-  console.log("Clearing existing data...");
-  await supabase.from("events").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-  await supabase.from("team_members").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-  await supabase.from("games").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+const EventSchema = new mongoose.Schema({
+  slug: String,
+  title: String,
+  date: String,
+  dateSort: String,
+  location: String,
+  status: String,
+  description: String,
+  imageUrl: String,
+  shape: String,
+  tags: [String],
+  registerUrl: String,
+  floatingAssets: [String],
+  version: String,
+});
+const EventModel = mongoose.models.Event || mongoose.model("Event", EventSchema);
+
+const TeamMemberSchema = new mongoose.Schema({
+  name: String,
+  role: String,
+  bio: String,
+  github: String,
+  portfolio: String,
+  isAlumni: Boolean,
+  team: String,
+  level: Number,
+  imageUrl: String,
+  instagram: String,
+  linkedin: String,
+});
+const TeamMemberModel = mongoose.models.TeamMember || mongoose.model("TeamMember", TeamMemberSchema);
+
+const GameSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  developer: { type: String, required: false },
+  tagline: { type: String, required: false },
+  description: { type: String, required: false },
+  engine: { type: String, required: true },
+  genre: { type: String, required: true },
+  platform: { type: String, required: false },
+  itchUrl: { type: String, required: false },
+  coverUrl: { type: String, required: false },
+  videoUrl: { type: String, required: false },
+  tags: { type: String, required: false },
+  userEmail: { type: String, required: false },
+  status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
+  featured: { type: Boolean, default: false },
+  adminComment: { type: String, default: "" },
+}, { timestamps: true });
+const GameModel = mongoose.models.Game || mongoose.model("Game", GameSchema);
+
+async function seed() {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error("MONGODB_URI is not set in .env.local");
+    process.exit(1);
+  }
+
+  await connect(uri);
+  console.log("Connected to MongoDB.");
+
+  // Clear existing to avoid duplicates (optional, but safe for a seed script)
+  await EventModel.deleteMany({});
+  await TeamMemberModel.deleteMany({});
+  await GameModel.deleteMany({});
   console.log("Cleared existing data.");
 
   // List of working images from the public folder to use as fallbacks for broken image links
@@ -43,6 +104,7 @@ async function seed() {
 
   // Insert events
   const eventDocs = events.map((e) => {
+    // If image doesn't exist in our known good list, use a working fallback
     let finalImage = e.image;
     if (finalImage && finalImage.startsWith("/images/events/")) {
       finalImage = workingImages[imageIndex % workingImages.length];
@@ -52,24 +114,20 @@ async function seed() {
       slug: e.slug,
       title: e.title,
       date: e.date,
-      date_sort: e.dateSort,
+      dateSort: e.dateSort,
       location: e.location,
       status: e.status,
       description: e.summary,
-      image_url: getImageUrl(finalImage),
+      imageUrl: getImageUrl(finalImage),
       shape: (e as any).shape || "half",
       tags: e.tags,
-      register_url: e.registerUrl || "",
-      floating_assets: (e.floatingAssets || []).map(getImageUrl),
+      registerUrl: e.registerUrl || "",
+      floatingAssets: (e.floatingAssets || []).map(getImageUrl),
       version: e.version,
     };
   });
-  
-  if (eventDocs.length > 0) {
-    const { error: eventError } = await supabase.from("events").insert(eventDocs);
-    if (eventError) console.error("Error inserting events:", eventError.message);
-    else console.log(`Inserted ${eventDocs.length} events.`);
-  }
+  await EventModel.insertMany(eventDocs);
+  console.log(`Inserted ${eventDocs.length} events.`);
 
   // Insert team members
   const teamDocs = team.map((t) => {
@@ -79,20 +137,16 @@ async function seed() {
       bio: t.bio,
       github: t.github || "",
       portfolio: t.portfolio || "",
-      is_alumni: (t as any).isAlumni || false,
+      isAlumni: (t as any).isAlumni || false,
       team: t.team,
       level: t.level,
-      image_url: getImageUrl(t.image),
+      imageUrl: getImageUrl(t.image),
       instagram: (t as any).instagram || "",
       linkedin: (t as any).linkedin || "",
     };
   });
-
-  if (teamDocs.length > 0) {
-    const { error: teamError } = await supabase.from("team_members").insert(teamDocs);
-    if (teamError) console.error("Error inserting team members:", teamError.message);
-    else console.log(`Inserted ${teamDocs.length} team members.`);
-  }
+  await TeamMemberModel.insertMany(teamDocs);
+  console.log(`Inserted ${teamDocs.length} team members.`);
 
   // Insert games
   const gameDocs = games.map((g) => ({
@@ -103,17 +157,13 @@ async function seed() {
     engine: g.engine,
     genre: g.genre,
     platform: g.version,
-    itch_url: g.playUrl,
-    cover_url: getImageUrl(g.image),
+    itchUrl: g.playUrl,
+    coverUrl: getImageUrl(g.image),
     tags: g.tags.join(", "),
-    status: "approved",
+    status: "approved", // all seeded games are approved
   }));
-
-  if (gameDocs.length > 0) {
-    const { error: gameError } = await supabase.from("games").insert(gameDocs);
-    if (gameError) console.error("Error inserting games:", gameError.message);
-    else console.log(`Inserted ${gameDocs.length} games.`);
-  }
+  await GameModel.insertMany(gameDocs);
+  console.log(`Inserted ${gameDocs.length} games.`);
 
   console.log("Seed complete.");
   process.exit(0);

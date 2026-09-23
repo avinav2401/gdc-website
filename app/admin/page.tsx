@@ -6,6 +6,7 @@ import {
   CheckCircle, XCircle, MessageSquare, Palette, Users, Gamepad2,
   Calendar, ExternalLink, Plus, Trash2, Edit3, Save, X, Video, ArrowLeft, Star, StarOff, User as UserIcon, Image as ImageIcon
 } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -186,49 +187,33 @@ function EventsCMS() {
           <TextArea label="Description" value={draft.description} onChange={setD("description")} placeholder="Short summary of the event..." />
           <div>
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Cover Image</label>
-            <div className="flex flex-col gap-2">
-              {draft.imageUrl ? (
-                <div className="relative w-full h-40 border border-[#3f3f46] rounded-xl overflow-hidden group">
-                  <img src={draft.imageUrl} alt="Cover" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                    <label className="px-4 py-2 bg-white/20 text-white rounded-lg backdrop-blur-sm font-semibold cursor-pointer">
-                      Change Image
-                      <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const formData = new FormData();
-                          formData.append('file', file);
-                          const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                          const data = await res.json();
-                          if (data.secure_url) {
-                            setDraft((prev: any) => ({ ...prev, imageUrl: data.secure_url }));
-                          }
-                        }
-                      }} />
-                    </label>
-                  </div>
+            <CldUploadWidget uploadPreset="ml_default" onSuccess={(result: any) => {
+              if (result && result.info && result.info.secure_url) {
+                setDraft((prev: any) => ({ ...prev, imageUrl: result.info.secure_url }));
+              }
+            }}>
+              {({ open }) => (
+                <div className="flex flex-col gap-2">
+                  {draft.imageUrl ? (
+                    <div className="relative w-full h-40 border border-[#3f3f46] rounded-xl overflow-hidden group">
+                      <img src={draft.imageUrl} alt="Cover" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <button type="button" onClick={() => open()} className="px-4 py-2 bg-white/20 text-white rounded-lg backdrop-blur-sm font-semibold">
+                          Change Image
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => open()} className="w-full h-32 border-2 border-dashed border-[#3f3f46] rounded-xl flex flex-col items-center justify-center text-gray-500 hover:text-white hover:border-[var(--primary)] transition">
+                      <ImageIcon size={32} className="mb-2" />
+                      <span className="text-sm font-semibold">Upload Image</span>
+                    </button>
+                  )}
+                  {/* Debug text to verify URL is saved in state */}
+                  {draft.imageUrl && <div className="text-[10px] text-gray-600 break-all">URL: {draft.imageUrl}</div>}
                 </div>
-              ) : (
-                <label className="w-full h-32 border-2 border-dashed border-[#3f3f46] rounded-xl flex flex-col items-center justify-center text-gray-500 hover:text-white hover:border-[var(--primary)] transition cursor-pointer">
-                  <ImageIcon size={32} className="mb-2" />
-                  <span className="text-sm font-semibold">Upload Image</span>
-                  <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const formData = new FormData();
-                      formData.append('file', file);
-                      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                      const data = await res.json();
-                      if (data.secure_url) {
-                        setDraft((prev: any) => ({ ...prev, imageUrl: data.secure_url }));
-                      }
-                    }
-                  }} />
-                </label>
               )}
-              {/* Debug text to verify URL is saved in state */}
-              {draft.imageUrl && <div className="text-[10px] text-gray-600 break-all">URL: {draft.imageUrl}</div>}
-            </div>
+            </CldUploadWidget>
           </div>
           <div className="flex gap-3">
             <button onClick={save} className="flex items-center gap-2 px-5 py-2 bg-emerald-500 text-black font-bold rounded-lg hover:opacity-90 transition text-sm uppercase">
@@ -363,24 +348,20 @@ function TeamCMS() {
           <TextArea label="Bio" value={draft.bio} onChange={setD("bio")} placeholder="Short bio..." />
           <div>
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Profile Photo</label>
-            <div className="flex items-center gap-4">
-              <label className="px-4 py-2 bg-[#27272a] hover:bg-[#3f3f46] border border-[#3f3f46] rounded-lg text-sm font-semibold transition cursor-pointer">
-                {draft.imageUrl ? "Change Photo" : "Upload Photo"}
-                <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (data.secure_url) setD("imageUrl")(data.secure_url);
-                  }
-                }} />
-              </label>
-              {draft.imageUrl && (
-                <img src={draft.imageUrl} alt="Preview" className="w-12 h-12 rounded object-cover border border-[#3f3f46]" />
+            <CldUploadWidget uploadPreset="ml_default" onSuccess={(result: any) => {
+              if (result?.info?.secure_url) setD("imageUrl")(result.info.secure_url);
+            }}>
+              {({ open }) => (
+                <div className="flex items-center gap-4">
+                  <button onClick={() => open()} className="px-4 py-2 bg-[#27272a] hover:bg-[#3f3f46] border border-[#3f3f46] rounded-lg text-sm font-semibold transition">
+                    {draft.imageUrl ? "Change Photo" : "Upload Photo"}
+                  </button>
+                  {draft.imageUrl && (
+                    <img src={draft.imageUrl} alt="Preview" className="w-12 h-12 rounded object-cover border border-[#3f3f46]" />
+                  )}
+                </div>
               )}
-            </div>
+            </CldUploadWidget>
           </div>
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={draft.isAlumni} onChange={e => setD("isAlumni")(e.target.checked)}
