@@ -14,4 +14,4 @@ if (!supabaseSecretKey) {
 export const supabase = createClient(
   supabaseUrl,
   supabaseSecretKey
-);
+); 
