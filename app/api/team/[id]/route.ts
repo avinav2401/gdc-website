@@ -9,9 +9,23 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
+    const dbPayload = {
+      name: body.name,
+      role: body.role,
+      team: body.team,
+      level: body.level !== undefined ? parseInt(body.level.toString(), 10) : undefined,
+      bio: body.bio,
+      image_url: body.imageUrl,
+      is_alumni: body.isAlumni,
+      portfolio: body.portfolio,
+      github: body.github,
+      instagram: body.instagram,
+      linkedin: body.linkedin,
+    };
+
     const { data, error } = await supabase
       .from("team_members")
-      .update(body)
+      .update(dbPayload)
       .eq("id", id)
       .select()
       .single();
@@ -25,7 +39,13 @@ export async function PUT(
       );
     }
 
-    return NextResponse.json(data);
+    const mappedData = data ? {
+      ...data,
+      imageUrl: data.image_url,
+      isAlumni: data.is_alumni,
+    } : null;
+
+    return NextResponse.json(mappedData);
   } catch (error) {
     console.error("PUT team member error:", error);
 

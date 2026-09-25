@@ -17,7 +17,13 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(data);
+    const mappedData = (data || []).map((m: any) => ({
+      ...m,
+      imageUrl: m.image_url,
+      isAlumni: m.is_alumni,
+    }));
+
+    return NextResponse.json(mappedData);
   } catch (error) {
     console.error("GET team members error:", error);
 
@@ -32,9 +38,23 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    const dbPayload = {
+      name: body.name,
+      role: body.role,
+      team: body.team,
+      level: parseInt(body.level || "4", 10),
+      bio: body.bio,
+      image_url: body.imageUrl,
+      is_alumni: body.isAlumni,
+      portfolio: body.portfolio,
+      github: body.github,
+      instagram: body.instagram,
+      linkedin: body.linkedin,
+    };
+
     const { data, error } = await supabase
       .from("team_members")
-      .insert(body)
+      .insert(dbPayload)
       .select()
       .single();
 

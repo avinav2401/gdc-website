@@ -107,10 +107,10 @@ function CharacterCard({ member }: { member: Member }) {
 
 export default function TeamClientView({ team }: { team: Member[] }) {
   const facultyMembers = team.filter((m) => m.team === "faculty" && !m.isAlumni);
-  const level1GuildMasters = team.filter((m) => m.level === 1 && !m.isAlumni && m.team === "core");
-  const level2GuildMasters = team.filter((m) => m.level === 2 && !m.isAlumni && m.team === "core");
-  const level3Operatives = team.filter((m) => m.level === 3 && !m.isAlumni && m.team === "core");
-  const level4Initiates = team.filter((m) => m.level === 4 && !m.isAlumni && m.team === "core");
+  const level1GuildMasters = team.filter((m) => m.level === 1 && !m.isAlumni && (m.team === "core" || m.team === "executives"));
+  const level2GuildMasters = team.filter((m) => m.level === 2 && !m.isAlumni && (m.team === "core" || m.team === "executives"));
+  const level3Operatives = team.filter((m) => m.level === 3 && !m.isAlumni && (m.team === "core" || m.team === "executives"));
+  const level4Initiates = team.filter((m) => m.level === 4 && !m.isAlumni && (m.team === "core" || m.team === "executives"));
   const alumni = team.filter((m) => m.isAlumni);
 
   // Gallery slider state & active group photo paths (Store your photos in public/gallery/)

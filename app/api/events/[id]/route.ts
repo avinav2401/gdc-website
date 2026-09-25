@@ -9,9 +9,25 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
+    const dbPayload = {
+      title: body.title,
+      slug: body.slug || body.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      date: body.date,
+      date_sort: body.dateSort,
+      location: body.location,
+      description: body.description,
+      image_url: body.imageUrl,
+      status: body.status,
+      version: body.version,
+      shape: body.shape,
+      register_url: body.registerUrl,
+      is_game_jam: body.isGameJam,
+      tags: typeof body.tags === "string" ? body.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : body.tags,
+    };
+
     const { data, error } = await supabase
       .from("events")
-      .update(body)
+      .update(dbPayload)
       .eq("id", id)
       .select()
       .single();
@@ -25,7 +41,15 @@ export async function PUT(
       );
     }
 
-    return NextResponse.json(data);
+    const mappedData = data ? {
+      ...data,
+      dateSort: data.date_sort,
+      imageUrl: data.image_url,
+      registerUrl: data.register_url,
+      isGameJam: data.is_game_jam,
+    } : null;
+
+    return NextResponse.json(mappedData);
   } catch (error) {
     console.error("PUT event error:", error);
 
