@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
 import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon, UploadCloud, Link as LinkIcon } from "lucide-react";
-import { CldUploadWidget } from "next-cloudinary";
 import { supabase } from "@/lib/supabase";
 
 const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pygame", "Phaser", "MonoGame", "Other"];
@@ -87,6 +86,7 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
   });
   const [uploadMode, setUploadMode] = useState<"url" | "upload">("url");
   const [webglFiles, setWebglFiles] = useState<FileList | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [submitted, setSubmitted] = useState(false);
@@ -129,7 +129,19 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
       }
     }
 
-    onSubmit({ ...form, itchUrl: finalPlayUrl });
+    let finalCoverUrl = form.coverUrl;
+    if (coverFile) {
+      const ext = coverFile.name.split('.').pop();
+      const path = `covers/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+      await supabase.storage.from("games").upload(path, coverFile, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      const { data } = supabase.storage.from("games").getPublicUrl(path);
+      finalCoverUrl = data.publicUrl;
+    }
+
+    onSubmit({ ...form, itchUrl: finalPlayUrl, coverUrl: finalCoverUrl });
     setSubmitted(true);
     setUploading(false);
   };
@@ -209,30 +221,23 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-1.5">Cover Image (Cloudinary)</label>
-              {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
-                <CldUploadWidget
-                  uploadPreset="ml_default" // The user needs to change this to their unsigned preset name
-                  onSuccess={(result: any) => {
-                    setForm(f => ({ ...f, coverUrl: result.info.secure_url }));
-                  }}
-                >
-                  {({ open }) => (
-                    <button
-                      type="button"
-                      onClick={() => open()}
-                      className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-[#3f3f46] border-dashed rounded-lg px-4 py-3 text-gray-400 hover:text-white hover:border-[var(--primary)] transition"
-                    >
-                      <ImageIcon size={20} />
-                      {form.coverUrl ? "Image Uploaded! Click to Change" : "Upload Cover Image"}
-                    </button>
-                  )}
-                </CldUploadWidget>
-              ) : (
-                <div className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-red-900/50 rounded-lg px-4 py-3 text-red-500 text-xs">
-                  <AlertCircle size={16} /> NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME missing
-                </div>
-              )}
+              <label className="block text-sm font-semibold text-gray-300 mb-1.5">Cover Image (Supabase)</label>
+              <label className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-[#3f3f46] border-dashed rounded-lg px-4 py-3 text-gray-400 hover:text-white hover:border-[var(--primary)] transition cursor-pointer">
+                <ImageIcon size={20} />
+                <span className="truncate max-w-[200px]">
+                  {coverFile ? coverFile.name : (form.coverUrl ? "Image Uploaded! Click to Change" : "Upload Cover Image")}
+                </span>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setCoverFile(e.target.files[0]);
+                    }
+                  }} 
+                />
+              </label>
             </div>
             <InputField label="Gameplay Video / GIF URL" id="videoUrl" type="url" placeholder="https://youtube.com/... or direct .gif URL" value={form.videoUrl} onChange={set("videoUrl")} />
           </div>
