@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
-import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
+import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon, UploadCloud, Link as LinkIcon } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
+import { supabase } from "@/lib/supabase";
 
 const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pygame", "Phaser", "MonoGame", "Other"];
 const genreOptions = ["Action", "Platformer", "Puzzle", "RPG", "Arcade", "Simulation", "Horror", "Strategy", "Idle", "Zen", "Roguelite", "Other"];
@@ -84,14 +85,53 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
     platform: "", itchUrl: "", tags: "", coverUrl: "", videoUrl: "",
     developer: "Developer Name", // Placeholder for now
   });
+  const [uploadMode, setUploadMode] = useState<"url" | "upload">("url");
+  const [webglFiles, setWebglFiles] = useState<FileList | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [submitted, setSubmitted] = useState(false);
 
   const set = (key: string) => (v: string) => setForm(f => ({ ...f, [key]: v }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    setUploading(true);
+
+    let finalPlayUrl = form.itchUrl;
+
+    if (uploadMode === "upload" && webglFiles && webglFiles.length > 0) {
+      const gameId = form.title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
+      
+      let indexHtmlPath = "";
+      const total = webglFiles.length;
+      
+      for (let i = 0; i < total; i++) {
+        const file = webglFiles[i];
+        const path = `${gameId}/${file.webkitRelativePath}`;
+        
+        await supabase.storage.from("games").upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+        // The root folder is usually the first part of webkitRelativePath
+        // We want to find the main index.html
+        if (file.name === "index.html" || file.webkitRelativePath.endsWith("/index.html")) {
+          indexHtmlPath = path;
+        }
+
+        setUploadProgress(Math.round(((i + 1) / total) * 100));
+      }
+
+      if (indexHtmlPath) {
+        const { data } = supabase.storage.from("games").getPublicUrl(indexHtmlPath);
+        finalPlayUrl = data.publicUrl;
+      }
+    }
+
+    onSubmit({ ...form, itchUrl: finalPlayUrl });
     setSubmitted(true);
+    setUploading(false);
   };
 
   if (submitted) {
@@ -133,8 +173,39 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
             <SelectField label="Platform" id="platform" options={platformOptions} required value={form.platform} onChange={set("platform")} />
           </div>
 
-          {/* Links */}
-          <InputField label="Itch.io / Steam / WebGL URL" id="itchUrl" type="url" required placeholder="https://yourname.itch.io/game" value={form.itchUrl} onChange={set("itchUrl")} />
+          {/* Hosting */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">Game Hosting</label>
+            <div className="flex gap-2 p-1 bg-[#0d0d12] border border-[#27272a] rounded-lg w-fit mb-4">
+              <button type="button" onClick={() => setUploadMode("url")} className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-md transition ${uploadMode === "url" ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"}`}>
+                <LinkIcon size={16} /> External Link
+              </button>
+              <button type="button" onClick={() => setUploadMode("upload")} className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-md transition ${uploadMode === "upload" ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"}`}>
+                <UploadCloud size={16} /> Native WebGL Upload
+              </button>
+            </div>
+
+            {uploadMode === "url" ? (
+              <InputField label="Itch.io / Steam / WebGL URL" id="itchUrl" type="url" required placeholder="https://yourname.itch.io/game" value={form.itchUrl} onChange={set("itchUrl")} />
+            ) : (
+              <div className="border border-dashed border-[#3f3f46] rounded-lg p-5 text-center bg-[#0d0d12]">
+                <label className="cursor-pointer flex flex-col items-center justify-center gap-3">
+                  <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-full">
+                    <UploadCloud size={24} />
+                  </div>
+                  <div className="font-semibold text-white">Select WebGL Build Folder</div>
+                  <div className="text-xs text-gray-500 max-w-xs">Upload your exported HTML5/WebGL folder. Must contain an <code className="text-gray-300">index.html</code>.</div>
+                  {/* @ts-ignore */}
+                  <input type="file" webkitdirectory="" directory="" multiple className="hidden" onChange={(e) => setWebglFiles(e.target.files)} />
+                </label>
+                {webglFiles && webglFiles.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-[#27272a] text-sm text-emerald-400 font-mono">
+                    <CheckCircle size={14} className="inline mr-1" /> {webglFiles.length} files selected
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
@@ -172,8 +243,8 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
             <button type="button" onClick={onClose} className="flex-1 py-3 rounded-lg border border-[#3f3f46] text-gray-400 hover:bg-white/5 transition font-semibold">
               Cancel
             </button>
-            <button type="submit" className="flex-1 py-3 rounded-lg bg-[var(--primary)] text-black font-bold hover:opacity-90 transition font-display text-lg uppercase tracking-wider">
-              Submit for Review
+            <button type="submit" disabled={uploading} className="flex-1 py-3 rounded-lg bg-[var(--primary)] text-black font-bold hover:opacity-90 transition font-display text-lg uppercase tracking-wider disabled:opacity-50">
+              {uploading ? `Uploading... ${uploadProgress}%` : "Submit for Review"}
             </button>
           </div>
         </form>
