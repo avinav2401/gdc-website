@@ -41,9 +41,26 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    // Map camelCase (from dashboard) to snake_case (Supabase columns)
+    const row = {
+      title: body.title,
+      tagline: body.tagline,
+      description: body.description,
+      engine: body.engine,
+      genre: body.genre,
+      platform: body.platform,
+      tags: body.tags,
+      developer: body.developer,
+      itch_url: body.itchUrl,
+      cover_url: body.coverUrl,
+      video_url: body.videoUrl,
+      user_email: body.userEmail,
+      status: "pending",
+    };
+
     const { data, error } = await supabase
       .from("games")
-      .insert(body)
+      .insert(row)
       .select()
       .single();
 

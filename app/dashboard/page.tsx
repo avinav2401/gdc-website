@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
 import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon, UploadCloud, Link as LinkIcon } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pygame", "Phaser", "MonoGame", "Other"];
 const genreOptions = ["Action", "Platformer", "Puzzle", "RPG", "Arcade", "Simulation", "Horror", "Strategy", "Idle", "Zen", "Roguelite", "Other"];
@@ -104,15 +104,21 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
       
       let indexHtmlPath = "";
       const total = webglFiles.length;
+      let uploadErrors = 0;
       
       for (let i = 0; i < total; i++) {
         const file = webglFiles[i];
         const path = `${gameId}/${file.webkitRelativePath}`;
         
-        await supabase.storage.from("games").upload(path, file, {
+        const { error } = await supabaseBrowser.storage.from("games").upload(path, file, {
           cacheControl: "3600",
           upsert: false,
         });
+
+        if (error) {
+          console.error(`Upload failed for ${file.name}:`, error);
+          uploadErrors++;
+        }
 
         // The root folder is usually the first part of webkitRelativePath
         // We want to find the main index.html
@@ -123,8 +129,12 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
         setUploadProgress(Math.round(((i + 1) / total) * 100));
       }
 
+      if (uploadErrors > 0) {
+        alert(`Warning: ${uploadErrors} file(s) failed to upload. The game may not work correctly.`);
+      }
+
       if (indexHtmlPath) {
-        const { data } = supabase.storage.from("games").getPublicUrl(indexHtmlPath);
+        const { data } = supabaseBrowser.storage.from("games").getPublicUrl(indexHtmlPath);
         finalPlayUrl = data.publicUrl;
       }
     }
@@ -133,12 +143,16 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
     if (coverFile) {
       const ext = coverFile.name.split('.').pop();
       const path = `covers/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
-      await supabase.storage.from("games").upload(path, coverFile, {
+      const { error } = await supabaseBrowser.storage.from("games").upload(path, coverFile, {
         cacheControl: "3600",
         upsert: false,
       });
-      const { data } = supabase.storage.from("games").getPublicUrl(path);
-      finalCoverUrl = data.publicUrl;
+      if (error) {
+        console.error("Cover upload failed:", error);
+      } else {
+        const { data } = supabaseBrowser.storage.from("games").getPublicUrl(path);
+        finalCoverUrl = data.publicUrl;
+      }
     }
 
     onSubmit({ ...form, itchUrl: finalPlayUrl, coverUrl: finalCoverUrl });
@@ -275,7 +289,7 @@ function SubmissionCard({ sub }: { sub: any }) {
             <h3 className="font-display text-2xl uppercase">{sub.title}</h3>
             <StatusBadge status={sub.status} />
           </div>
-          <p className="text-sm text-gray-500">{sub.engine} · {sub.genre} · Submitted {new Date(sub.createdAt).toLocaleDateString()}</p>
+          <p className="text-sm text-gray-500">{sub.engine} · {sub.genre} · Submitted {new Date(sub.created_at).toLocaleDateString()}</p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           {sub.itchUrl && (
@@ -418,7 +432,7 @@ export default function DashboardPage() {
                 <p className="text-sm mt-2">Hit "Submit New Game" to get started.</p>
               </div>
             ) : (
-              submissions.map(sub => <SubmissionCard key={sub._id} sub={sub} />)
+              submissions.map(sub => <SubmissionCard key={sub.id} sub={sub} />)
             )}
           </div>
         </div>

@@ -16,6 +16,11 @@ export function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("gdc_role");
     localStorage.removeItem("gdc_admin_auth");
+    localStorage.removeItem("gdc_name");
+    localStorage.removeItem("gdc_email");
+    localStorage.removeItem("gdc_github");
+    localStorage.removeItem("gdc_portfolio");
+    localStorage.removeItem("gdc_bio");
     setRole(null);
     setIsAuth(false);
     router.push("/auth");

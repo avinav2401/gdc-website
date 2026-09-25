@@ -6,7 +6,7 @@ import {
   CheckCircle, XCircle, MessageSquare, Palette, Users, Gamepad2,
   Calendar, ExternalLink, Plus, Trash2, Edit3, Save, X, Video, ArrowLeft, Star, StarOff, User as UserIcon, Image as ImageIcon
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -55,19 +55,19 @@ function GameReviewCard({ game, onApprove, onReject }: { game: any; onApprove: (
             <h3 className="font-display text-2xl uppercase">{game.title}</h3>
             <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded-full">Pending</span>
           </div>
-          <p className="text-gray-500 text-sm">by <span className="text-gray-300">{game.developer || "Unknown"}</span> · {game.engine} · {game.genre} · Submitted {new Date(game.createdAt).toLocaleDateString()}</p>
+          <p className="text-gray-500 text-sm">by <span className="text-gray-300">{game.developer || "Unknown"}</span> · {game.engine} · {game.genre} · Submitted {new Date(game.created_at).toLocaleDateString()}</p>
           
-          {game.coverUrl && (
+          {game.cover_url && (
             <div className="mt-4 mb-2">
-              <img src={game.coverUrl} alt="Cover" className="w-full max-w-[300px] h-auto rounded-lg border border-[#27272a] object-cover" />
+              <img src={game.cover_url} alt="Cover" className="w-full max-w-[300px] h-auto rounded-lg border border-[#27272a] object-cover" />
             </div>
           )}
 
           {game.description && <p className="text-gray-400 text-sm mt-2">{game.description}</p>}
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {game.itchUrl && (
-            <a href={game.itchUrl} target="_blank" rel="noreferrer"
+          {game.itch_url && (
+            <a href={game.itch_url} target="_blank" rel="noreferrer"
               className="flex items-center gap-1.5 px-4 py-2 text-sm bg-[#FA5C5C]/10 text-[#FA5C5C] border border-[#FA5C5C]/30 rounded-lg hover:bg-[#FA5C5C]/20 transition">
               <ExternalLink size={14} /> View Game
             </a>
@@ -75,10 +75,10 @@ function GameReviewCard({ game, onApprove, onReject }: { game: any; onApprove: (
           <button onClick={() => setShowComment(s => !s)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-white/5 text-gray-300 border border-white/10 rounded-lg hover:bg-white/10 transition">
             <MessageSquare size={14} /> Note
           </button>
-          <button onClick={() => onApprove(game._id, comment)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/25 transition font-semibold">
+          <button onClick={() => onApprove(game.id, comment)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/25 transition font-semibold">
             <CheckCircle size={14} /> Approve
           </button>
-          <button onClick={() => onReject(game._id, comment)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-500/15 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/25 transition font-semibold">
+          <button onClick={() => onReject(game.id, comment)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-500/15 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/25 transition font-semibold">
             <XCircle size={14} /> Reject
           </button>
         </div>
@@ -124,7 +124,7 @@ function EventsCMS() {
     if (adding) {
       res = await fetch("/api/events", { method: "POST", body: JSON.stringify(draft) });
     } else if (editing) {
-      res = await fetch(`/api/events/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+      res = await fetch(`/api/events/${editing.id}`, { method: "PUT", body: JSON.stringify(draft) });
     }
     
     if (res && !res.ok) {
@@ -193,9 +193,9 @@ function EventsCMS() {
                 if (!file) return;
                 const ext = file.name.split('.').pop();
                 const path = `events/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
-                const { error } = await supabase.storage.from("games").upload(path, file);
+                const { error } = await supabaseBrowser.storage.from("games").upload(path, file);
                 if (!error) {
-                  const { data } = supabase.storage.from("games").getPublicUrl(path);
+                  const { data } = supabaseBrowser.storage.from("games").getPublicUrl(path);
                   setDraft((prev: any) => ({ ...prev, imageUrl: data.publicUrl }));
                 }
               }} />
@@ -233,7 +233,7 @@ function EventsCMS() {
 
       <div className="space-y-3">
         {items.map(ev => (
-          <div key={ev._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+          <div key={ev.id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h4 className="font-display text-xl uppercase">{ev.title}</h4>
@@ -246,7 +246,7 @@ function EventsCMS() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button onClick={() => startEdit(ev)} className="p-2 text-gray-400 hover:text-[var(--primary)] hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
-              <button onClick={() => del(ev._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+              <button onClick={() => del(ev.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
             </div>
           </div>
         ))}
@@ -278,7 +278,7 @@ function TeamCMS() {
     if (adding) {
       await fetch("/api/team", { method: "POST", body: JSON.stringify(draft) });
     } else if (editing) {
-      await fetch(`/api/team/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+      await fetch(`/api/team/${editing.id}`, { method: "PUT", body: JSON.stringify(draft) });
     }
     setAdding(false);
     setEditing(null);
@@ -359,9 +359,9 @@ function TeamCMS() {
                 if (!file) return;
                 const ext = file.name.split('.').pop();
                 const path = `team/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
-                const { error } = await supabase.storage.from("games").upload(path, file);
+                const { error } = await supabaseBrowser.storage.from("games").upload(path, file);
                 if (!error) {
-                  const { data } = supabase.storage.from("games").getPublicUrl(path);
+                  const { data } = supabaseBrowser.storage.from("games").getPublicUrl(path);
                   setD("imageUrl")(data.publicUrl);
                 }
               }} />
@@ -391,7 +391,7 @@ function TeamCMS() {
 
       <div className="space-y-3">
         {filtered.map(m => (
-          <div key={m._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+          <div key={m.id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="font-display text-xl uppercase">{m.name || "Unnamed"}</h4>
@@ -414,7 +414,7 @@ function TeamCMS() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button onClick={() => startEdit(m)} className="p-2 text-gray-400 hover:text-[var(--secondary)] hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
-              <button onClick={() => del(m._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+              <button onClick={() => del(m.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
             </div>
           </div>
         ))}
@@ -430,7 +430,7 @@ function MembersCMS() {
   const [editing, setEditing] = useState<any | null>(null);
   const [adding, setAdding] = useState(false);
   
-  const blank = () => ({ name: "", email: "", password: "gdc2026password", role: "member" });
+  const blank = () => ({ name: "", email: "", password: "", role: "member" });
   const [draft, setDraft] = useState<any>(blank());
   const setD = (k: string) => (v: string) => setDraft((d: any) => ({ ...d, [k]: v }));
 
@@ -445,7 +445,7 @@ function MembersCMS() {
     if (adding) {
       await fetch("/api/users", { method: "POST", body: JSON.stringify(draft) });
     } else if (editing) {
-      await fetch(`/api/users/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+      await fetch(`/api/users/${editing.id}`, { method: "PUT", body: JSON.stringify(draft) });
     }
     setAdding(false);
     setEditing(null);
@@ -500,7 +500,7 @@ function MembersCMS() {
 
       <div className="space-y-3">
         {items.map(m => (
-          <div key={m._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+          <div key={m.id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="font-display text-xl uppercase">{m.name || "Unnamed"}</h4>
@@ -512,7 +512,7 @@ function MembersCMS() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button onClick={() => startEdit(m)} className="p-2 text-gray-400 hover:text-[#00f2fe] hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
-              <button onClick={() => del(m._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+              <button onClick={() => del(m.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
             </div>
           </div>
         ))}
@@ -543,7 +543,7 @@ function GamesCMS() {
 
   const save = async () => {
     if (editing) {
-      await fetch(`/api/games/${editing._id}`, { method: "PUT", body: JSON.stringify(draft) });
+      await fetch(`/api/games/${editing.id}`, { method: "PUT", body: JSON.stringify(draft) });
     }
     setEditing(null);
     setDraft(blank());
@@ -608,7 +608,7 @@ function GamesCMS() {
 
       <div className="space-y-3">
         {(filter === "all" ? items : items.filter(g => g.status === filter)).map(g => (
-          <div key={g._id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
+          <div key={g.id} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="font-display text-xl uppercase">{g.title}</h4>
@@ -624,12 +624,12 @@ function GamesCMS() {
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button onClick={() => toggleFeatured(g._id, g.featured)} title="Toggle featured"
+              <button onClick={() => toggleFeatured(g.id, g.featured)} title="Toggle featured"
                 className={`p-2 rounded-lg transition ${g.featured ? "text-yellow-400 hover:text-yellow-200 bg-yellow-500/10" : "text-gray-600 hover:text-yellow-400 hover:bg-yellow-500/10"}`}>
                 {g.featured ? <Star size={16} fill="currentColor" /> : <StarOff size={16} />}
               </button>
               <button onClick={() => startEdit(g)} className="p-2 text-gray-400 hover:text-yellow-400 hover:bg-white/5 rounded-lg transition"><Edit3 size={16} /></button>
-              <button onClick={() => del(g._id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
+              <button onClick={() => del(g.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"><Trash2 size={16} /></button>
             </div>
           </div>
         ))}
@@ -954,7 +954,7 @@ export default function AdminPage() {
                 <p className="text-sm mt-2">No pending game submissions.</p>
               </div>
             ) : pendingGames.map(game => (
-              <GameReviewCard key={game._id} game={game} onApprove={handleApprove} onReject={handleReject} />
+              <GameReviewCard key={game.id} game={game} onApprove={handleApprove} onReject={handleReject} />
             ))}
           </div>
         )}

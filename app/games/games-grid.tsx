@@ -83,6 +83,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
                 {g.tags &&
                   g.tags
                     .split(",")
+                    .filter((t: string) => t.trim().length > 0)
                     .map((t: string) => (
                       <span
                         key={t.trim()}
