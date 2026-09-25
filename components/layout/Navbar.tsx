@@ -23,7 +23,7 @@ export function Navbar() {
     localStorage.removeItem("gdc_bio");
     setRole(null);
     setIsAuth(false);
-    router.push("/auth");
+    window.location.href = "/auth";
   };
 
   useEffect(() => {
@@ -38,10 +38,12 @@ export function Navbar() {
       setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
     };
     window.addEventListener("storage", handleStorage);
+    window.addEventListener("auth-change", handleStorage);
     
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("auth-change", handleStorage);
     };
   }, []);
 
