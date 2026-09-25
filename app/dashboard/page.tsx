@@ -210,23 +210,29 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-semibold text-gray-300 mb-1.5">Cover Image (Cloudinary)</label>
-              <CldUploadWidget
-                uploadPreset="ml_default" // The user needs to change this to their unsigned preset name
-                onSuccess={(result: any) => {
-                  setForm(f => ({ ...f, coverUrl: result.info.secure_url }));
-                }}
-              >
-                {({ open }) => (
-                  <button
-                    type="button"
-                    onClick={() => open()}
-                    className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-[#3f3f46] border-dashed rounded-lg px-4 py-3 text-gray-400 hover:text-white hover:border-[var(--primary)] transition"
-                  >
-                    <ImageIcon size={20} />
-                    {form.coverUrl ? "Image Uploaded! Click to Change" : "Upload Cover Image"}
-                  </button>
-                )}
-              </CldUploadWidget>
+              {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+                <CldUploadWidget
+                  uploadPreset="ml_default" // The user needs to change this to their unsigned preset name
+                  onSuccess={(result: any) => {
+                    setForm(f => ({ ...f, coverUrl: result.info.secure_url }));
+                  }}
+                >
+                  {({ open }) => (
+                    <button
+                      type="button"
+                      onClick={() => open()}
+                      className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-[#3f3f46] border-dashed rounded-lg px-4 py-3 text-gray-400 hover:text-white hover:border-[var(--primary)] transition"
+                    >
+                      <ImageIcon size={20} />
+                      {form.coverUrl ? "Image Uploaded! Click to Change" : "Upload Cover Image"}
+                    </button>
+                  )}
+                </CldUploadWidget>
+              ) : (
+                <div className="w-full flex items-center justify-center gap-2 bg-[#0d0d12] border border-red-900/50 rounded-lg px-4 py-3 text-red-500 text-xs">
+                  <AlertCircle size={16} /> NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME missing
+                </div>
+              )}
             </div>
             <InputField label="Gameplay Video / GIF URL" id="videoUrl" type="url" placeholder="https://youtube.com/... or direct .gif URL" value={form.videoUrl} onChange={set("videoUrl")} />
           </div>
