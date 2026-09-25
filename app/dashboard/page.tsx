@@ -207,7 +207,7 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
                   </div>
                   <div className="font-semibold text-white">Select WebGL Build Folder</div>
                   <div className="text-xs text-gray-500 max-w-xs">Upload your exported HTML5/WebGL folder. Must contain an <code className="text-gray-300">index.html</code>.</div>
-                  {/* @ts-ignore */}
+                  {/* @ts-expect-error */}
                   <input type="file" webkitdirectory="" directory="" multiple className="hidden" onChange={(e) => setWebglFiles(e.target.files)} />
                 </label>
                 {webglFiles && webglFiles.length > 0 && (

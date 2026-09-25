@@ -49,9 +49,9 @@ export default function AuthPage() {
         // Redirect based on role
         setTimeout(() => {
           if (data.role === 'admin') {
-            window.location.href = '/admin';
+            router.push('/admin');
           } else {
-            window.location.href = '/dashboard';
+            router.push('/dashboard');
           }
         }, 1500);
       } else {
@@ -87,7 +87,7 @@ export default function AuthPage() {
         localStorage.setItem('gdc_admin_auth', 'false'); // Members are never admin
         
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          router.push('/dashboard');
         }, 1500);
       } else {
         setErrorMsg(data.error || "Google Login failed");

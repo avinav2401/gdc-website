@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -16,7 +18,7 @@ export function Navbar() {
     localStorage.removeItem("gdc_admin_auth");
     setRole(null);
     setIsAuth(false);
-    window.location.href = "/auth";
+    router.push("/auth");
   };
 
   useEffect(() => {
