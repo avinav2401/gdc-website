@@ -38,7 +38,7 @@ function CharacterCard({ member }: { member: Member }) {
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 filter contrast-125 z-0"
             />
           ) : (
-            <span className="font-display text-4xl font-black text-white drop-shadow-[3px_3px_0px_#FF007F] tracking-wider uppercase z-0">
+            <span className="font-display text-4xl font-black text-white drop-shadow-[3px_3px_0px_#FF007F] tracking-wider uppercase z-0 group-hover:opacity-0 transition-opacity duration-300">
               {initials(member.name)}
             </span>
           )}
@@ -246,7 +246,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                   </div>
                 </div>
 
-                <div className={facultyMembers.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch justify-items-center"}>
+                <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto items-stretch">
                   {facultyMembers.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
@@ -281,7 +281,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 1 // Founders & Directors
                   </span>
                 </div>
-                <div className={level1GuildMasters.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch justify-items-center"}>
+                <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto items-stretch">
                   {level1GuildMasters.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
@@ -299,7 +299,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 2 // Guild Masters & Directors
                   </span>
                 </div>
-                <div className={level2GuildMasters.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-2 max-w-4xl mx-auto items-stretch justify-items-center"}>
+                <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto items-stretch">
                   {level2GuildMasters.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
@@ -317,7 +317,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 3 // Senior Engine Operatives
                   </span>
                 </div>
-                <div className={level3Operatives.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch justify-items-center"}>
+                <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto items-stretch">
                   {level3Operatives.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
@@ -335,7 +335,7 @@ export default function TeamClientView({ team }: { team: Member[] }) {
                     LEVEL 4 // Community Recruits & Specialists
                   </span>
                 </div>
-                <div className={level4Initiates.length === 1 ? "flex justify-center" : "grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch justify-items-center"}>
+                <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto items-stretch">
                   {level4Initiates.map((m) => (
                     <div key={m.name} className="w-full max-w-[320px]">
                       <CharacterCard member={m} />
