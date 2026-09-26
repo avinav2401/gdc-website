@@ -1,11 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ExternalLink, Play, X, Maximize2 } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
 
 export default function GamesGrid({ allGames }: { allGames: any[] }) {
   const [playingGame, setPlayingGame] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (playingGame) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [playingGame]);
+
+
 
   if (allGames.length === 0) {
     return (
