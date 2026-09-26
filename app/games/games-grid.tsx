@@ -81,9 +81,8 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
               {/* Tag Pills */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {g.tags &&
-                  g.tags
-                    .split(",")
-                    .filter((t: string) => t.trim().length > 0)
+                  (Array.isArray(g.tags) ? g.tags : typeof g.tags === "string" ? g.tags.split(",") : [])
+                    .filter((t: any) => typeof t === "string" && t.trim().length > 0)
                     .map((t: string) => (
                       <span
                         key={t.trim()}
