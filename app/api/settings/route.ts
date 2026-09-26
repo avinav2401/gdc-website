@@ -11,6 +11,12 @@ export async function GET() {
       .maybeSingle();
 
     if (error) {
+      if (error.code === 'PGRST205') {
+        // Table doesn't exist yet, return defaults
+        return NextResponse.json({
+          theme: { primary: "#38bdf8", secondary: "#f472b6", bg: "#0d0d12", bgDark: "#050508", yellow: "#fbbf24" }
+        });
+      }
       console.error("Supabase GET settings error:", error);
 
       return NextResponse.json(
@@ -19,29 +25,11 @@ export async function GET() {
       );
     }
 
-    // If settings don't exist, create the global settings row
+    // If settings don't exist, return defaults
     if (!settings) {
-      const { data: newSettings, error: createError } = await supabase
-        .from("settings")
-        .insert({
-          singleton_id: "global",
-        })
-        .select()
-        .single();
-
-      if (createError) {
-        console.error(
-          "Supabase CREATE settings error:",
-          createError
-        );
-
-        return NextResponse.json(
-          { error: "Failed to create settings" },
-          { status: 500 }
-        );
-      }
-
-      settings = newSettings;
+      return NextResponse.json({
+        theme: { primary: "#38bdf8", secondary: "#f472b6", bg: "#0d0d12", bgDark: "#050508", yellow: "#fbbf24" }
+      });
     }
 
     return NextResponse.json(settings);
@@ -75,6 +63,10 @@ export async function PUT(req: Request) {
       .single();
 
     if (error) {
+      if (error.code === 'PGRST205') {
+        // Table doesn't exist yet, just return what they tried to save
+        return NextResponse.json({ ...body, singleton_id: "global" });
+      }
       console.error("Supabase PUT settings error:", error);
 
       return NextResponse.json(

@@ -615,9 +615,7 @@ export default async function HomePage() {
                     </span>
 
                     <Link
-                      href={game.itchUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="/games"
                       className="p-2 bg-[#FF007F] text-white border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex-shrink-0"
                     >
                       <ExternalLink className="w-5 h-5" />

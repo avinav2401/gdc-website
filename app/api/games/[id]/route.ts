@@ -9,9 +9,11 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
+    const { adminComment, ...cleanBody } = body;
+
     const { data, error } = await supabase
       .from("games")
-      .update(body)
+      .update(cleanBody)
       .eq("id", id)
       .select()
       .single();

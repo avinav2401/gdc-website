@@ -9,14 +9,38 @@ const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pyg
 const genreOptions = ["Action", "Platformer", "Puzzle", "RPG", "Arcade", "Simulation", "Horror", "Strategy", "Idle", "Zen", "Roguelite", "Other"];
 const platformOptions = ["WebGL / Browser", "Windows", "Linux", "macOS", "Android", "iOS", "Itch.io", "Steam"];
 
+// Helper to determine the right headers for Unity WebGL files
+function getWebGLMimeType(fileName: string) {
+  let contentType = "application/octet-stream";
+  let contentEncoding = undefined;
+
+  // Handle compression headers
+  if (fileName.endsWith(".gz")) {
+    contentEncoding = "gzip";
+    fileName = fileName.slice(0, -3); // Strip .gz to find actual type
+  } else if (fileName.endsWith(".br")) {
+    contentEncoding = "br";
+    fileName = fileName.slice(0, -3); // Strip .br to find actual type
+  }
+
+  // Handle MIME types
+  if (fileName.endsWith(".wasm")) contentType = "application/wasm";
+  else if (fileName.endsWith(".js")) contentType = "application/javascript";
+  else if (fileName.endsWith(".html")) contentType = "text/html";
+  else if (fileName.endsWith(".css")) contentType = "text/css";
+  else if (fileName.endsWith(".data")) contentType = "application/octet-stream";
+
+  return { contentType, contentEncoding };
+}
+
 // ─── Sub-components ─────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: "pending" | "approved" | "rejected" }) {
   if (status === "approved")
-    return <span className="flex items-center gap-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-3 py-1 text-sm font-bold rounded-full"><CheckCircle size={14}/> Approved</span>;
+    return <span className="flex items-center gap-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-3 py-1 text-sm font-bold rounded-full"><CheckCircle size={14} /> Approved</span>;
   if (status === "rejected")
-    return <span className="flex items-center gap-1 bg-red-500/20 text-red-400 border border-red-500/40 px-3 py-1 text-sm font-bold rounded-full"><AlertCircle size={14}/> Rejected</span>;
-  return <span className="flex items-center gap-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 px-3 py-1 text-sm font-bold rounded-full"><Clock size={14}/> Pending Review</span>;
+    return <span className="flex items-center gap-1 bg-red-500/20 text-red-400 border border-red-500/40 px-3 py-1 text-sm font-bold rounded-full"><AlertCircle size={14} /> Rejected</span>;
+  return <span className="flex items-center gap-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 px-3 py-1 text-sm font-bold rounded-full"><Clock size={14} /> Pending Review</span>;
 }
 
 function InputField({ label, id, type = "text", placeholder, required, value, onChange, readOnly }: {
@@ -97,22 +121,28 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
     e.preventDefault();
     setUploading(true);
 
-    let finalPlayUrl = form.itchUrl;
+    let finalPlayUrl = "";
 
-    if (uploadMode === "upload" && webglFiles && webglFiles.length > 0) {
+    if (webglFiles && webglFiles.length > 0) {
       const gameId = form.title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
-      
+
       let indexHtmlPath = "";
       const total = webglFiles.length;
       let uploadErrors = 0;
-      
+
       for (let i = 0; i < total; i++) {
         const file = webglFiles[i];
         const path = `${gameId}/${file.webkitRelativePath}`;
-        
+
+        const { contentType, contentEncoding } = getWebGLMimeType(file.name);
+
+        // Upload to Supabase with the correct headers for WebGL
         const { error } = await supabaseBrowser.storage.from("games").upload(path, file, {
           cacheControl: "3600",
           upsert: false,
+          contentType,
+          // @ts-ignore - Supabase types don't list contentEncoding, but the API accepts it
+          contentEncoding,
         });
 
         if (error) {
@@ -137,6 +167,10 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
         const { data } = supabaseBrowser.storage.from("games").getPublicUrl(indexHtmlPath);
         finalPlayUrl = data.publicUrl;
       }
+    } else {
+       alert("Please select a WebGL build folder to upload!");
+       setUploading(false);
+       return;
     }
 
     let finalCoverUrl = form.coverUrl;
@@ -201,38 +235,26 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
 
           {/* Hosting */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Game Hosting</label>
-            <div className="flex gap-2 p-1 bg-[#0d0d12] border border-[#27272a] rounded-lg w-fit mb-4">
-              <button type="button" onClick={() => setUploadMode("url")} className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-md transition ${uploadMode === "url" ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"}`}>
-                <LinkIcon size={16} /> External Link
-              </button>
-              <button type="button" onClick={() => setUploadMode("upload")} className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-md transition ${uploadMode === "upload" ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"}`}>
-                <UploadCloud size={16} /> Native WebGL Upload
-              </button>
-            </div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">Game Hosting (Native WebGL)</label>
 
-            {uploadMode === "url" ? (
-              <InputField label="Itch.io / Steam / WebGL URL" id="itchUrl" type="url" required placeholder="https://yourname.itch.io/game" value={form.itchUrl} onChange={set("itchUrl")} />
-            ) : (
-              <div className="border border-dashed border-[#3f3f46] rounded-lg p-5 text-center bg-[#0d0d12]">
-                <label className="cursor-pointer flex flex-col items-center justify-center gap-3">
-                  <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-full">
-                    <UploadCloud size={24} />
-                  </div>
-                  <div className="font-semibold text-white">Select WebGL Build Folder</div>
-                  <div className="text-xs text-gray-500 max-w-xs">Upload your exported HTML5/WebGL folder. Must contain an <code className="text-gray-300">index.html</code>.</div>
-                  {/* @ts-expect-error - webkitdirectory is not in standard React typings */}
-                  <input type="file" webkitdirectory="" directory="" multiple className="hidden" onChange={(e) => setWebglFiles(e.target.files)} />
-                </label>
-                {webglFiles && webglFiles.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-[#27272a] text-sm text-emerald-400 font-mono">
-                    <CheckCircle size={14} className="inline mr-1" /> {webglFiles.length} files selected
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="border border-dashed border-[#3f3f46] rounded-lg p-5 text-center bg-[#0d0d12]">
+              <label className="cursor-pointer flex flex-col items-center justify-center gap-3">
+                <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-full">
+                  <UploadCloud size={24} />
+                </div>
+                <div className="font-semibold text-white">Select WebGL Build Folder</div>
+                <div className="text-xs text-gray-500 max-w-xs">Upload your exported HTML5/WebGL folder. Must contain an <code className="text-gray-300">index.html</code>.</div>
+                {/* @ts-expect-error - webkitdirectory is not in standard React typings */}
+                <input type="file" webkitdirectory="" directory="" multiple className="hidden" onChange={(e) => setWebglFiles(e.target.files)} />
+              </label>
+              {webglFiles && webglFiles.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-[#27272a] text-sm text-emerald-400 font-mono">
+                  <CheckCircle size={14} className="inline mr-1" /> {webglFiles.length} files selected
+                </div>
+              )}
+            </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-semibold text-gray-300 mb-1.5">Cover Image (Supabase)</label>
@@ -241,15 +263,15 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
                 <span className="truncate max-w-[200px]">
                   {coverFile ? coverFile.name : (form.coverUrl ? "Image Uploaded! Click to Change" : "Upload Cover Image")}
                 </span>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       setCoverFile(e.target.files[0]);
                     }
-                  }} 
+                  }}
                 />
               </label>
             </div>
@@ -292,16 +314,10 @@ function SubmissionCard({ sub }: { sub: any }) {
           <p className="text-sm text-gray-500">{sub.engine} · {sub.genre} · Submitted {new Date(sub.created_at).toLocaleDateString()}</p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          {sub.itchUrl && (
-            <a href={sub.itchUrl} target="_blank" rel="noreferrer"
-               className="flex items-center gap-1.5 px-4 py-2 bg-[#FA5C5C]/10 text-[#FA5C5C] border border-[#FA5C5C]/30 rounded-lg text-sm font-semibold hover:bg-[#FA5C5C]/20 transition">
-              <ExternalLink size={14}/> Itch.io
-            </a>
-          )}
           {sub.adminComment && (
             <button onClick={() => setOpen(o => !o)}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-white/5 text-gray-300 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition">
-              Admin Note {open ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
+              className="flex items-center gap-1.5 px-4 py-2 bg-white/5 text-gray-300 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition">
+              Admin Note {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
           )}
         </div>
@@ -328,13 +344,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setIsAuth(localStorage.getItem("gdc_admin_auth") === "true");
-    
+
     const role = localStorage.getItem("gdc_role") || "member";
     setUserRole(role.charAt(0).toUpperCase() + role.slice(1));
-    
+
     const name = localStorage.getItem("gdc_name");
     if (name) setUserName(name);
-    
+
     const gh = localStorage.getItem("gdc_github");
     if (gh) setGithubUrl(gh);
     const pf = localStorage.getItem("gdc_portfolio");
@@ -348,7 +364,7 @@ export default function DashboardPage() {
       setUserRole(r.charAt(0).toUpperCase() + r.slice(1));
       const n = localStorage.getItem("gdc_name");
       if (n) setUserName(n);
-      
+
       const gh = localStorage.getItem("gdc_github");
       if (gh) setGithubUrl(gh);
       const pf = localStorage.getItem("gdc_portfolio");
@@ -361,9 +377,9 @@ export default function DashboardPage() {
   }, []);
 
   const fetchSubmissions = async () => {
-    const email = localStorage.getItem("gdc_email");
-    if (!email) return;
-    const res = await fetch(`/api/games?email=${encodeURIComponent(email)}`);
+    const name = localStorage.getItem("gdc_name");
+    if (!name) return;
+    const res = await fetch(`/api/games?developer=${encodeURIComponent(name)}`);
     if (res.ok) {
       setSubmissions(await res.json());
     }
@@ -403,7 +419,7 @@ export default function DashboardPage() {
             onClick={() => setShowModal(true)}
             className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition"
           >
-            <Plus size={22}/> Submit New Game
+            <Plus size={22} /> Submit New Game
           </button>
         </div>
 
@@ -441,15 +457,15 @@ export default function DashboardPage() {
         <div className="bg-[#111118] border border-[#27272a] rounded-xl p-6">
           <h2 className="font-display text-3xl uppercase mb-5 text-[var(--secondary)]">Your Profile</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <InputField label="Display Name" id="pname" placeholder="Your name" value={userName} onChange={() => {}} readOnly />
+            <InputField label="Display Name" id="pname" placeholder="Your name" value={userName} onChange={() => { }} readOnly />
             <InputField label="GitHub URL" id="pgithub" type="url" placeholder="https://github.com/..." value={githubUrl} onChange={setGithubUrl} />
             <InputField label="Portfolio URL" id="pportfolio" type="url" placeholder="https://yoursite.dev" value={portfolioUrl} onChange={setPortfolioUrl} />
-            <InputField label="Role" id="prole" placeholder="Role" value={userRole} onChange={() => {}} readOnly />
+            <InputField label="Role" id="prole" placeholder="Role" value={userRole} onChange={() => { }} readOnly />
           </div>
           <div className="mt-5">
             <TextAreaField label="Bio" id="pbio" placeholder="Tell the community about yourself..." rows={3} value={bio} onChange={setBio} />
           </div>
-          <button 
+          <button
             onClick={handleUpdateProfile}
             className="mt-5 px-6 py-2.5 bg-[var(--secondary)] text-black font-bold rounded-lg hover:opacity-90 transition font-display uppercase tracking-wider"
           >

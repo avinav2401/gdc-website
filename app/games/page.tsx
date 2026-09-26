@@ -24,21 +24,21 @@ export default async function GamesPage() {
   const allGames = (approvedGames || []).map((g: any) => ({
     ...g,
 
-    // Supabase column names
+    // Supabase column names with fallbacks
     id: g.id,
     title: g.title,
-    developer: g.developer,
+    developer: g.developer || g.team || "GDC Member",
     tagline: g.tagline,
     description: g.description,
     engine: g.engine,
     genre: g.genre,
     platform: g.platform,
-    tags: g.tags,
+    tags: Array.isArray(g.tags) ? g.tags.join(",") : (g.tags || ""),
     status: g.status,
 
-    // MongoDB -> Supabase field names
-    coverUrl: g.cover_url,
-    itchUrl: g.itch_url,
+    // Image & Play links (supporting both schema formats)
+    coverUrl: g.cover_url || g.image_url,
+    itchUrl: g.itch_url || g.play_url,
     videoUrl: g.video_url,
   }));
 

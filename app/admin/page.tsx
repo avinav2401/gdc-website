@@ -66,12 +66,6 @@ function GameReviewCard({ game, onApprove, onReject }: { game: any; onApprove: (
           {game.description && <p className="text-gray-400 text-sm mt-2">{game.description}</p>}
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {game.itch_url && (
-            <a href={game.itch_url} target="_blank" rel="noreferrer"
-              className="flex items-center gap-1.5 px-4 py-2 text-sm bg-[#FA5C5C]/10 text-[#FA5C5C] border border-[#FA5C5C]/30 rounded-lg hover:bg-[#FA5C5C]/20 transition">
-              <ExternalLink size={14} /> View Game
-            </a>
-          )}
           <button onClick={() => setShowComment(s => !s)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-white/5 text-gray-300 border border-white/10 rounded-lg hover:bg-white/10 transition">
             <MessageSquare size={14} /> Note
           </button>

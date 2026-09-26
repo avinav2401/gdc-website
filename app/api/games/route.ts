@@ -4,15 +4,15 @@ import { supabase } from "@/lib/supabase";
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const email = searchParams.get("email");
+    const developer = searchParams.get("developer");
 
     let query = supabase
       .from("games")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (email) {
-      query = query.eq("user_email", email);
+    if (developer) {
+      query = query.eq("team", developer);
     }
 
     const { data, error } = await query;
@@ -41,21 +41,24 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Map camelCase (from dashboard) to snake_case (Supabase columns)
+    // Map frontend fields to Supabase 'games' table columns
+    const slug = (body.title || "game")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") + "-" + Date.now();
+
     const row = {
       title: body.title,
-      tagline: body.tagline,
-      description: body.description,
-      engine: body.engine,
-      genre: body.genre,
-      platform: body.platform,
-      tags: body.tags,
-      developer: body.developer,
-      itch_url: body.itchUrl,
-      cover_url: body.coverUrl,
-      video_url: body.videoUrl,
-      user_email: body.userEmail,
+      slug: slug,
+      team: body.developer || "Anonymous",
+      engine: body.engine || "Other",
+      description: body.description || body.tagline || "",
+      image_url: body.coverUrl || body.imageUrl || "",
+      play_url: body.itchUrl || body.playUrl || "",
+      video_url: body.videoUrl || "",
       status: "pending",
+      featured: false,
+      tags: typeof body.tags === "string" ? body.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : (body.tags || []),
     };
 
     const { data, error } = await supabase

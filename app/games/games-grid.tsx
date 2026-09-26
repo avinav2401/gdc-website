@@ -131,19 +131,11 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
                 Playing in Browser
               </span>
             </div>
-            
+
             <div className="flex items-center gap-3">
-              <a 
-                href={playingGame.itchUrl} 
-                target="_blank" 
-                rel="noreferrer"
-                className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white transition"
-              >
-                <ExternalLink size={14} /> Open in new tab
-              </a>
               <div className="w-px h-4 bg-gray-700 mx-2" />
-              <button 
-                onClick={() => setPlayingGame(null)} 
+              <button
+                onClick={() => setPlayingGame(null)}
                 className="p-2 bg-gray-800 hover:bg-red-500 hover:text-white rounded transition text-gray-400"
               >
                 <X size={20} />
@@ -154,8 +146,17 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           {/* Game Frame */}
           <div className="flex-1 w-full h-full p-4 md:p-8 flex items-center justify-center relative bg-[url('/grid.svg')]">
             <div className="w-full max-w-6xl aspect-video bg-black border-4 border-[#00F2FE] shadow-[0_0_40px_rgba(0,242,254,0.15)] relative group">
-              <iframe 
-                src={playingGame.itchUrl} 
+              <iframe
+                src={(() => {
+                  try {
+                    const url = playingGame.itchUrl || "";
+                    const parts = url.split("/games/");
+                    if (parts.length > 1) {
+                      return `/api/play/${parts[1]}`;
+                    }
+                  } catch (e) {}
+                  return playingGame.itchUrl;
+                })()}
                 className="w-full h-full"
                 allow="autoplay; fullscreen; vr"
                 allowFullScreen
