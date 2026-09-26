@@ -17,6 +17,9 @@ export function Footer() {
     <footer className="relative border-t-8 border-white bg-[#07080D] text-white overflow-hidden">
       {/* Top Neon Accent Bar */}
       <div className="h-2 w-full bg-[#00F2FE]" />
+      
+      {/* Right Neon Accent Bar */}
+      <div className="absolute top-2 right-0 bottom-0 w-2 bg-[#FF007F]" />
 
       {/* Background Hatch Texture */}
       <div className="absolute inset-0 hatch opacity-10 pointer-events-none" />
