@@ -73,7 +73,7 @@ export default async function GamesPage() {
           }}
         />
 
-        <div className="mx-auto max-w-7xl relative z-10">
+        <div className="mx-auto max-w-7xl relative">
           {/* Header Section */}
           <div className="mb-12">
             <span className="bg-[#FF007F] text-white text-xs font-bold uppercase tracking-widest px-3 py-1 border-2 border-white inline-block mb-3 shadow-[3px_3px_0px_#00F2FE]">

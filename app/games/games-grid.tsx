@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createPortal } from "react-dom";
 import { ExternalLink, Play, X, Maximize2 } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
 
@@ -119,7 +118,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
       </div>
 
       {/* ─── WebGL Player Modal ────────────────────────────────────────────── */}
-      {playingGame && typeof document !== "undefined" && createPortal(
+      {playingGame && (
         <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col backdrop-blur-md">
           {/* Top Bar */}
           <div className="h-14 border-b-2 border-gray-800 flex items-center justify-between px-6 bg-[#07080D]">
@@ -163,8 +162,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
               />
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );
