@@ -1,11 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ExternalLink, Play, X, Maximize2 } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
 
 export default function GamesGrid({ allGames }: { allGames: any[] }) {
   const [playingGame, setPlayingGame] = useState<any | null>(null);
+
+  const handlePlayGame = (g: any) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setPlayingGame(g);
+  };
+
+  useEffect(() => {
+    if (playingGame) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [playingGame]);
 
   if (allGames.length === 0) {
     return (
@@ -27,7 +43,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           >
             <div>
               {/* Media Container */}
-              <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4 group cursor-pointer" onClick={() => g.itchUrl && setPlayingGame(g)}>
+              <div className="aspect-video bg-[#141622] border-2 border-white relative overflow-hidden flex items-center justify-center mb-4 group cursor-pointer" onClick={() => g.itchUrl && handlePlayGame(g)}>
                 {g.coverUrl ? (
                   <img
                     src={g.coverUrl}
@@ -102,7 +118,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
 
               {g.itchUrl ? (
                 <button
-                  onClick={() => setPlayingGame(g)}
+                  onClick={() => handlePlayGame(g)}
                   className="px-4 py-2 bg-[#FF007F] text-white font-bold uppercase tracking-widest text-[10px] border border-white hover:bg-[#00F2FE] hover:text-black transition-colors flex items-center justify-center gap-2"
                 >
                   <Play size={12} className="fill-current" /> Play
@@ -143,24 +159,23 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           </div>
 
           {/* Game Frame */}
-          <div className="flex-1 w-full h-full p-4 md:p-8 flex items-center justify-center relative bg-[url('/grid.svg')]">
-            <div className="w-full max-w-6xl aspect-video bg-black border-4 border-[#00F2FE] shadow-[0_0_40px_rgba(0,242,254,0.15)] relative group">
-              <iframe
-                src={(() => {
-                  try {
-                    const url = playingGame.itchUrl || "";
-                    const parts = url.split("/games/");
-                    if (parts.length > 1) {
-                      return `/api/play/${parts[1]}`;
-                    }
-                  } catch (e) {}
-                  return playingGame.itchUrl;
-                })()}
-                className="w-full h-full"
-                allow="autoplay; fullscreen; vr"
-                allowFullScreen
-              />
-            </div>
+          <div className="flex-1 w-full h-full p-2 md:p-4 flex items-center justify-center relative bg-[url('/grid.svg')]">
+            <iframe
+              src={(() => {
+                try {
+                  const url = playingGame.itchUrl || "";
+                  const parts = url.split("/games/");
+                  if (parts.length > 1) {
+                    return `/api/play/${parts[1]}`;
+                  }
+                } catch (e) {}
+                return playingGame.itchUrl;
+              })()}
+              className="w-full h-full border-none"
+              style={{ backgroundColor: 'transparent' }}
+              allow="autoplay; fullscreen; vr"
+              allowFullScreen
+            />
           </div>
         </div>
       )}
