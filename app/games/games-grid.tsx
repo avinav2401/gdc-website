@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ExternalLink, Play, X, Maximize2, MonitorPlay } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
+import ThreeDArcade from "./3d-arcade";
 
 export default function GamesGrid({ allGames }: { allGames: any[] }) {
   const [playingGame, setPlayingGame] = useState<any | null>(null);
@@ -164,30 +165,9 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
             </button>
           </div>
 
-          {/* Game Frame Area */}
-          <div className="flex-1 w-full h-full p-4 md:p-8 flex flex-col items-center justify-center relative bg-[#07080D]">
-            {/* Simple Clean Box */}
-            <div className="w-full max-w-6xl aspect-video bg-black shadow-2xl relative">
-              <iframe
-                src={(() => {
-                  try {
-                    const url = playingGame.itchUrl || "";
-                    const parts = url.split("/games/");
-                    if (parts.length > 1) {
-                      return `/api/play/${parts[1]}`;
-                    }
-                  } catch (e) {}
-                  return playingGame.itchUrl;
-                })()}
-                className="w-full h-full border-none"
-                allow="autoplay; fullscreen; vr"
-                allowFullScreen
-              />
-            </div>
-
-            <p className="mt-4 text-gray-500 font-mono text-xs tracking-widest uppercase">
-              Press <span className="text-white border border-gray-700 px-1 rounded-sm shadow-sm bg-gray-900">ESC</span> or click Close Game to exit
-            </p>
+          {/* 3D Game Frame Area */}
+          <div className="flex-1 w-full h-full p-0 flex flex-col relative bg-[#07080D]">
+            <ThreeDArcade itchUrl={playingGame.itchUrl} title={playingGame.title} />
           </div>
         </div>
       )}
