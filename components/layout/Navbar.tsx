@@ -56,26 +56,25 @@ export function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b-4 ${
         scrolled 
-          ? "bg-[#07080D]/80 backdrop-blur-xl border-[#00F2FE]/50 shadow-[0_4px_30px_rgba(0,242,254,0.15)]" 
-          : "bg-transparent border-transparent"
+          ? "bg-[#0B0C15] border-[#00F2FE] shadow-[0_4px_0px_rgba(0,242,254,0.5)]" 
+          : "bg-[#07080D] border-transparent"
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 flex h-16 items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3 group relative">
-          <div className="absolute -inset-2 bg-gradient-to-r from-[#00F2FE] to-[#FF007F] opacity-0 group-hover:opacity-40 blur-lg transition duration-500 rounded-full" />
           <img
             src="/logo.png"
             alt="GDC Logo"
-            className="w-10 h-10 border-2 border-white/80 [image-rendering:pixelated] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-[0_0_10px_rgba(255,0,127,0.5)] relative z-10"
+            className="w-10 h-10 border-2 border-white [image-rendering:pixelated] group-hover:scale-110 transition-transform duration-200 shadow-[2px_2px_0_#FF007F] group-hover:shadow-[4px_4px_0_#00F2FE] relative z-10"
           />
           <div className="flex flex-col leading-none relative z-10">
-            <span className="font-black text-xl sm:text-2xl tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 group-hover:from-[#00F2FE] group-hover:to-white transition-all uppercase drop-shadow-md">
+            <span className="font-arcade text-xl sm:text-2xl tracking-widest text-white group-hover:text-[#00F2FE] transition-colors drop-shadow-[2px_2px_0_#FF007F]">
               GDC
             </span>
-            <span className="text-[7px] sm:text-[9px] text-[#00F2FE] uppercase tracking-[0.2em] font-bold group-hover:text-[#FF007F] transition-colors">
+            <span className="text-[7px] sm:text-[9px] text-[#00F2FE] font-arcade tracking-[0.2em] group-hover:text-[#FF007F] transition-colors">
               Game Dev Community
             </span>
           </div>
@@ -87,10 +86,9 @@ export function Navbar() {
             <Link
               key={href}
               href={href}
-              className="relative px-2 py-1 font-bold text-sm uppercase tracking-widest text-gray-400 hover:text-white transition-colors group overflow-hidden"
+              className="font-arcade text-sm uppercase tracking-widest text-gray-300 hover:text-white hover:drop-shadow-[2px_2px_0_#00F2FE] transition-all"
             >
-              <span className="relative z-10">{label}</span>
-              <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#00F2FE] to-[#FF007F] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              {label}
             </Link>
           ))}
         </div>
@@ -100,41 +98,39 @@ export function Navbar() {
           {!role ? (
             <Link
               href="/auth"
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-white overflow-hidden rounded-sm border border-white/20 bg-white/5 hover:border-[#FF007F]/50 transition-all"
+              className="px-4 py-2 font-arcade text-xs text-white border-2 border-white hover:bg-white hover:text-black transition-colors shadow-[2px_2px_0_#FF007F] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#FF007F]"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FF007F]/20 to-[#00F2FE]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md" />
-              <span className="relative z-10 drop-shadow-md">Login</span>
+              Login
             </Link>
           ) : role === "admin" ? (
             <Link
               href="/admin"
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-black bg-[#00F2FE] overflow-hidden rounded-sm hover:scale-105 transition-transform shadow-[0_0_15px_rgba(0,242,254,0.4)] hover:shadow-[0_0_25px_rgba(0,242,254,0.6)]"
+              className="px-4 py-2 font-arcade text-xs text-black bg-[#00F2FE] border-2 border-[#00F2FE] hover:bg-white hover:border-white transition-colors shadow-[2px_2px_0_#FF007F] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#FF007F]"
             >
-              <span className="relative z-10">Admin Portal</span>
+              Admin Portal
             </Link>
           ) : (
             <Link
               href="/dashboard"
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-white overflow-hidden rounded-sm border border-white/20 bg-white/5 hover:border-[#00F2FE]/50 transition-all"
+              className="px-4 py-2 font-arcade text-xs text-white border-2 border-white hover:bg-white hover:text-black transition-colors shadow-[2px_2px_0_#FF007F] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#FF007F]"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#00F2FE]/20 to-[#FF007F]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md" />
-              <span className="relative z-10 drop-shadow-md">Dashboard</span>
+              Dashboard
             </Link>
           )}
           
           {role && (
             <Link
               href="/dashboard"
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-white bg-[#FF007F] overflow-hidden rounded-sm hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,0,127,0.4)] hover:shadow-[0_0_25px_rgba(255,0,127,0.6)]"
+              className="px-4 py-2 font-arcade text-xs text-white bg-[#FF007F] border-2 border-[#FF007F] hover:bg-[#00F2FE] hover:border-[#00F2FE] hover:text-black transition-colors shadow-[2px_2px_0_#00F2FE] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#00F2FE]"
             >
-              <span className="relative z-10">Submit Game</span>
+              Submit Game
             </Link>
           )}
           
           {role && (
             <button
               onClick={handleLogout}
-              className="px-3 py-2 font-bold text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              className="font-arcade text-xs text-gray-500 hover:text-white transition-colors"
             >
               Logout
             </button>
@@ -153,26 +149,26 @@ export function Navbar() {
 
       {/* Mobile Panel */}
       {open && (
-        <div className="md:hidden bg-[#07080D]/95 backdrop-blur-xl border-b border-[#00F2FE]/20 px-4 py-6 space-y-4 shadow-2xl absolute top-full left-0 right-0 max-h-[calc(100vh-4rem)] overflow-y-auto">
-          <div className="flex flex-col gap-2">
+        <div className="md:hidden bg-[#0B0C15] border-b-4 border-[#00F2FE] px-4 py-6 space-y-4 shadow-[0_10px_0px_rgba(0,242,254,0.3)] absolute top-full left-0 right-0 max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="flex flex-col gap-4">
             {navLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="block px-4 py-3 font-bold text-sm uppercase tracking-widest text-gray-300 hover:text-white hover:bg-white/5 rounded-sm transition-colors border-l-2 border-transparent hover:border-[#00F2FE]"
+                className="block font-arcade text-sm text-gray-300 hover:text-white hover:drop-shadow-[2px_2px_0_#00F2FE] transition-all"
               >
                 {label}
               </Link>
             ))}
           </div>
           
-          <div className="pt-4 border-t border-gray-800/50 flex flex-col gap-3">
+          <div className="pt-6 border-t-2 border-[#FF007F]/30 flex flex-col gap-4">
             {!role ? (
               <Link
                 href="/auth"
                 onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-white/5 border border-white/10 rounded-sm hover:bg-white/10 transition-colors"
+                className="block text-center px-4 py-3 font-arcade text-sm text-white border-2 border-white hover:bg-white hover:text-black transition-colors shadow-[2px_2px_0_#FF007F]"
               >
                 Login
               </Link>
@@ -180,7 +176,7 @@ export function Navbar() {
               <Link
                 href="/admin"
                 onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-black bg-[#00F2FE] rounded-sm shadow-[0_0_15px_rgba(0,242,254,0.3)]"
+                className="block text-center px-4 py-3 font-arcade text-sm text-black bg-[#00F2FE] border-2 border-[#00F2FE] hover:bg-white hover:border-white transition-colors shadow-[2px_2px_0_#FF007F]"
               >
                 Admin Portal
               </Link>
@@ -188,7 +184,7 @@ export function Navbar() {
               <Link
                 href="/dashboard"
                 onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-white/5 border border-white/10 rounded-sm hover:bg-white/10 transition-colors"
+                className="block text-center px-4 py-3 font-arcade text-sm text-white border-2 border-white hover:bg-white hover:text-black transition-colors shadow-[2px_2px_0_#FF007F]"
               >
                 Dashboard
               </Link>
@@ -198,7 +194,7 @@ export function Navbar() {
               <Link
                 href="/dashboard"
                 onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-[#FF007F] rounded-sm shadow-[0_0_15px_rgba(255,0,127,0.3)]"
+                className="block text-center px-4 py-3 font-arcade text-sm text-white bg-[#FF007F] border-2 border-[#FF007F] hover:bg-[#00F2FE] hover:border-[#00F2FE] hover:text-black transition-colors shadow-[2px_2px_0_#00F2FE]"
               >
                 Submit Game
               </Link>
@@ -207,7 +203,7 @@ export function Navbar() {
             {role && (
               <button
                 onClick={handleLogout}
-                className="block w-full text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-gray-500 hover:text-white hover:bg-white/5 rounded-sm transition-colors mt-2 pb-8"
+                className="block w-full text-center px-4 py-3 font-arcade text-sm text-gray-500 hover:text-white transition-colors pb-8"
               >
                 Logout
               </button>
