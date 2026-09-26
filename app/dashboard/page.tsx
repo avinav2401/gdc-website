@@ -141,7 +141,7 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
           cacheControl: "3600",
           upsert: false,
           contentType,
-          // @ts-ignore - Supabase types don't list contentEncoding, but the API accepts it
+          // @ts-expect-error - Supabase types don't list contentEncoding, but the API accepts it
           contentEncoding,
         });
 

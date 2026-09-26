@@ -44,7 +44,7 @@ function TabButton({ label, active, onClick, icon: Icon }: { label: string; acti
 
 // ─── Game Approval ──────────────────────────────────────────────────────────
 
-function GameReviewCard({ game, onApprove, onReject }: { game: any; onApprove: (id: string, note: string) => void; onReject: (id: string, note: string) => void }) {
+function GameReviewCard({ game, onApprove, onReject, onDelete }: { game: any; onApprove: (id: string, note: string) => void; onReject: (id: string, note: string) => void; onDelete: (id: string) => void }) {
   const [comment, setComment] = useState("");
   const [showComment, setShowComment] = useState(false);
   return (
@@ -74,6 +74,9 @@ function GameReviewCard({ game, onApprove, onReject }: { game: any; onApprove: (
           </button>
           <button onClick={() => onReject(game.id, comment)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-500/15 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/25 transition font-semibold">
             <XCircle size={14} /> Reject
+          </button>
+          <button onClick={() => onDelete(game.id)} className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-900/40 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-900/60 hover:text-red-400 transition font-semibold">
+            <Trash2 size={14} /> Delete
           </button>
         </div>
       </div>
@@ -545,6 +548,7 @@ function GamesCMS() {
   };
   
   const del = async (id: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this game? This action cannot be undone.")) return;
     await fetch(`/api/games/${id}`, { method: "DELETE" });
     fetchItems();
   };
@@ -878,6 +882,12 @@ export default function AdminPage() {
     fetchGames();
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this game? This action cannot be undone.")) return;
+    await fetch(`/api/games/${id}`, { method: "DELETE" });
+    fetchGames();
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('gdc_admin_auth');
     router.push('/auth');
@@ -948,7 +958,7 @@ export default function AdminPage() {
                 <p className="text-sm mt-2">No pending game submissions.</p>
               </div>
             ) : pendingGames.map(game => (
-              <GameReviewCard key={game.id} game={game} onApprove={handleApprove} onReject={handleReject} />
+              <GameReviewCard key={game.id} game={game} onApprove={handleApprove} onReject={handleReject} onDelete={handleDelete} />
             ))}
           </div>
         )}

@@ -23,7 +23,7 @@ export function Navbar() {
     localStorage.removeItem("gdc_bio");
     setRole(null);
     setIsAuth(false);
-    window.location.href = "/auth";
+    router.push("/auth");
   };
 
   useEffect(() => {
