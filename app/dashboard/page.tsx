@@ -1,10 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ComicButton } from "@/components/ui/ComicButton";
 import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon, UploadCloud, Link as LinkIcon, Gamepad2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
-import { SubmitGameModal } from "@/components/ui/SubmitGameModal";
+import { SubmitGameModal, InputField, TextAreaField } from "@/components/ui/SubmitGameModal";
+
+function StatusBadge({ status }: { status: "pending" | "approved" | "rejected" }) {
+  if (status === "approved")
+    return <span className="flex items-center gap-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-3 py-1 text-sm font-bold rounded-full"><CheckCircle size={14} /> Approved</span>;
+  if (status === "rejected")
+    return <span className="flex items-center gap-1 bg-red-500/20 text-red-400 border border-red-500/40 px-3 py-1 text-sm font-bold rounded-full"><AlertCircle size={14} /> Rejected</span>;
+  return <span className="flex items-center gap-1 bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 px-3 py-1 text-sm font-bold rounded-full"><Clock size={14} /> Pending Review</span>;
+}
 
 // ─── Submission Card ─────────────────────────────────────────────────────
 function SubmissionCard({ sub }: { sub: any }) {

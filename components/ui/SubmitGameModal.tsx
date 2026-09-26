@@ -26,7 +26,7 @@ function getWebGLMimeType(fileName: string) {
   return { contentType, contentEncoding };
 }
 
-function InputField({ label, id, type = "text", placeholder, required, value, onChange, readOnly }: {
+export function InputField({ label, id, type = "text", placeholder, required, value, onChange, readOnly }: {
   label: string; id: string; type?: string; placeholder?: string;
   required?: boolean; value: string; onChange: (v: string) => void;
   readOnly?: boolean;
@@ -46,7 +46,7 @@ function InputField({ label, id, type = "text", placeholder, required, value, on
   );
 }
 
-function TextAreaField({ label, id, placeholder, required, value, onChange, rows = 4 }: {
+export function TextAreaField({ label, id, placeholder, required, value, onChange, rows = 4 }: {
   label: string; id: string; placeholder?: string;
   required?: boolean; value: string; onChange: (v: string) => void; rows?: number;
 }) {
@@ -64,7 +64,7 @@ function TextAreaField({ label, id, placeholder, required, value, onChange, rows
   );
 }
 
-function SelectField({ label, id, options, required, value, onChange }: {
+export function SelectField({ label, id, options, required, value, onChange }: {
   label: string; id: string; options: string[]; required?: boolean;
   value: string; onChange: (v: string) => void;
 }) {
