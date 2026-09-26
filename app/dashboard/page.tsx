@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ComicButton } from "@/components/ui/ComicButton";
-import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon, UploadCloud, Link as LinkIcon } from "lucide-react";
+import { ExternalLink, Plus, X, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronUp, Image as ImageIcon, UploadCloud, Link as LinkIcon, Gamepad2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 const engineOptions = ["Unity", "Unreal Engine", "Godot 4", "HTML5 Canvas", "Pygame", "Phaser", "MonoGame", "Other"];
@@ -197,11 +197,11 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
   if (submitted) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div className="bg-[#111118] border border-[#27272a] rounded-2xl p-10 max-w-md w-full text-center shadow-2xl">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 max-w-md w-full text-center shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           <div className="text-6xl mb-4">🎮</div>
-          <h2 className="font-display text-4xl uppercase text-[var(--primary)] mb-4">Submitted!</h2>
-          <p className="text-gray-400 mb-8">Your game has been submitted for review. You'll be notified once an admin reviews it.</p>
-          <ComicButton variant="primary" className="w-full" onClick={onClose}>Back to Dashboard</ComicButton>
+          <h2 className="text-4xl font-black uppercase tracking-tighter text-[var(--primary)] mb-4">Submitted!</h2>
+          <p className="text-gray-400 mb-8 font-medium">Your game has been submitted for review. You'll be notified once an admin reviews it.</p>
+          <button className="w-full py-3 bg-[var(--primary)] text-black font-black text-sm uppercase tracking-widest rounded-xl hover:bg-opacity-90 transition-all shadow-[0_0_20px_rgba(56,189,248,0.3)]" onClick={onClose}>Back to Dashboard</button>
         </div>
       </div>
     );
@@ -209,10 +209,10 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#111118] border border-[#27272a] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-[#111118] border-b border-[#27272a] px-8 py-5 flex items-center justify-between">
-          <h2 className="font-display text-3xl uppercase tracking-wider text-[var(--primary)]">Submit a Game</h2>
+        <div className="sticky top-0 z-10 bg-black/50 backdrop-blur-lg border-b border-white/10 px-8 py-5 flex items-center justify-between">
+          <h2 className="text-3xl font-black uppercase tracking-tight text-[var(--primary)]">Submit a Game</h2>
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white">
             <X size={24} />
           </button>
@@ -286,11 +286,11 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
             By submitting, you confirm this game was made by GDC members and agree to have it listed publicly upon admin approval.
           </p>
 
-          <div className="flex gap-4 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-3 rounded-lg border border-[#3f3f46] text-gray-400 hover:bg-white/5 transition font-semibold">
+          <div className="flex gap-4 pt-4 border-t border-white/10">
+            <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-white/20 text-gray-300 hover:bg-white/10 transition-all font-bold text-sm uppercase tracking-wider">
               Cancel
             </button>
-            <button type="submit" disabled={uploading} className="flex-1 py-3 rounded-lg bg-[var(--primary)] text-black font-bold hover:opacity-90 transition font-display text-lg uppercase tracking-wider disabled:opacity-50">
+            <button type="submit" disabled={uploading} className="flex-1 py-3 rounded-xl bg-[var(--primary)] text-black font-black hover:opacity-90 transition-all text-sm uppercase tracking-widest disabled:opacity-50 shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.5)]">
               {uploading ? `Uploading... ${uploadProgress}%` : "Submit for Review"}
             </button>
           </div>
@@ -304,11 +304,11 @@ function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
 function SubmissionCard({ sub }: { sub: any }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="bg-[#111118] border border-[#27272a] rounded-xl overflow-hidden">
+    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:border-white/20 transition-colors duration-300">
       <div className="p-5 flex flex-col md:flex-row justify-between gap-4">
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3 mb-2">
-            <h3 className="font-display text-2xl uppercase">{sub.title}</h3>
+            <h3 className="text-2xl font-black uppercase tracking-tight text-white">{sub.title}</h3>
             <StatusBadge status={sub.status} />
           </div>
           <p className="text-sm text-gray-500">{sub.engine} · {sub.genre} · Submitted {new Date(sub.created_at).toLocaleDateString()}</p>
@@ -405,21 +405,28 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-white py-12">
+    <div className="min-h-screen bg-black text-white pt-24 pb-12 relative overflow-hidden">
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[var(--primary)]/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-[var(--secondary)]/10 rounded-full blur-[120px] pointer-events-none" />
+      
       {showModal && <SubmitGameModal onClose={() => setShowModal(false)} onSubmit={handleSubmit} />}
 
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4 max-w-5xl relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div className="mb-10 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
           <div>
-            <p className="text-[var(--primary)] font-semibold text-sm uppercase tracking-widest mb-1">Developer Portal</p>
-            <h1 className="font-display text-5xl md:text-6xl uppercase">Dashboard</h1>
+            <p className="text-[var(--primary)] text-sm font-bold uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" /> Developer Portal
+            </p>
+            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500">
+              Dashboard
+            </h1>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-black font-display text-xl uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition"
+            className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-black font-black text-sm uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.5)]"
           >
-            <Plus size={22} /> Submit New Game
+            <Plus size={18} /> Submit New Game
           </button>
         </div>
 
@@ -430,22 +437,25 @@ export default function DashboardPage() {
             { label: "Approved", value: submissions.filter(s => s.status === "approved").length },
             { label: "Pending", value: submissions.filter(s => s.status === "pending").length },
           ].map(stat => (
-            <div key={stat.label} className="bg-[#111118] border border-[#27272a] rounded-xl p-5 text-center">
-              <div className="font-display text-4xl text-[var(--primary)]">{stat.value}</div>
-              <div className="text-gray-500 text-sm mt-1">{stat.label}</div>
+            <div key={stat.label} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)] relative group overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative z-10 font-black text-5xl tracking-tighter text-[var(--primary)] drop-shadow-md">{stat.value}</div>
+              <div className="relative z-10 text-gray-400 text-xs mt-2 uppercase tracking-widest font-semibold">{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* Submissions */}
-        <div className="mb-8">
-          <h2 className="font-display text-3xl uppercase mb-5">Your Submissions</h2>
+        <div className="mb-10">
+          <h2 className="text-3xl font-black uppercase tracking-tighter mb-6 text-white">Your Submissions</h2>
           <div className="space-y-4">
             {submissions.length === 0 ? (
-              <div className="text-center py-16 text-gray-600">
-                <div className="text-5xl mb-4">🎮</div>
-                <p className="font-display text-2xl uppercase">No Games Yet</p>
-                <p className="text-sm mt-2">Hit "Submit New Game" to get started.</p>
+              <div className="text-center py-20 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl shadow-inner">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/5 border border-white/10 mb-6 text-gray-400">
+                  <Gamepad2 size={40} />
+                </div>
+                <p className="text-3xl font-black uppercase tracking-tighter text-white">No Games Yet</p>
+                <p className="text-gray-400 mt-2 font-medium">Hit "Submit New Game" to get started.</p>
               </div>
             ) : (
               submissions.map(sub => <SubmissionCard key={sub.id} sub={sub} />)
@@ -454,20 +464,21 @@ export default function DashboardPage() {
         </div>
 
         {/* Profile card */}
-        <div className="bg-[#111118] border border-[#27272a] rounded-xl p-6">
-          <h2 className="font-display text-3xl uppercase mb-5 text-[var(--secondary)]">Your Profile</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <h2 className="text-3xl font-black uppercase tracking-tighter mb-6 text-[var(--secondary)] relative z-10">Your Profile</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
             <InputField label="Display Name" id="pname" placeholder="Your name" value={userName} onChange={() => { }} readOnly />
             <InputField label="GitHub URL" id="pgithub" type="url" placeholder="https://github.com/..." value={githubUrl} onChange={setGithubUrl} />
             <InputField label="Portfolio URL" id="pportfolio" type="url" placeholder="https://yoursite.dev" value={portfolioUrl} onChange={setPortfolioUrl} />
             <InputField label="Role" id="prole" placeholder="Role" value={userRole} onChange={() => { }} readOnly />
           </div>
-          <div className="mt-5">
+          <div className="mt-5 relative z-10">
             <TextAreaField label="Bio" id="pbio" placeholder="Tell the community about yourself..." rows={3} value={bio} onChange={setBio} />
           </div>
           <button
             onClick={handleUpdateProfile}
-            className="mt-5 px-6 py-2.5 bg-[var(--secondary)] text-black font-bold rounded-lg hover:opacity-90 transition font-display uppercase tracking-wider"
+            className="mt-6 px-8 py-3 bg-white text-black font-black text-sm uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] relative z-10"
           >
             Update Profile
           </button>
