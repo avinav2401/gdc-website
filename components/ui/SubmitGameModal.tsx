@@ -119,7 +119,7 @@ export function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; on
           cacheControl: "3600",
           upsert: false,
           contentType,
-          // @ts-expect-error
+          // @ts-expect-error - Supabase Storage API accepts contentEncoding but types are incomplete
           contentEncoding,
         });
 
@@ -215,7 +215,7 @@ export function SubmitGameModal({ onClose, onSubmit }: { onClose: () => void; on
                 </div>
                 <div className="font-semibold text-white">Select WebGL Build Folder</div>
                 <div className="text-xs text-gray-500 max-w-xs">Upload your exported HTML5/WebGL folder. Must contain an <code className="text-gray-300">index.html</code>.</div>
-                {/* @ts-expect-error */}
+                {/* @ts-expect-error - webkitdirectory is non-standard but required for folder selection */}
                 <input type="file" webkitdirectory="" directory="" multiple className="hidden" onChange={(e) => setWebglFiles(e.target.files)} />
               </label>
               {webglFiles && webglFiles.length > 0 && (
