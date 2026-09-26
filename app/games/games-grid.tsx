@@ -165,24 +165,36 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           </div>
 
           {/* Game Frame Area */}
-          <div className="flex-1 w-full h-full p-0 flex flex-col relative bg-[#07080D]">
-            <iframe
-              src={(() => {
-                try {
-                  const url = playingGame.itchUrl || "";
-                  const parts = url.split("/games/");
-                  if (parts.length > 1) {
-                    return `/api/play/${parts[1]}`;
-                  }
-                } catch (e) {}
-                return playingGame.itchUrl;
-              })()}
-              className="w-full h-full border-none bg-black relative z-10"
-              style={{ backgroundColor: 'transparent' }}
-              allow="autoplay; fullscreen; vr"
-              allowFullScreen
-            />
+          <div className="flex-1 w-full h-full p-4 md:p-8 flex flex-col items-center justify-center relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#161B26] to-[#07080D]">
+            {/* The "Screen" */}
+            <div className="w-full h-full max-w-[1400px] max-h-[85vh] bg-black border-4 border-gray-800 relative group rounded-md p-2 shadow-[0_0_80px_rgba(0,242,254,0.15)] flex flex-col">
+              {/* Inner glowing bezel */}
+              <div className="flex-1 w-full h-full border-2 border-[#00F2FE] relative overflow-hidden shadow-[inset_0_0_30px_rgba(0,242,254,0.3)] bg-black">
+                {/* CRT Scanline Overlay specifically for the game area */}
+                <div className="absolute inset-0 pointer-events-none opacity-10 z-20" style={{ background: "repeating-linear-gradient(to bottom, transparent 0, transparent 2px, #000 3px)" }} />
+                
+                <iframe
+                  src={(() => {
+                    try {
+                      const url = playingGame.itchUrl || "";
+                      const parts = url.split("/games/");
+                      if (parts.length > 1) {
+                        return `/api/play/${parts[1]}`;
+                      }
+                    } catch (e) {}
+                    return playingGame.itchUrl;
+                  })()}
+                  className="w-full h-full border-none bg-black relative z-10"
+                  style={{ backgroundColor: 'transparent' }}
+                  allow="autoplay; fullscreen; vr"
+                  allowFullScreen
+                />
+              </div>
+            </div>
 
+            <p className="mt-4 text-gray-500 font-mono text-xs tracking-widest uppercase">
+              Press <span className="text-white border border-gray-700 px-1 rounded-sm shadow-sm bg-gray-900">ESC</span> or click Close Game to exit
+            </p>
           </div>
         </div>
       )}
