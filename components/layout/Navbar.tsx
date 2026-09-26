@@ -96,29 +96,28 @@ export function Navbar() {
         </div>
 
         {/* CTA Buttons */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-6">
           {!role ? (
             <Link
               href="/auth"
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-white overflow-hidden rounded-sm border border-white/20 bg-white/5 hover:border-[#FF007F]/50 transition-all"
+              className="font-sans text-sm font-semibold text-gray-300 hover:text-white transition-colors"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FF007F]/20 to-[#00F2FE]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md" />
-              <span className="relative z-10 drop-shadow-md">Login</span>
+              Login
             </Link>
           ) : role === "admin" ? (
             <Link
               href="/admin"
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-black bg-[#00F2FE] overflow-hidden rounded-sm hover:scale-105 transition-transform shadow-[0_0_15px_rgba(0,242,254,0.4)] hover:shadow-[0_0_25px_rgba(0,242,254,0.6)]"
+              className="font-sans text-sm font-semibold text-[#00F2FE] hover:text-white transition-colors"
             >
-              <span className="relative z-10">Admin Portal</span>
+              Admin Portal
             </Link>
           ) : (
             <Link
               href="/dashboard"
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-white overflow-hidden rounded-sm border border-white/20 bg-white/5 hover:border-[#00F2FE]/50 transition-all"
+              className="font-sans text-sm font-semibold text-gray-300 hover:text-white transition-colors flex items-center gap-2"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#00F2FE]/20 to-[#FF007F]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md" />
-              <span className="relative z-10 drop-shadow-md">Dashboard</span>
+              <div className="w-2 h-2 rounded-full bg-[#00F2FE]" />
+              Dashboard
             </Link>
           )}
           
@@ -131,16 +130,16 @@ export function Navbar() {
                   router.push("/dashboard?action=submit");
                 }
               }}
-              className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-white bg-[#FF007F] overflow-hidden rounded-sm hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,0,127,0.4)] hover:shadow-[0_0_25px_rgba(255,0,127,0.6)]"
+              className="relative group px-6 py-2.5 font-sans font-bold text-sm text-white bg-gradient-to-r from-[#FF007F] to-[#7928CA] rounded-full hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,0,127,0.5)] hover:shadow-[0_0_30px_rgba(255,0,127,0.7)] border border-white/20"
             >
-              <span className="relative z-10">Submit Game</span>
+              Submit Game
             </button>
           )}
           
           {role && (
             <button
               onClick={handleLogout}
-              className="px-3 py-2 font-bold text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              className="font-sans text-xs font-medium text-gray-500 hover:text-white transition-colors"
             >
               Logout
             </button>
@@ -178,7 +177,7 @@ export function Navbar() {
               <Link
                 href="/auth"
                 onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-white/5 border border-white/10 rounded-sm hover:bg-white/10 transition-colors"
+                className="block text-center px-4 py-3 font-sans font-bold text-sm text-gray-300 hover:text-white transition-colors"
               >
                 Login
               </Link>
@@ -186,7 +185,7 @@ export function Navbar() {
               <Link
                 href="/admin"
                 onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-black bg-[#00F2FE] rounded-sm shadow-[0_0_15px_rgba(0,242,254,0.3)]"
+                className="block text-center px-4 py-3 font-sans font-bold text-sm text-[#00F2FE] hover:text-white transition-colors"
               >
                 Admin Portal
               </Link>
@@ -194,7 +193,7 @@ export function Navbar() {
               <Link
                 href="/dashboard"
                 onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-white/5 border border-white/10 rounded-sm hover:bg-white/10 transition-colors"
+                className="block text-center px-4 py-3 font-sans font-bold text-sm text-gray-300 hover:text-white transition-colors"
               >
                 Dashboard
               </Link>
@@ -210,7 +209,7 @@ export function Navbar() {
                     router.push("/dashboard?action=submit");
                   }
                 }}
-                className="block w-full text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-[#FF007F] rounded-sm shadow-[0_0_15px_rgba(255,0,127,0.3)]"
+                className="block w-full text-center px-4 py-3 font-sans font-bold text-sm text-white bg-gradient-to-r from-[#FF007F] to-[#7928CA] rounded-xl shadow-[0_0_15px_rgba(255,0,127,0.4)] border border-white/20"
               >
                 Submit Game
               </button>
@@ -219,7 +218,7 @@ export function Navbar() {
             {role && (
               <button
                 onClick={handleLogout}
-                className="block w-full text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-gray-500 hover:text-white hover:bg-white/5 rounded-sm transition-colors mt-2 pb-8"
+                className="block w-full text-center px-4 py-3 font-sans font-medium text-sm text-gray-500 hover:text-white transition-colors mt-2 pb-8"
               >
                 Logout
               </button>
