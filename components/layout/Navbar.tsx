@@ -123,12 +123,18 @@ export function Navbar() {
           )}
           
           {role && (
-            <Link
-              href="/dashboard"
+            <button
+              onClick={() => {
+                if (window.location.pathname === "/dashboard") {
+                  window.dispatchEvent(new Event("open-submit-modal"));
+                } else {
+                  router.push("/dashboard?action=submit");
+                }
+              }}
               className="relative group px-5 py-2 font-bold text-xs uppercase tracking-widest text-white bg-[#FF007F] overflow-hidden rounded-sm hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,0,127,0.4)] hover:shadow-[0_0_25px_rgba(255,0,127,0.6)]"
             >
               <span className="relative z-10">Submit Game</span>
-            </Link>
+            </button>
           )}
           
           {role && (
@@ -195,13 +201,19 @@ export function Navbar() {
             )}
             
             {role && (
-              <Link
-                href="/dashboard"
-                onClick={() => setOpen(false)}
-                className="block text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-[#FF007F] rounded-sm shadow-[0_0_15px_rgba(255,0,127,0.3)]"
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  if (window.location.pathname === "/dashboard") {
+                    window.dispatchEvent(new Event("open-submit-modal"));
+                  } else {
+                    router.push("/dashboard?action=submit");
+                  }
+                }}
+                className="block w-full text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-white bg-[#FF007F] rounded-sm shadow-[0_0_15px_rgba(255,0,127,0.3)]"
               >
                 Submit Game
-              </Link>
+              </button>
             )}
             
             {role && (

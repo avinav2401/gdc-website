@@ -372,8 +372,25 @@ export default function DashboardPage() {
       const b = localStorage.getItem("gdc_bio");
       if (b) setBio(b);
     };
+
+    const handleOpenSubmit = () => setShowModal(true);
+
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    window.addEventListener("open-submit-modal", handleOpenSubmit);
+
+    // Also check query param on initial load
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("action") === "submit") {
+        setShowModal(true);
+        window.history.replaceState({}, '', '/dashboard');
+      }
+    }
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("open-submit-modal", handleOpenSubmit);
+    };
   }, []);
 
   const fetchSubmissions = async () => {
