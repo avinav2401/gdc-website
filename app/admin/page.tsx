@@ -36,8 +36,8 @@ function TextArea({ label, value, onChange, placeholder }: { label: string; valu
 function TabButton({ label, active, onClick, icon: Icon }: { label: string; active: boolean; onClick: () => void; icon: any }) {
   return (
     <button onClick={onClick}
-      className={`flex items-center gap-2 px-5 py-3 font-display text-lg uppercase tracking-wider rounded-xl transition ${active ? "bg-[var(--primary)] text-black" : "text-gray-400 hover:bg-white/5 hover:text-white"}`}>
-      <Icon size={18} /> {label}
+      className={`flex items-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-wider rounded-xl transition-all duration-300 ${active ? "bg-white/10 text-white shadow-lg border border-white/20" : "text-gray-400 border border-transparent hover:bg-white/5 hover:text-white"}`}>
+      <Icon size={18} className={active ? "text-[var(--primary)]" : ""} /> {label}
     </button>
   );
 }
@@ -48,14 +48,14 @@ function GameReviewCard({ game, onApprove, onReject, onDelete }: { game: any; on
   const [comment, setComment] = useState("");
   const [showComment, setShowComment] = useState(false);
   return (
-    <div className="bg-[#111118] border border-[#27272a] rounded-xl p-6">
+    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-lg hover:border-white/20 transition-colors duration-300">
       <div className="flex flex-col md:flex-row justify-between gap-4">
         <div className="flex-1">
-          <div className="flex flex-wrap items-center gap-3 mb-1">
-            <h3 className="font-display text-2xl uppercase">{game.title}</h3>
-            <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded-full">Pending</span>
+          <div className="flex flex-wrap items-center gap-3 mb-2">
+            <h3 className="text-2xl font-black uppercase tracking-tight text-white">{game.title}</h3>
+            <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Pending</span>
           </div>
-          <p className="text-gray-500 text-sm">by <span className="text-gray-300">{game.developer || "Unknown"}</span> · {game.engine} · {game.genre} · Submitted {new Date(game.created_at).toLocaleDateString()}</p>
+          <p className="text-gray-400 text-sm font-medium">by <span className="text-gray-200 font-bold">{game.developer || "Unknown"}</span> · {game.engine} · {game.genre} · Submitted {new Date(game.created_at).toLocaleDateString()}</p>
           
           {game.cover_url && (
             <div className="mt-4 mb-2">
@@ -744,9 +744,9 @@ function CMSPanel() {
         { icon: UserIcon, label: "Members", desc: "View and manage registered members.", color: "text-[#00f2fe]", section: "members" as const, btnColor: "bg-[#00f2fe]" },
       ].map(item => (
         <button key={item.label} onClick={() => setActiveSection(item.section)}
-          className="bg-[#111118] border border-[#27272a] rounded-xl p-6 text-left hover:bg-white/5 hover:border-[#3f3f46] transition group">
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-left shadow-lg hover:bg-white/10 hover:border-white/20 transition-all duration-300 group">
           <item.icon size={32} className={`${item.color} mb-4`} />
-          <h3 className="font-display text-2xl uppercase mb-2 group-hover:text-white transition">{item.label}</h3>
+          <h3 className="text-2xl font-black uppercase tracking-tight mb-2 text-gray-200 group-hover:text-white transition">{item.label}</h3>
           <p className="text-gray-500 text-sm mb-4">{item.desc}</p>
           <span className={`inline-block text-black text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-widest ${item.btnColor}`}>
             Manage →
@@ -800,25 +800,32 @@ function AdminLoginForm({ onLogin }: { onLogin: () => void }) {
   };
 
   return (
-    <div className="min-h-[92vh] flex items-center justify-center bg-[var(--bg)] py-12 px-4">
-      <div className="absolute inset-0 opacity-5 pointer-events-none"
-           style={{ backgroundImage: 'linear-gradient(#f472b6 1px, transparent 1px), linear-gradient(90deg, #f472b6 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-      <div className="relative z-10 w-full max-w-md bg-[#111118] border border-[#27272a] rounded-2xl shadow-2xl p-8">
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-4">👑</div>
-          <h2 className="font-display text-3xl uppercase tracking-wider text-[var(--secondary)]">Admin Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 relative overflow-hidden">
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--primary)]/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[var(--secondary)]/10 rounded-full blur-[120px] pointer-events-none" />
+      
+      <div className="relative z-10 w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-8 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50 pointer-events-none" />
+        <div className="relative z-10 text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 border border-white/20 mb-6 shadow-inner">
+             <div className="text-3xl">👑</div>
+          </div>
+          <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Admin Access</h2>
+          <p className="text-gray-400 text-sm mt-2 font-medium">Please authenticate to continue.</p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
           {errorMsg && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg text-sm font-semibold text-center">
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg text-sm font-semibold text-center backdrop-blur-md">
               {errorMsg}
             </div>
           )}
-          <Field label="Admin Email" value={form.email} onChange={v => set("email")({target: {value: v}} as any)} placeholder="admin@college.edu" autoComplete="off" />
-          <Field label="Password" value={form.password} onChange={v => set("password")({target: {value: v}} as any)} type="password" placeholder="••••••••" autoComplete="new-password" />
+          <div className="space-y-4">
+            <Field label="Admin Email" value={form.email} onChange={v => set("email")({target: {value: v}} as any)} placeholder="admin@college.edu" autoComplete="off" />
+            <Field label="Password" value={form.password} onChange={v => set("password")({target: {value: v}} as any)} type="password" placeholder="••••••••" autoComplete="new-password" />
+          </div>
           <button type="submit" disabled={loading}
-            className="w-full py-3.5 bg-[var(--secondary)] text-black font-display text-xl uppercase rounded-xl hover:opacity-90 active:scale-95 transition disabled:opacity-50">
-            {loading ? "Authenticating..." : "Access Control Center →"}
+            className="w-full py-3.5 bg-white text-black font-black text-sm tracking-widest uppercase rounded-xl hover:bg-gray-200 active:scale-95 transition-all duration-300 disabled:opacity-50 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]">
+            {loading ? "Authenticating..." : "Access Control Center"}
           </button>
         </form>
       </div>
@@ -916,14 +923,24 @@ export default function AdminPage() {
   const rejectedGames = games.filter(g => g.status === "rejected");
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-white py-12">
-      <div className="container mx-auto px-4 max-w-5xl">
+    <div className="min-h-screen bg-black text-white pt-24 pb-12 relative overflow-hidden">
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[var(--primary)]/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-[var(--secondary)]/10 rounded-full blur-[120px] pointer-events-none" />
+      
+      <div className="container mx-auto px-4 max-w-5xl relative z-10">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-end">
+        <div className="mb-10 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
           <div>
-            <p className="text-[var(--secondary)] text-sm font-semibold uppercase tracking-widest mb-1">Admin Portal</p>
-            <h1 className="font-display text-5xl md:text-6xl uppercase">Control Center</h1>
+            <p className="text-[var(--secondary)] text-sm font-bold uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-[var(--secondary)] animate-pulse" /> Admin Portal
+            </p>
+            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500">
+              Control Center
+            </h1>
           </div>
+          <button onClick={handleLogout} className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-semibold transition-all backdrop-blur-md flex items-center gap-2">
+            Log Out <X size={16} />
+          </button>
         </div>
 
         {/* Stats */}
@@ -934,15 +951,16 @@ export default function AdminPage() {
             { label: "Rejected", value: rejectedGames.length, color: "text-red-400" },
             { label: "Total Games", value: games.length, color: "text-[var(--primary)]" },
           ].map(s => (
-            <div key={s.label} className="bg-[#111118] border border-[#27272a] rounded-xl p-4 text-center">
-              <div className={`font-display text-4xl ${s.color}`}>{s.value}</div>
-              <div className="text-gray-500 text-xs mt-1">{s.label}</div>
+            <div key={s.label} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.3)] relative group overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className={`relative z-10 font-black text-5xl tracking-tighter ${s.color} drop-shadow-md`}>{s.value}</div>
+              <div className="relative z-10 text-gray-400 text-xs mt-2 uppercase tracking-widest font-semibold">{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* Tab Bar */}
-        <div className="flex flex-wrap gap-2 mb-8 p-2 bg-[#111118] border border-[#27272a] rounded-2xl">
+        <div className="flex flex-wrap gap-2 mb-8 p-2 bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
           <TabButton label="Game Approvals" icon={Gamepad2} active={tab === "games"} onClick={() => setTab("games")} />
           <TabButton label="Theme Editor" icon={Palette} active={tab === "theme"} onClick={() => setTab("theme")} />
           <TabButton label="CMS" icon={Calendar} active={tab === "cms"} onClick={() => setTab("cms")} />
@@ -952,10 +970,12 @@ export default function AdminPage() {
         {tab === "games" && (
           <div className="space-y-4">
             {pendingGames.length === 0 ? (
-              <div className="text-center py-16 text-gray-600">
-                <div className="text-5xl mb-4">✅</div>
-                <p className="font-display text-2xl uppercase">All Clear!</p>
-                <p className="text-sm mt-2">No pending game submissions.</p>
+              <div className="text-center py-20 bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl shadow-inner">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6 text-emerald-400">
+                  <CheckCircle size={40} />
+                </div>
+                <p className="text-3xl font-black uppercase tracking-tighter text-white">All Clear!</p>
+                <p className="text-gray-400 mt-2 font-medium">No pending game submissions requiring review.</p>
               </div>
             ) : pendingGames.map(game => (
               <GameReviewCard key={game.id} game={game} onApprove={handleApprove} onReject={handleReject} onDelete={handleDelete} />
