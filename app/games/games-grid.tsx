@@ -119,7 +119,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
 
       {/* ─── WebGL Player Modal ────────────────────────────────────────────── */}
       {playingGame && (
-        <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col backdrop-blur-md">
+        <div className="fixed inset-0 z-[100] bg-black flex flex-col">
           {/* Top Bar */}
           <div className="h-14 border-b-2 border-gray-800 flex items-center justify-between px-6 bg-[#07080D]">
             <div className="flex items-center gap-4">
