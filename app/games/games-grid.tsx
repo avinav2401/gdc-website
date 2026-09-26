@@ -141,32 +141,27 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           {/* Animated Scanline Overlay for background */}
           <div className="absolute inset-0 pointer-events-none opacity-20" style={{ background: "repeating-linear-gradient(to bottom, transparent 0, transparent 2px, #000 3px)" }} />
           
-          {/* Top Header Bar */}
-          <div className="h-16 relative z-20 border-b border-[#00F2FE]/30 flex items-center justify-between px-4 sm:px-6 bg-[#07080D]/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,242,254,0.15)]">
+          {/* Top Header Bar (Arcade Style) */}
+          <div className="h-16 relative z-20 border-b-4 border-[#FF007F] flex items-center justify-between px-4 sm:px-6 bg-[#0B0C15] shadow-[0_4px_20px_rgba(255,0,127,0.3)]">
             <div className="flex items-center gap-3 sm:gap-4 truncate">
-              <div className="relative group shrink-0">
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#FF007F] to-[#00F2FE] rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-                <div className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-black rounded-full border border-white/20 shadow-[0_0_15px_rgba(255,0,127,0.3)]">
-                  <MonitorPlay size={16} className="sm:w-5 sm:h-5 text-white" />
-                </div>
+              <div className="flex items-center justify-center w-10 h-10 bg-[#FF007F] text-white border-2 border-white shadow-[2px_2px_0_#00F2FE] shrink-0">
+                <MonitorPlay size={20} className="sm:w-6 sm:h-6" />
               </div>
               <div className="flex flex-col truncate">
-                <h3 className="font-black text-sm sm:text-lg text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 uppercase tracking-widest leading-tight truncate drop-shadow-sm">
+                <h3 className="font-arcade text-sm sm:text-xl text-white uppercase tracking-wider leading-tight truncate drop-shadow-[2px_2px_0_#00F2FE]">
                   {playingGame.title}
                 </h3>
-                <span className="font-mono text-[8px] sm:text-[10px] text-[#00F2FE] uppercase tracking-[0.2em] font-bold hidden sm:block">
-                  Playing • Arcade Mode
+                <span className="font-mono text-[8px] sm:text-xs text-[#00F2FE] uppercase tracking-widest font-bold hidden sm:block animate-pulse">
+                  ● ARCADE MODE
                 </span>
               </div>
             </div>
 
             <button
               onClick={() => setPlayingGame(null)}
-              className="relative group flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 bg-white/5 border border-white/20 text-white rounded-sm hover:border-[#FF007F]/50 transition-all uppercase tracking-widest font-bold text-[10px] sm:text-xs shrink-0 ml-2 overflow-hidden"
+              className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#07080D] border-2 border-[#00F2FE] text-[#00F2FE] hover:bg-[#00F2FE] hover:text-black hover:shadow-[4px_4px_0_#FF007F] transition-all uppercase font-arcade text-[10px] sm:text-xs shrink-0 ml-2"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FF007F]/20 to-[#00F2FE]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md" />
-              <span className="relative z-10 hidden sm:inline drop-shadow-md">Close</span>
-              <X size={16} className="relative z-10" />
+              <span className="hidden sm:inline">Close Game</span> <X size={16} strokeWidth={3} />
             </button>
           </div>
 
