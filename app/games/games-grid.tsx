@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ExternalLink, Play, X, Maximize2 } from "lucide-react";
+import { ExternalLink, Play, X, Maximize2, MonitorPlay } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
 
 export default function GamesGrid({ allGames }: { allGames: any[] }) {
@@ -12,6 +12,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
     setPlayingGame(g);
   };
 
+  // Lock body scroll when playing a game
   useEffect(() => {
     if (playingGame) {
       document.body.style.overflow = "hidden";
@@ -133,33 +134,38 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
         ))}
       </div>
 
-      {/* ─── WebGL Player Modal ────────────────────────────────────────────── */}
+      {/* ─── WebGL Player Modal (Arcade Mode) ────────────────────────────── */}
       {playingGame && (
-        <div className="fixed inset-0 z-[100] bg-black flex flex-col">
-          {/* Top Bar */}
-          <div className="h-14 border-b-2 border-gray-800 flex items-center justify-between px-6 bg-[#07080D]">
+        <div className="fixed inset-0 z-[100] bg-[#07080D] flex flex-col font-sans">
+          {/* Animated Scanline Overlay for background */}
+          <div className="absolute inset-0 pointer-events-none opacity-20" style={{ background: "repeating-linear-gradient(to bottom, transparent 0, transparent 2px, #000 3px)" }} />
+          
+          {/* Top Header Bar */}
+          <div className="h-16 relative z-10 border-b-4 border-[#FF007F] flex items-center justify-between px-6 bg-[#0B0C15] shadow-[0_4px_20px_rgba(255,0,127,0.3)]">
             <div className="flex items-center gap-4">
-              <h3 className="font-display text-xl uppercase tracking-wider text-white">
-                {playingGame.title}
-              </h3>
-              <span className="px-2 py-0.5 bg-[#FF007F]/20 text-[#FF007F] border border-[#FF007F]/50 text-[10px] font-bold uppercase tracking-widest">
-                Playing in Browser
-              </span>
+              <div className="flex items-center justify-center w-10 h-10 bg-[#FF007F] text-white border-2 border-white shadow-[2px_2px_0_#00F2FE]">
+                <MonitorPlay size={20} />
+              </div>
+              <div className="flex flex-col">
+                <h3 className="font-arcade text-lg text-white uppercase tracking-wider leading-tight">
+                  {playingGame.title}
+                </h3>
+                <span className="font-mono text-xs text-[#00F2FE] uppercase tracking-widest font-bold">
+                  ● ARCADE MODE
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="w-px h-4 bg-gray-700 mx-2" />
-              <button
-                onClick={() => setPlayingGame(null)}
-                className="p-2 bg-gray-800 hover:bg-red-500 hover:text-white rounded transition text-gray-400"
-              >
-                <X size={20} />
-              </button>
-            </div>
+            <button
+              onClick={() => setPlayingGame(null)}
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border-2 border-gray-600 text-gray-400 hover:text-white hover:border-[#FF007F] hover:bg-[#FF007F]/10 transition-all uppercase tracking-widest font-bold text-xs"
+            >
+              Close Game <X size={16} />
+            </button>
           </div>
 
-          {/* Game Frame */}
-          <div className="flex-1 w-full h-full p-2 md:p-4 flex items-center justify-center relative bg-[url('/grid.svg')]">
+          {/* Game Frame Area */}
+          <div className="flex-1 w-full h-full p-0 flex flex-col relative bg-[#07080D]">
             <iframe
               src={(() => {
                 try {
@@ -171,11 +177,12 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
                 } catch (e) {}
                 return playingGame.itchUrl;
               })()}
-              className="w-full h-full border-none"
+              className="w-full h-full border-none bg-black relative z-10"
               style={{ backgroundColor: 'transparent' }}
               allow="autoplay; fullscreen; vr"
               allowFullScreen
             />
+
           </div>
         </div>
       )}
