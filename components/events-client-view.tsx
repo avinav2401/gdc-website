@@ -104,7 +104,7 @@ export default function EventsClientView({ events }: EventsClientViewProps) {
         </div>
       )}
 
-      <section className="relative w-full overflow-hidden bg-[#0D0E17] py-6 md:py-10">
+      <section className="relative w-full overflow-hidden bg-[#0D0E17] pt-20 pb-6 md:pt-24 md:pb-10">
         <div className="w-full border-y-4 border-[#00F2FE] bg-[#07080D] shadow-[0px_6px_0px_#FF007F] relative">
           <img
             src="/relax.webp"
