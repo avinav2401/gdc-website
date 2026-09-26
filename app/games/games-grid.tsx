@@ -142,16 +142,16 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           <div className="absolute inset-0 pointer-events-none opacity-20" style={{ background: "repeating-linear-gradient(to bottom, transparent 0, transparent 2px, #000 3px)" }} />
           
           {/* Top Header Bar */}
-          <div className="h-16 relative z-10 border-b-4 border-[#FF007F] flex items-center justify-between px-6 bg-[#0B0C15] shadow-[0_4px_20px_rgba(255,0,127,0.3)]">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-10 h-10 bg-[#FF007F] text-white border-2 border-white shadow-[2px_2px_0_#00F2FE]">
-                <MonitorPlay size={20} />
+          <div className="h-16 relative z-10 border-b-4 border-[#FF007F] flex items-center justify-between px-4 sm:px-6 bg-[#0B0C15] shadow-[0_4px_20px_rgba(255,0,127,0.3)]">
+            <div className="flex items-center gap-3 sm:gap-4 truncate">
+              <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-[#FF007F] text-white border-2 border-white shadow-[2px_2px_0_#00F2FE] shrink-0">
+                <MonitorPlay size={16} className="sm:w-5 sm:h-5" />
               </div>
-              <div className="flex flex-col">
-                <h3 className="font-arcade text-lg text-white uppercase tracking-wider leading-tight">
+              <div className="flex flex-col truncate">
+                <h3 className="font-arcade text-sm sm:text-lg text-white uppercase tracking-wider leading-tight truncate">
                   {playingGame.title}
                 </h3>
-                <span className="font-mono text-xs text-[#00F2FE] uppercase tracking-widest font-bold">
+                <span className="font-mono text-[8px] sm:text-xs text-[#00F2FE] uppercase tracking-widest font-bold hidden sm:block">
                   ● ARCADE MODE
                 </span>
               </div>
@@ -159,9 +159,9 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
 
             <button
               onClick={() => setPlayingGame(null)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border-2 border-gray-600 text-gray-400 hover:text-white hover:border-[#FF007F] hover:bg-[#FF007F]/10 transition-all uppercase tracking-widest font-bold text-xs"
+              className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-transparent border-2 border-gray-600 text-gray-400 hover:text-white hover:border-[#FF007F] hover:bg-[#FF007F]/10 transition-all uppercase tracking-widest font-bold text-[10px] sm:text-xs shrink-0 ml-2"
             >
-              Close Game <X size={16} />
+              <span className="hidden sm:inline">Close Game</span> <X size={16} />
             </button>
           </div>
 
@@ -190,7 +190,7 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
               />
             </div>
 
-            <p className="mt-6 text-gray-400 font-mono text-xs tracking-widest uppercase z-10 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
+            <p className="mt-4 sm:mt-6 text-gray-400 font-mono text-[10px] sm:text-xs tracking-widest uppercase z-10 bg-black/50 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full backdrop-blur-md border border-white/10 text-center mx-4">
               Press <span className="text-white font-bold">ESC</span> or click Close Game to exit
             </p>
           </div>

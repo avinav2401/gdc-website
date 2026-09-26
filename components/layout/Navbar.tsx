@@ -72,10 +72,10 @@ export function Navbar() {
             className="w-10 h-10 border-2 border-white/80 [image-rendering:pixelated] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-[0_0_10px_rgba(255,0,127,0.5)] relative z-10"
           />
           <div className="flex flex-col leading-none relative z-10">
-            <span className="font-black text-2xl tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 group-hover:from-[#00F2FE] group-hover:to-white transition-all uppercase drop-shadow-md">
+            <span className="font-black text-xl sm:text-2xl tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 group-hover:from-[#00F2FE] group-hover:to-white transition-all uppercase drop-shadow-md">
               GDC
             </span>
-            <span className="text-[9px] text-[#00F2FE] uppercase tracking-[0.2em] font-bold group-hover:text-[#FF007F] transition-colors">
+            <span className="text-[7px] sm:text-[9px] text-[#00F2FE] uppercase tracking-[0.2em] font-bold group-hover:text-[#FF007F] transition-colors">
               Game Dev Community
             </span>
           </div>
@@ -153,7 +153,7 @@ export function Navbar() {
 
       {/* Mobile Panel */}
       {open && (
-        <div className="md:hidden bg-[#07080D]/95 backdrop-blur-xl border-b border-[#00F2FE]/20 px-4 py-6 space-y-4 shadow-2xl absolute top-full left-0 right-0">
+        <div className="md:hidden bg-[#07080D]/95 backdrop-blur-xl border-b border-[#00F2FE]/20 px-4 py-6 space-y-4 shadow-2xl absolute top-full left-0 right-0 max-h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="flex flex-col gap-2">
             {navLinks.map(({ href, label }) => (
               <Link
@@ -207,7 +207,7 @@ export function Navbar() {
             {role && (
               <button
                 onClick={handleLogout}
-                className="block w-full text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-gray-500 hover:text-white hover:bg-white/5 rounded-sm transition-colors mt-2"
+                className="block w-full text-center px-4 py-3 font-bold text-sm uppercase tracking-widest text-gray-500 hover:text-white hover:bg-white/5 rounded-sm transition-colors mt-2 pb-8"
               >
                 Logout
               </button>
