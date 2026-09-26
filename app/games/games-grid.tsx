@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ExternalLink, Play, X, Maximize2, MonitorPlay } from "lucide-react";
 import StatusBadge from "@/components/status-badge";
-import ThreeDArcade from "./3d-arcade";
+import ThreeDBackground from "./3d-arcade";
 
 export default function GamesGrid({ allGames }: { allGames: any[] }) {
   const [playingGame, setPlayingGame] = useState<any | null>(null);
@@ -166,8 +166,33 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           </div>
 
           {/* 3D Game Frame Area */}
-          <div className="flex-1 w-full h-full p-0 flex flex-col relative bg-[#07080D]">
-            <ThreeDArcade itchUrl={playingGame.itchUrl} title={playingGame.title} />
+          <div className="flex-1 w-full h-full p-4 md:p-8 flex flex-col items-center justify-center relative bg-black overflow-hidden">
+            
+            {/* The 3D Animated Background */}
+            <ThreeDBackground />
+
+            {/* Simple Clean Box (Layered on top of 3D bg) */}
+            <div className="w-full max-w-6xl aspect-video bg-black shadow-[0_0_80px_rgba(0,242,254,0.3)] border-2 border-white/10 relative z-10 rounded-sm">
+              <iframe
+                src={(() => {
+                  try {
+                    const url = playingGame.itchUrl || "";
+                    const parts = url.split("/games/");
+                    if (parts.length > 1) {
+                      return `/api/play/${parts[1]}`;
+                    }
+                  } catch (e) {}
+                  return playingGame.itchUrl;
+                })()}
+                className="w-full h-full border-none"
+                allow="autoplay; fullscreen; vr"
+                allowFullScreen
+              />
+            </div>
+
+            <p className="mt-6 text-gray-400 font-mono text-xs tracking-widest uppercase z-10 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
+              Press <span className="text-white font-bold">ESC</span> or click Close Game to exit
+            </p>
           </div>
         </div>
       )}
