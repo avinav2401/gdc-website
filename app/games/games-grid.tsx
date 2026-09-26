@@ -141,27 +141,30 @@ export default function GamesGrid({ allGames }: { allGames: any[] }) {
           {/* Animated Scanline Overlay for background */}
           <div className="absolute inset-0 pointer-events-none opacity-20" style={{ background: "repeating-linear-gradient(to bottom, transparent 0, transparent 2px, #000 3px)" }} />
           
-          {/* Top Header Bar (Arcade Style) */}
-          <div className="h-16 relative z-20 border-b-4 border-[#FF007F] flex items-center justify-between px-4 sm:px-6 bg-[#0B0C15] shadow-[0_4px_20px_rgba(255,0,127,0.3)]">
-            <div className="flex items-center gap-3 sm:gap-4 truncate">
-              <div className="flex items-center justify-center w-10 h-10 bg-[#FF007F] text-white border-2 border-white shadow-[2px_2px_0_#00F2FE] shrink-0">
-                <MonitorPlay size={20} className="sm:w-6 sm:h-6" />
+          {/* Top Header Bar (Sleek Glassmorphism Style) */}
+          <div className="h-16 relative z-20 border-b border-[#00F2FE]/50 flex items-center justify-between px-4 sm:px-6 bg-[#07080D]/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,242,254,0.15)] transition-all">
+            <div className="flex items-center gap-3 sm:gap-4 truncate group cursor-default relative">
+              <div className="absolute -inset-2 bg-gradient-to-r from-[#00F2FE] to-[#FF007F] opacity-10 group-hover:opacity-40 blur-lg transition duration-500 rounded-full" />
+              <div className="relative z-10 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border-2 border-white/80 rounded-full shadow-[0_0_10px_rgba(255,0,127,0.5)] shrink-0 group-hover:scale-110 transition-transform duration-300 bg-[#07080D]">
+                <MonitorPlay size={16} className="sm:w-5 sm:h-5 text-white group-hover:text-[#00F2FE] transition-colors" />
               </div>
-              <div className="flex flex-col truncate">
-                <h3 className="font-arcade text-sm sm:text-xl text-white uppercase tracking-wider leading-tight truncate drop-shadow-[2px_2px_0_#00F2FE]">
+              <div className="flex flex-col truncate relative z-10">
+                <h3 className="font-black text-sm sm:text-lg text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 group-hover:from-[#00F2FE] group-hover:to-white uppercase tracking-widest leading-tight truncate drop-shadow-md transition-all">
                   {playingGame.title}
                 </h3>
-                <span className="font-mono text-[8px] sm:text-xs text-[#00F2FE] uppercase tracking-widest font-bold hidden sm:block animate-pulse">
-                  ● ARCADE MODE
+                <span className="text-[7px] sm:text-[9px] text-[#00F2FE] uppercase tracking-[0.2em] font-bold group-hover:text-[#FF007F] transition-colors hidden sm:block">
+                  Arcade Mode
                 </span>
               </div>
             </div>
 
             <button
               onClick={() => setPlayingGame(null)}
-              className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#07080D] border-2 border-[#00F2FE] text-[#00F2FE] hover:bg-[#00F2FE] hover:text-black hover:shadow-[4px_4px_0_#FF007F] transition-all uppercase font-arcade text-[10px] sm:text-xs shrink-0 ml-2"
+              className="relative group flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 font-bold text-[10px] sm:text-xs uppercase tracking-widest text-white overflow-hidden rounded-sm border border-white/20 bg-white/5 hover:border-[#FF007F]/50 transition-all shrink-0 ml-2"
             >
-              <span className="hidden sm:inline">Close Game</span> <X size={16} strokeWidth={3} />
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FF007F]/20 to-[#00F2FE]/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md" />
+              <span className="relative z-10 hidden sm:inline drop-shadow-md">Close Game</span>
+              <X size={16} className="relative z-10 drop-shadow-md" />
             </button>
           </div>
 
